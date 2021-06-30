@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'deqm_test_kit/patient_group'
 
 module DEQMTestKit

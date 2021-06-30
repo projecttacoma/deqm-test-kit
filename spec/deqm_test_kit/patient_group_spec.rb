@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe DEQMTestKit::PatientGroup do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[1] }

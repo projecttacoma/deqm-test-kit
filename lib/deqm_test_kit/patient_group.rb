@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DEQMTestKit
   class PatientGroup < Inferno::TestGroup
     title 'Patient  Tests'
@@ -6,9 +8,7 @@ module DEQMTestKit
 
     test do
       title 'Server returns requested Patient resource from the Patient read interaction'
-      description %(
-        Verify that Patient resources can be read from the server.
-      )
+      description %(Verify that Patient resources can be read from the server.)
 
       input :patient_id
       # Named requests can be used by other tests
@@ -26,9 +26,7 @@ module DEQMTestKit
 
     test do
       title 'Patient resource is valid'
-      description %(
-        Verify that the Patient resource returned from the server is a valid FHIR resource.
-      )
+      description %(Verify that the Patient resource returned from the server is a valid FHIR resource.)
       # This test will use the response from the :patient request in the
       # previous test
       uses_request :patient

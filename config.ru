@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'inferno'
 
 inferno_spec = Bundler.locked_gems.specs.find { |spec| spec.name == 'inferno_core' }

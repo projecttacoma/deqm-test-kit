@@ -213,6 +213,9 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.7.0)
       parser (>= 3.0.1.1)
+    rubocop-rspec (2.4.0)
+      rubocop (~> 1.0)
+      rubocop-ast (>= 1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)
     sequel (5.45.0)
@@ -244,6 +247,7 @@ DEPENDENCIES
   factory_bot (~> 6.1)
   rspec (~> 3.10)
   rubocop (~> 1.18)
+  rubocop-rspec (~> 2.4)
   webmock (~> 3.11)
 
 BUNDLED WITH
