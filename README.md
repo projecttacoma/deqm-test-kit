@@ -1,16 +1,17 @@
-# Inferno Template
+# DEQM Test Kit
 
-This is a template repository for an
-[Inferno](https://github.com/inferno-community/inferno-core) test kit.
+This repository is an [Inferno](https://github.com/inferno-community/inferno-core) test kit
+for testing conformance to the operations and resources specified in the 
+[Data Exchange for Quality Measures (DEQM) Implementation Guide](http://hl7.org/fhir/us/davinci-deqm/).
 
 ## Instructions
 
 - Clone this repo.
 - Write your tests in the `lib` folder.
-- Put the `package.tgz` for the IG you're writing tests for in
-  `lib/your_test_kit_name/igs` and update this path in `docker-compose.yml`.
+- Put additional `package.tgz`s for the IGs you're writing tests for in
+  `lib/deqm_test_kit/igs` and update this path in `docker-compose.yml`.
   This will ensure that the validator has access to the resources needed to
-  validate resources against your IG.
+  validate resources against your IGs.
 - Run `docker-compose build` in this repo.
 - Run `docker-compose pull` in this repo.
 - Run `docker-compose up` in this repo.
@@ -21,13 +22,6 @@ This is a template repository for an
 In order to make your test suite available to others, it needs to be organized
 like a standard ruby gem (ruby libraries are called gems).
 
-- Fill in the information in the `gemspec` file in the root of this repository.
-  The name of this file should match the `spec.name` within the file. This will
-  be the name of the gem you create. For example, if your file is
-  `my_test_kit.gemspec` and its `spec.name` is `'my_test_kit'`, then others will
-  be able to install your gem with `gem install my_test_kit`. There are
-  [recommended naming conventions for
-  gems](https://guides.rubygems.org/name-your-gem/).
 - Your tests must be in `lib`
 - `lib` should contain only one file. All other files should be in a
   subdirectory. The file in lib be what people use to import your gem after they

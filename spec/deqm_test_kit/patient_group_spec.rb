@@ -1,7 +1,7 @@
-RSpec.describe InfernoTemplate::PatientGroup do
-  let(:suite) { Inferno::Repositories::TestSuites.new.find('test_suite_template') }
+RSpec.describe DEQMTestKit::PatientGroup do
+  let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[1] }
-  let(:test_session) { repo_create(:test_session, test_suite_id: 'test_suite_template') }
+  let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   let(:url) { 'http://example.com/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 

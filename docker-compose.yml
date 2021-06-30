@@ -10,7 +10,7 @@ services:
     depends_on:
       - validator_service
   validator_service:
-    image: infernocommunity/fhir-validator-service
+    image: infernocommunity/fhir-validator-service:latest
     # Update this path to match your directory structure
     volumes:
-      - ./lib/inferno_template/igs:/home/igs
+      - ./lib/deqm_test_kit/igs:/home/igs
