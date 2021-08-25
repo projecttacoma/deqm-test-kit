@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   inferno:
     build:
@@ -9,6 +9,10 @@ services:
       - "4567:4567"
     depends_on:
       - validator_service
+  cqf_ruler:
+    image: tacoma/cqf-ruler-preloaded:0.5.0.no-vs
+    ports:
+      - "8080:8080"
   validator_service:
     image: infernocommunity/fhir-validator-service:latest
     # Update this path to match your directory structure
