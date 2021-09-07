@@ -2,7 +2,7 @@
 
 module DEQMTestKit
   class PatientGroup < Inferno::TestGroup
-    title 'Patient  Tests'
+    title 'Patient Tests'
     description 'Verify that the server makes Patient resources available'
     id :patient_group
 
