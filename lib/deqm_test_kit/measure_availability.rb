@@ -30,10 +30,7 @@ module DEQMTestKit
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
         measure_bundle = JSON.parse(response[:body])
-        
-
         assert measure_bundle["total"].positive?, "Expected to find measure with identifier #{measure_identifier} and version #{measure_version}"
-        assert false, "Measure bundle logged #{measure_bundle.to_s}"
       end
     end
   end
