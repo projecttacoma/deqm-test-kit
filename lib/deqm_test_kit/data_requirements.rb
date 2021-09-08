@@ -25,7 +25,10 @@ module DEQMTestKit
           # @client.additional_headers = { 'x-api-key': @instance.api_key, 'Authorization': @instance.auth_header } if @instance.api_key && @instance.auth_header
   
           # Search system for measure by identifier and version
-          fhir_read(:measure, "measure-EXM130-7.3.000", name: :data_requirements)
+          fhir_search(:measure, params: { name: measure_identifier, version: measure_version }, name: :measure_search)
+          measure_bundle = JSON.parse(response[:body])
+          id = measure_bundle.entry[0].resource.id;
+          fhir_operation("Measure/#{id}/$data-requirements", name: :data_requirements)
           assert_response_status(200)
           assert_resource_type(:measure)
           assert_valid_json(response[:body])
