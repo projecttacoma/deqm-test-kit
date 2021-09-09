@@ -44,22 +44,26 @@ module DEQMTestKit
           
           id = measure_bundle["entry"][0]["resource"]["id"]
 
+          # Run our data requirements operation on the test client server
           fhir_operation("Measure/#{id}/$data-requirements", body: PARAMS, name: :data_requirements)
           library = JSON.parse(response[:body])
           actual_dr = library["dataRequirement"]
           assert_response_status(200)
           assert_resource_type(:library)
           assert_valid_json(response[:body])
-
+          
+          # Search embedded cqf-ruler instance by identifier and version
           fhir_search(:measure, client: :embedded_client, params: { name: measure_identifier, version: measure_version }, name: :measure_search)
           measure_bundle = JSON.parse(response[:body])
           
           id = measure_bundle["entry"][0]["resource"]["id"]
           
+          # Run data requirements operation on embedded cqf-ruler instance
           fhir_operation("Measure/#{id}/$data-requirements", body: PARAMS, client: :embedded_client, name: :data_requirements)
           expected_library = JSON.parse(response[:body])
           expected_dr = expected_library["dataRequirement"]
 
+          # Ensure both data requirements results libraries are identical
           assert((expected_dr - actual_dr).blank?, "Client data-requirements is missing expected data requirements for measure #{id}")
           assert((actual_dr - expected_dr).blank?, "Client data-requirements contains unexpected data requirements for measure #{id}")
 
