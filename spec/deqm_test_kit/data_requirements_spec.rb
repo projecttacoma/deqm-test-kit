@@ -4,7 +4,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[3] }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
-  let(:url) { 'http://example.com/fhir' }
+  url = 'http://example.com/fhir'
   # ensure this url matches url in embedded_client in data_requirements.rb
   let(:embedded_client) do
     'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
@@ -24,7 +24,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:measure_version) { '7.3.000' }
     let(:test_id) { 'test_id' }
 
-    it 'passes if a Library was received' do
+    it 'passes if the expected Library was received' do
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: test_id } }])
       test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }])
 
@@ -34,10 +34,10 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(:get, "#{embedded_client}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: test_measure_response.to_json)
 
-      stub_request(:post, "#{url}/Measure/#{test_id}/$data-requirements")
+      stub_request(:post, "#{embedded_client}/Measure/#{test_id}/$data-requirements")
         .to_return(status: 200, body: test_library_response.to_json)
 
-      stub_request(:post, "#{embedded_client}/Measure/#{test_id}/$data-requirements")
+      stub_request(:post, "#{url}/Measure/#{test_id}/$data-requirements")
         .to_return(status: 200, body: test_library_response.to_json)
 
       # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
@@ -46,8 +46,10 @@ RSpec.describe DEQMTestKit::DataRequirements do
     end
 
     it 'fails if a 200 is not received' do
+      # external client returns 201 instead of 200
+
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: test_id } }])
-      test_library_response = FHIR::Library.new
+      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }])
 
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: test_measure_response.to_json)
@@ -55,12 +57,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(:get, "#{embedded_client}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: test_measure_response.to_json)
 
-      # external client returns 201 instead of 200
-      stub_request(:post, "#{url}/Measure/#{test_id}/$data-requirements")
-        .to_return(status: 201, body: test_library_response.to_json)
-
       stub_request(:post, "#{embedded_client}/Measure/#{test_id}/$data-requirements")
         .to_return(status: 200, body: test_library_response.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{test_id}/$data-requirements")
+        .to_return(status: 201, body: test_library_response.to_json)
 
       result = run(test, url: url).first
 
@@ -69,8 +70,9 @@ RSpec.describe DEQMTestKit::DataRequirements do
     end
 
     it 'fails if a Library is not received' do
-      test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: test_id } }])
       # returns a bundle not a library
+      test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: test_id } }])
+
       test_not_library_response = FHIR::Bundle.new
 
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
