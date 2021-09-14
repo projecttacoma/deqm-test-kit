@@ -2,6 +2,7 @@
 
 require_relative 'deqm_test_kit/patient_group'
 require_relative 'deqm_test_kit/measure_availability'
+require_relative 'deqm_test_kit/data_requirements'
 
 module DEQMTestKit
   class Suite < Inferno::TestSuite
@@ -41,5 +42,6 @@ module DEQMTestKit
     # using their id
     group from: :patient_group
     group from: :measure_availability
+    group from: :data_requirements
   end
 end
