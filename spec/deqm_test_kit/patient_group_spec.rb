@@ -3,6 +3,7 @@
 RSpec.describe DEQMTestKit::PatientGroup do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[1] }
+  let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   let(:url) { 'http://example.com/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
@@ -10,8 +11,10 @@ RSpec.describe DEQMTestKit::PatientGroup do
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable, inputs)
-    Inferno::Repositories::TestRuns.new.results_for_test_run(test_run.id)
+    inputs.each do |name, value|
+      session_data_repo.save(test_session_id: test_session.id, name: name, value: value)
+    end
+    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
 
   describe 'read test' do
@@ -23,7 +26,7 @@ RSpec.describe DEQMTestKit::PatientGroup do
       stub_request(:get, "#{url}/Patient/#{patient_id}")
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, url: url, patient_id: patient_id).first
+      result = run(test, url: url, patient_id: patient_id)
 
       expect(result.result).to eq('pass')
     end
@@ -33,7 +36,7 @@ RSpec.describe DEQMTestKit::PatientGroup do
       stub_request(:get, "#{url}/Patient/#{patient_id}")
         .to_return(status: 201, body: resource.to_json)
 
-      result = run(test, url: url, patient_id: patient_id).first
+      result = run(test, url: url, patient_id: patient_id)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
@@ -44,7 +47,7 @@ RSpec.describe DEQMTestKit::PatientGroup do
       stub_request(:get, "#{url}/Patient/#{patient_id}")
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, url: url, patient_id: patient_id).first
+      result = run(test, url: url, patient_id: patient_id)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/Patient/)
@@ -55,7 +58,7 @@ RSpec.describe DEQMTestKit::PatientGroup do
       stub_request(:get, "#{url}/Patient/#{patient_id}")
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, url: url, patient_id: patient_id).first
+      result = run(test, url: url, patient_id: patient_id)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/resource with id/)
@@ -78,7 +81,7 @@ RSpec.describe DEQMTestKit::PatientGroup do
         response_body: resource.to_json
       )
 
-      result = run(test).first
+      result = run(test)
 
       expect(result.result).to eq('pass')
     end
@@ -96,7 +99,7 @@ RSpec.describe DEQMTestKit::PatientGroup do
         response_body: resource.to_json
       )
 
-      result = run(test).first
+      result = run(test)
 
       expect(result.result).to eq('fail')
     end
