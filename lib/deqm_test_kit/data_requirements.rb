@@ -1,8 +1,11 @@
 # frozen_string_literal: true
+require_relative '../utils/data_requirements_utils'
 
 module DEQMTestKit
   # GET [base]/Measure/CMS146/$data-requirements?periodStart=2014&periodEnd=2014
   class DataRequirements < Inferno::TestGroup
+    include DataRequirementsUtils
+
     id 'data_requirements'
     title 'Data Requirements'
     description 'Ensure fhir server can respond to the $data-requirements request'
@@ -58,6 +61,8 @@ module DEQMTestKit
         library = JSON.parse(response[:body])
         actual_dr = library['dataRequirement']
 
+        actual_dr_strings = get_dr_comparison_list actual_dr
+
         # Search embedded cqf-ruler instance by identifier and version
         fhir_search(:measure, client: :embedded_client,
                               params: { name: measure_identifier, version: measure_version }, name: :measure_search)
@@ -70,11 +75,17 @@ module DEQMTestKit
         expected_library = JSON.parse(response[:body])
         expected_dr = expected_library['dataRequirement']
 
+        expected_dr_strings = get_dr_comparison_list expected_dr
+
+        diff = expected_dr_strings - actual_dr_strings
+
         # Ensure both data requirements results libraries are identical
-        assert((expected_dr - actual_dr).blank?,
-               "Client data-requirements is missing expected data requirements for measure #{test_client_id}")
-        assert((actual_dr - expected_dr).blank?,
-               "Client data-requirements contains unexpected data requirements for measure #{test_client_id}")
+        assert(diff.blank?,
+               "Client data-requirements is missing expected data requirements for measure #{test_client_id}: #{diff}")
+
+        diff = actual_dr_strings - expected_dr_strings
+        assert(diff.blank?,
+               "Client data-requirements contains unexpected data requirements for measure #{test_client_id}: #{diff}")
       end
     end
   end
