@@ -3,6 +3,7 @@
 RSpec.describe DEQMTestKit::DataRequirements do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[3] }
+  let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   url = 'http://example.com/fhir'
   # ensure this url matches url in embedded_client in data_requirements.rb
@@ -14,8 +15,10 @@ RSpec.describe DEQMTestKit::DataRequirements do
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable, inputs)
-    Inferno::Repositories::TestRuns.new.results_for_test_run(test_run.id)
+    inputs.each do |name, value|
+      session_data_repo.save(test_session_id: test_session.id, name: name, value: value)
+    end
+    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
 
   describe 'data requirements test' do
@@ -41,7 +44,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
         .to_return(status: 200, body: test_library_response.to_json)
 
       # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
-      result = run(test, url: url).first
+      result = run(test, url: url)
       expect(result.result).to eq('pass')
     end
 
@@ -63,7 +66,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(:post, "#{url}/Measure/#{test_id}/$data-requirements")
         .to_return(status: 201, body: test_library_response.to_json)
 
-      result = run(test, url: url).first
+      result = run(test, url: url)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
@@ -87,7 +90,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(:post, "#{embedded_client}/Measure/#{test_id}/$data-requirements")
         .to_return(status: 200, body: test_not_library_response.to_json)
 
-      result = run(test, url: url).first
+      result = run(test, url: url)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match('Bad resource type received: expected Library, but received Bundle')
