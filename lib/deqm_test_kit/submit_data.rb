@@ -70,10 +70,10 @@ module DEQMTestKit
         # Create submit data parameters
         measure_report = create_measure_report(measure['url'], '2019-01-01', '2019-12-31')
         params = {
-          resourceType: 'Parameters',
-          parameter: [{
-            name: 'measureReport',
-            resource: measure_report
+          'resourceType' => 'Parameters',
+          'parameter' => [{
+            'name' => 'measureReport',
+            'resource' => measure_report
           }]
         }
 
@@ -86,10 +86,10 @@ module DEQMTestKit
           end
 
           resource_param = {
-            name: 'resource',
-            resource: r
+            'name' => 'resource',
+            'resource' => r
           }
-          params[:parameter].push(resource_param)
+          params['parameter'].push(resource_param)
         end
         # Submit the data
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
@@ -117,15 +117,15 @@ module DEQMTestKit
 
     def create_measure_report(measure_url, period_start, period_end)
        mr = {
-        resourceType: 'MeasureReport',
-        type: 'data-collection',
-        measure: measure_url,
-        period: {
-          start: period_start,
-          end: period_end
+        'type' => 'data-collection',
+        'measure' => measure_url,
+        'period' => {
+          'start' => period_start,
+          'end' => period_end
         },
-        status: 'complete'
+        'status' => 'complete'
       }
+      mr['resourceType'] = 'MeasureReport'
       mr['identifier'] = [{}]
       mr['identifier'][0]['value'] = SecureRandom.uuid
       mr
