@@ -33,6 +33,7 @@ module DEQMTestKit
       id 'data-requirements-01'
       description 'Data requirements on the fhir test server match the data requirements of our embedded client'
       makes_request :data_requirements
+      output :queries_json
 
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
@@ -86,7 +87,32 @@ module DEQMTestKit
         diff = actual_dr_strings - expected_dr_strings
         assert(diff.blank?,
                "Client data-requirements contains unexpected data requirements for measure #{test_client_id}: #{diff}")
+        queries = get_data_requirements_queries(actual_dr)
+        output queries_json: queries.to_json
       end
+    end
+
+    def get_data_requirements_queries(data_requirement)
+      # hashes with { endpoint => FHIR Type, params => { queries } }
+      # TODO: keep provenance or decide that it shouldn't be a data requirement query
+      queries = data_requirement
+                .select { |dr| dr['type'] && dr['type'] != "Provenance" }
+                .map do |dr|
+        q = { 'endpoint' => dr['type'], 'params' => {} }
+
+        # prefer specific code filter first before valueSet
+        if dr.dig('codeFilter')&.first&.dig('code')&.first
+          q['params'][dr['codeFilter'][0]['path'].to_s] = dr['codeFilter'][0]['code'][0]['code']
+        elsif dr.dig('codeFilter')&.first&.dig('valueSet')
+          q['params']["#{dr['codeFilter'][0]['path']}:in"] = dr['codeFilter'][0]['valueSet']
+        end
+
+        q
+      end
+
+      # TODO: We should be smartly querying for patients based on what the resources reference?
+      queries.unshift('endpoint' => 'Patient', 'params' => {})
+      queries
     end
   end
   # rubocop:enable Metrics/BlockLength
