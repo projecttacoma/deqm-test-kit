@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require_relative '../utils/data_requirements_utils'
 
 module DEQMTestKit
@@ -34,27 +35,19 @@ module DEQMTestKit
       description 'Data requirements on the fhir test server match the data requirements of our embedded client'
       makes_request :data_requirements
       output :queries_json
+      input :measure_id
 
       run do
-        # Look for matching measure from cqf-ruler datastore by resource id
-        # TODO: actually pull measure from user input drop down (populated from embedded client),
-        # whichever was selected from measure availability group
-        measure_to_test = 'EXM130|7.3.000'
-        measure_identifier, measure_version = measure_to_test.split('|')
-
-        # Search system for measure by identifier and version
-        fhir_search(:measure, params: { name: measure_identifier, version: measure_version }, name: :measure_search)
+        # Get measure resource from client
+        fhir_read(:measure, measure_id)
         assert_response_status(200)
-        assert_resource_type(:bundle)
+        assert_resource_type(:measure)
         assert_valid_json(response[:body])
-        measure_bundle = JSON.parse(response[:body])
-        assert measure_bundle['total'].positive?,
-               "Expected to find measure with identifier #{measure_identifier} and version #{measure_version}"
-
-        test_client_id = measure_bundle['entry'][0]['resource']['id']
+        measure_identifier = resource.name
+        measure_version = resource.version
 
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{test_client_id}/$data-requirements", body: PARAMS, name: :data_requirements)
+        fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS, name: :data_requirements)
         assert_response_status(200)
         assert_resource_type(:library)
         assert_valid_json(response[:body])
@@ -82,38 +75,15 @@ module DEQMTestKit
 
         # Ensure both data requirements results libraries are identical
         assert(diff.blank?,
-               "Client data-requirements is missing expected data requirements for measure #{test_client_id}: #{diff}")
+               "Client data-requirements is missing expected data requirements for measure #{measure_id}: #{diff}")
 
         diff = actual_dr_strings - expected_dr_strings
         assert(diff.blank?,
-               "Client data-requirements contains unexpected data requirements for measure #{test_client_id}: #{diff}")
+               "Client data-requirements contains unexpected data requirements for measure #{measure_id}: #{diff}")
         queries = get_data_requirements_queries(actual_dr)
         output queries_json: queries.to_json
       end
     end
-
-    def get_data_requirements_queries(data_requirement)
-      # hashes with { endpoint => FHIR Type, params => { queries } }
-      # TODO: keep provenance or decide that it shouldn't be a data requirement query
-      queries = data_requirement
-                .select { |dr| dr['type'] && dr['type'] != "Provenance" }
-                .map do |dr|
-        q = { 'endpoint' => dr['type'], 'params' => {} }
-
-        # prefer specific code filter first before valueSet
-        if dr.dig('codeFilter')&.first&.dig('code')&.first
-          q['params'][dr['codeFilter'][0]['path'].to_s] = dr['codeFilter'][0]['code'][0]['code']
-        elsif dr.dig('codeFilter')&.first&.dig('valueSet')
-          q['params']["#{dr['codeFilter'][0]['path']}:in"] = dr['codeFilter'][0]['valueSet']
-        end
-
-        q
-      end
-
-      # TODO: We should be smartly querying for patients based on what the resources reference?
-      queries.unshift('endpoint' => 'Patient', 'params' => {})
-      queries
-    end
+    # rubocop:enable Metrics/BlockLength
   end
-  # rubocop:enable Metrics/BlockLength
 end

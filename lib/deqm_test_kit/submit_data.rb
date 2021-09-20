@@ -30,12 +30,12 @@ module DEQMTestKit
       run do
         # get measure from client
         assert(measure_id,
-               'No measure selected. You must run the Measure Availability test group prior to running the Submit Data test group.')
+               'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
         measure = JSON.parse(response[:body])
 
-        assert_valid_json(queries_json, 'Valid json queries must be passed from the Data Requirements test group') # for safety
+        assert_valid_json(queries_json, 'Valid Data Requirements json queries must be used') # for safety
         queries = JSON.parse(queries_json)
         # If we have no queries, get all of these types
         if queries.empty?
@@ -49,7 +49,7 @@ module DEQMTestKit
         end
         # Call the $updateCodeSystems workaround on embedded cqf-ruler so code:in queries work
         fhir_operation('$updateCodeSystems', client: :embedded_client)
-        reply = fhir_client(:embedded_client).send(:get, "$updateCodeSystems")
+        reply = fhir_client(:embedded_client).send(:get, '$updateCodeSystems')
         assert reply.response[:code] == 200
 
         # Get submission data
@@ -65,7 +65,8 @@ module DEQMTestKit
           else
             []
           end
-        end.flatten.uniq { |r| r['id'] }
+        end
+        resources.flatten!.uniq! { |r| r['id'] }
 
         # Create submit data parameters
         measure_report = create_measure_report(measure['url'], '2019-01-01', '2019-12-31')
@@ -80,7 +81,7 @@ module DEQMTestKit
         # Add resources to parameters
         resources.each do |r|
           # create unique identifier if not present on resource
-          unless r.dig('identifier')&.first&.dig('value')
+          unless r['identifier']&.first&.dig('value')
             r['identifier'] = [{}]
             r['identifier'][0]['value'] = SecureRandom.uuid
           end
@@ -100,7 +101,7 @@ module DEQMTestKit
 
         # GET and assert presence of all submitted resources
         resources.each do |r|
-          identifier = r.dig('identifier')&.first&.dig('value')
+          identifier = r['identifier']&.first&.dig('value')
           assert !identifier.nil?, "Identifier #{identifier} was nil"
 
           # Search for resource by identifier
@@ -114,9 +115,10 @@ module DEQMTestKit
         end
       end
     end
-
+    # rubocop:enable Metrics/BlockLength
+    # rubocop:disable Metrics/MethodLength
     def create_measure_report(measure_url, period_start, period_end)
-       mr = {
+      mr = {
         'type' => 'data-collection',
         'measure' => measure_url,
         'period' => {
@@ -130,6 +132,6 @@ module DEQMTestKit
       mr['identifier'][0]['value'] = SecureRandom.uuid
       mr
     end
+    # rubocop:enable Metrics/MethodLength
   end
-  # rubocop:enable Metrics/BlockLength
 end

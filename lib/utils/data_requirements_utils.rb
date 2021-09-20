@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DEQMTestKit
+  # Utility functions in support of the data requirements test group
   module DataRequirementsUtils
     def get_filter_str(code_filter)
       ret_val = '(no code filter)'
@@ -25,6 +26,32 @@ module DEQMTestKit
 
         "#{dr_resource.type}#{path}#{filter_str}"
       end
+    end
+
+    def get_data_requirements_queries(data_requirements)
+      # hashes with { endpoint => FHIR Type, params => { queries } }
+      # TODO: keep provenance or decide that it shouldn't be a data requirement query
+      queries = data_requirements
+                .select { |dr| dr['type'] && dr['type'] != 'Provenance' }
+                .map do |dr|
+        query_for_code_filter(dr['codeFilter']&.first, dr['type'])
+      end
+
+      # TODO: We should be smartly querying for patients based on what the resources reference?
+      queries.unshift('endpoint' => 'Patient', 'params' => {})
+      queries
+    end
+
+    def query_for_code_filter(filter, type)
+      q = { 'endpoint' => type, 'params' => {} }
+
+      # prefer specific code filter first before valueSet
+      if filter&.dig('code')&.first
+        q['params'][filter['path'].to_s] = filter['code'][0]['code']
+      elsif filter&.dig('valueSet')
+        q['params']["#{filter['path']}:in"] = filter['valueSet']
+      end
+      q
     end
   end
 end
