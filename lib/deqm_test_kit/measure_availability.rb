@@ -31,10 +31,9 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
-        measure_bundle = JSON.parse(response[:body])
-        assert measure_bundle['total'].positive?,
+        assert resource.total.positive?,
                "Expected to find measure with identifier #{measure_identifier} and version #{measure_version}"
-        output measure_id: measure_bundle['entry'][0]['resource']['id']
+        output measure_id: resource.entry[0].resource.id
       end
     end
   end

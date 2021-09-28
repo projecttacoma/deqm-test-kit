@@ -18,13 +18,12 @@ module DEQMTestKit
 
     def get_dr_comparison_list(data_requirement)
       data_requirement.map do |dr|
-        dr_resource = FHIR::DataRequirement.new dr
-        cf = dr_resource.codeFilter&.first
+        cf = dr.codeFilter&.first
         filter_str = get_filter_str cf
 
         path = cf&.path ? ".#{cf.path}" : ''
 
-        "#{dr_resource.type}#{path}#{filter_str}"
+        "#{dr.type}#{path}#{filter_str}"
       end
     end
 
@@ -32,24 +31,23 @@ module DEQMTestKit
       # hashes with { endpoint => FHIR Type, params => { queries } }
       # TODO: keep provenance or decide that it shouldn't be a data requirement query
       queries = data_requirements
-                .select { |dr| dr['type'] && dr['type'] != 'Provenance' }
+                .select { |dr| dr.type && dr.type != 'Provenance' }
                 .map do |dr|
-        query_for_code_filter(dr['codeFilter']&.first, dr['type'])
+        query_for_code_filter(dr.codeFilter&.first, dr.type)
       end
 
       # TODO: We should be smartly querying for patients based on what the resources reference?
-      queries.unshift('endpoint' => 'Patient', 'params' => {})
+      queries.unshift(endpoint: 'Patient', params: {})
       queries
     end
 
     def query_for_code_filter(filter, type)
-      q = { 'endpoint' => type, 'params' => {} }
-
+      q = { endpoint: type, params: {} }
       # prefer specific code filter first before valueSet
-      if filter&.dig('code')&.first
-        q['params'][filter['path'].to_s] = filter['code'][0]['code']
-      elsif filter&.dig('valueSet')
-        q['params']["#{filter['path']}:in"] = filter['valueSet']
+      if filter&.code&.first
+        q[:params][filter.path.to_s] = filter.code[0].code
+      elsif filter&.valueSet
+        q[:params]["#{filter.path}:in"] = filter.valueSet
       end
       q
     end
