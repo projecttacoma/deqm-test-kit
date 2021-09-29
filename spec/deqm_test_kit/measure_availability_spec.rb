@@ -23,7 +23,6 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
     let(:measure_version) { '7.3.000' }
 
     it 'passes if a Measure was received' do
-      # measure_bundle['entry'][0]['resource']['id']
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
