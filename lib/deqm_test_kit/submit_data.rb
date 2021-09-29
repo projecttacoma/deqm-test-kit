@@ -33,18 +33,18 @@ module DEQMTestKit
                'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
-        measure = JSON.parse(response[:body])
+        measure = resource
 
         assert_valid_json(queries_json, 'Valid Data Requirements json queries must be used') # for safety
         queries = JSON.parse(queries_json)
         # If we have no queries, get all of these types
         if queries.empty?
           queries = [
-            { 'endpoint' => 'Patient', 'params' => {} },
-            { 'endpoint' => 'Encounter', 'params' => {} },
-            { 'endpoint' => 'Condition', 'params' => {} },
-            { 'endpoint' => 'Procedure', 'params' => {} },
-            { 'endpoint' => 'Observation', 'params' => {} }
+            { endpoint: 'Patient', params: {} },
+            { endpoint: 'Encounter', params: {} },
+            { endpoint: 'Condition', params: {} },
+            { endpoint: 'Procedure', params: {} },
+            { endpoint: 'Observation', params: {} }
           ]
         end
         # Call the $updateCodeSystems workaround on embedded cqf-ruler so code:in queries work
@@ -60,37 +60,35 @@ module DEQMTestKit
 
           # Return all resources in the response bundle if queries are met
           if code == 200
-            bundle = JSON.parse(response[:body])
-            bundle['entry'] ? bundle['entry'].map { |e| e['resource'] } : []
+            resource.entry ? resource.entry.map(&:resource) : []
           else
             []
           end
         end
-        resources.flatten!.uniq! { |r| r['id'] }
+        resources.flatten!.uniq!(&:id)
 
         # Create submit data parameters
-        measure_report = create_measure_report(measure['url'], '2019-01-01', '2019-12-31')
-        params = {
-          'resourceType' => 'Parameters',
-          'parameter' => [{
-            'name' => 'measureReport',
-            'resource' => measure_report
+        measure_report = create_measure_report(measure.url, '2019-01-01', '2019-12-31')
+        params_hash = {
+          resourceType: 'Parameters',
+          parameter: [{
+            name: 'measureReport',
+            resource: measure_report
+
           }]
         }
+        params = FHIR::Parameters.new params_hash
 
         # Add resources to parameters
         resources.each do |r|
           # create unique identifier if not present on resource
-          unless r['identifier']&.first&.dig('value')
-            r['identifier'] = [{}]
-            r['identifier'][0]['value'] = SecureRandom.uuid
-          end
+          r.identifier = [FHIR::Identifier.new({ value: SecureRandom.uuid })] unless r.identifier&.first&.value
 
           resource_param = {
-            'name' => 'resource',
-            'resource' => r
+            name: 'resource',
+            resource: r
           }
-          params['parameter'].push(resource_param)
+          params.parameter.push(resource_param)
         end
         # Submit the data
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
@@ -101,17 +99,16 @@ module DEQMTestKit
 
         # GET and assert presence of all submitted resources
         resources.each do |r|
-          identifier = r['identifier']&.first&.dig('value')
+          identifier = r.identifier&.first&.value
           assert !identifier.nil?, "Identifier #{identifier} was nil"
 
           # Search for resource by identifier
-          fhir_search(r['resourceType'], params: { identifier: identifier })
+          fhir_search(r.resourceType, params: { identifier: identifier })
           assert_response_status(200)
           assert_resource_type(:bundle)
           assert_valid_json(response[:body])
-          resource_bundle = JSON.parse(response[:body])
-          assert resource_bundle['total'].positive?,
-                 "Search for a #{r['resourceType']} with identifier #{identifier} returned no results"
+          assert resource.total.positive?,
+                 "Search for a #{r.resourceType} with identifier #{identifier} returned no results"
         end
       end
     end
@@ -127,10 +124,9 @@ module DEQMTestKit
         },
         'status' => 'complete'
       }
-      mr['resourceType'] = 'MeasureReport'
-      mr['identifier'] = [{}]
-      mr['identifier'][0]['value'] = SecureRandom.uuid
-      mr
+      resource = FHIR::MeasureReport.new(mr)
+      resource.identifier = [FHIR::Identifier.new({ value: SecureRandom.uuid })]
+      resource
     end
     # rubocop:enable Metrics/MethodLength
   end
