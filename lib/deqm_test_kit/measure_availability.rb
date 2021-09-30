@@ -18,6 +18,7 @@ module DEQMTestKit
       id 'measure-availability-01'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
+      output :measure_id
 
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
@@ -30,9 +31,9 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
-        measure_bundle = JSON.parse(response[:body])
-        assert measure_bundle['total'].positive?,
+        assert resource.total.positive?,
                "Expected to find measure with identifier #{measure_identifier} and version #{measure_version}"
+        output measure_id: resource.entry[0].resource.id
       end
     end
   end

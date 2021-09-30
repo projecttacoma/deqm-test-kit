@@ -2,7 +2,7 @@
 
 RSpec.describe DEQMTestKit::MeasureAvailability do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
-  let(:group) { suite.groups[2] }
+  let(:group) { suite.groups[1] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   let(:url) { 'http://example.com/fhir' }
@@ -23,7 +23,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
     let(:measure_version) { '7.3.000' }
 
     it 'passes if a Measure was received' do
-      resource = FHIR::Bundle.new(total: 1)
+      resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
