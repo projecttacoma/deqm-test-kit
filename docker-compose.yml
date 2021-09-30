@@ -50,7 +50,7 @@ services:
   deqm_test_server:
     depends_on:
       - mongo
-    image: tacoma/deqm-test-server:connectathon
+    image: tacoma/deqm-test-server:latest
     environment:
       DB_HOST: mongo
       DB_PORT: 27017
