@@ -54,8 +54,8 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
     it 'passes for expected Library with a valueSet codefilter' do
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
-      codeFilters = [{valueSet:'testValueSet'}]
-      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }], codeFilter: codeFilters)
+      code_filters = [{ valueSet: 'testValueSet' }]
+      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }], codeFilter: code_filters)
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
@@ -80,8 +80,8 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
     it 'passes for expected library with a single code codeFilter' do
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
-      codeFilters = [{code:[{code:'testcode',system:'testsystem'}]}]
-      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition', codeFilter: codeFilters}])
+      code_filters = [{ code: [{ code: 'testcode', system: 'testsystem' }] }]
+      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition', codeFilter: code_filters }])
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
