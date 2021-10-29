@@ -52,6 +52,58 @@ RSpec.describe DEQMTestKit::DataRequirements do
       expect(result.result).to eq('pass')
     end
 
+    it 'passes for expected Library with a valueSet codefilter' do
+      test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
+      code_filters = [{ valueSet: 'testValueSet' }]
+      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }], codeFilter: code_filters)
+      test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
+
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+        .to_return(status: 200, body: test_measure_response.to_json)
+
+      stub_request(:get, "#{embedded_client}/Measure?name=#{measure_name}&version=#{measure_version}")
+        .to_return(status: 200, body: test_measure_response.to_json)
+
+      stub_request(:post, "#{embedded_client}/Measure/#{measure_id}/$data-requirements")
+        .to_return(status: 200, body: test_library_response.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$data-requirements")
+        .to_return(status: 200, body: test_library_response.to_json)
+
+      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
+      result = run(test, url: url, measure_id: measure_id)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'passes for expected library with a single code codeFilter' do
+      test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
+      code_filters = [{ code: [{ code: 'testcode', system: 'testsystem' }] }]
+      test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition', codeFilter: code_filters }])
+      test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
+
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+        .to_return(status: 200, body: test_measure_response.to_json)
+
+      stub_request(:get, "#{embedded_client}/Measure?name=#{measure_name}&version=#{measure_version}")
+        .to_return(status: 200, body: test_measure_response.to_json)
+
+      stub_request(:post, "#{embedded_client}/Measure/#{measure_id}/$data-requirements")
+        .to_return(status: 200, body: test_library_response.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$data-requirements")
+        .to_return(status: 200, body: test_library_response.to_json)
+
+      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
+      result = run(test, url: url, measure_id: measure_id)
+      expect(result.result).to eq('pass')
+    end
+
     it 'fails if a 200 is not received' do
       # external client returns 201 instead of 200
 

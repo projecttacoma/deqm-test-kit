@@ -7,7 +7,7 @@ module DEQMTestKit
       ret_val = '(no code filter)'
 
       if code_filter&.code&.first
-        code = code_filter.first.code.first
+        code = code_filter.code.first
         ret_val = "(#{code.system}|#{code.code})"
       elsif code_filter&.valueSet
         ret_val = "(#{code_filter.valueSet})"
