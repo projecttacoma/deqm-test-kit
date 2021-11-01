@@ -36,5 +36,27 @@ module DEQMTestKit
         output measure_id: resource.entry[0].resource.id
       end
     end
+
+    test do
+      title 'Measure cannot be found returns empty bundle'
+      id 'measure-availability-02'
+      description 'Selected measure is know not to exist on the server and returns an empty bundle'
+      makes_request :measure_search_failure
+      output :null
+
+      run do
+        measure_identifier = 'NON-EXISTANT_MEASURE_ID'
+        measure_version = '0'
+
+        # Search system for measure by identifier and version
+        fhir_search(:measure, params: { name: measure_identifier, version: measure_version })
+        assert_response_status(200)
+        assert_resource_type(:bundle)
+        assert_valid_json(response[:body])
+        assert resource.total.zero?,
+               "Expected to return empty bundle when passed\"
+               identifier #{measure_identifier} and version #{measure_version}"
+      end
+    end
   end
 end
