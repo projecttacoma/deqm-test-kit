@@ -41,7 +41,7 @@ module DEQMTestKit
       title 'Measure cannot be found returns empty bundle'
       id 'measure-availability-02'
       description 'Selected measure is know not to exist on the server and returns an empty bundle'
-      makes_request :measure_search
+      uses_request :measure_search
       output :null
 
       run do
