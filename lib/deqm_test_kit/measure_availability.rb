@@ -49,10 +49,7 @@ module DEQMTestKit
         measure_version = '0'
 
         # Search system for measure by identifier and version
-        fhir_search(
-          :measure, 
-          params: { name: measure_identifier, version: measure_version }, 
-          name: :measure_search_failure)
+        fhir_search(:measure, params: { name: measure_identifier, version: measure_version })
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
