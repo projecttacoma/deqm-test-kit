@@ -41,7 +41,7 @@ module DEQMTestKit
       title 'Measure cannot be found returns empty bundle'
       id 'measure-availability-02'
       description 'Selected measure is know not to exist on the server and returns an empty bundle'
-      uses_request :measure_search
+      makes_request :measure_search_failure
       output :null
 
       run do
@@ -49,7 +49,7 @@ module DEQMTestKit
         measure_version = '0'
 
         # Search system for measure by identifier and version
-        fhir_search(:measure, params: { name: measure_identifier, version: measure_version }, name: :measure_search)
+        fhir_search(:measure, params: { name: measure_identifier, version: measure_version }, name: :measure_search_failure)
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
