@@ -21,17 +21,7 @@ module DEQMTestKit
 
     PARAMS = {
       resourceType: 'Parameters',
-      parameter: [{
-        periodStart: '2019-01-01',
-        periodEnd: '2019-12-31'
-      }]
-    }.freeze
-
-    MISSING_PARAMS = {
-      resourceType: 'Parameters',
-      parameter: [{
-        periodStart: '2019-01-01'
-      }]
+      parameter: [{}]
     }.freeze
 
     INVALID_ID = 'INVALID_ID'
@@ -96,6 +86,7 @@ module DEQMTestKit
                "Client data-requirements contains unexpected data requirements for measure #{measure_id}: #{diff}")
       end
     end
+
     test do
       title 'Check data requirements returns 400 for missing parameters'
       id 'data-requirements-02'
@@ -103,13 +94,14 @@ module DEQMTestKit
 
       run do
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{INVALID_ID}/$data-requirements", body: MISSING_PARAMS)
+        fhir_operation("Measure/#{INVALID_ID}/$data-requirements", body: PARAMS)
         assert_response_status(400)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
         assert(resource.issue[0].severity == 'error')
       end
     end
+
     test do
       title 'Check data requirements returns 400 for invalid measure id'
       id 'data-requirements-03'
