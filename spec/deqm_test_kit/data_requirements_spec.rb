@@ -74,10 +74,16 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(:get, "#{embedded_client}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: test_measure_response.to_json)
 
-      stub_request(:post, "#{embedded_client}/Measure/#{measure_id}/$data-requirements")
+      stub_request(
+        :post,
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+      )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$data-requirements")
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+      )
         .to_return(status: 200, body: test_library_response.to_json)
 
       # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
@@ -100,10 +106,16 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(:get, "#{embedded_client}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: test_measure_response.to_json)
 
-      stub_request(:post, "#{embedded_client}/Measure/#{measure_id}/$data-requirements")
+      stub_request(
+        :post,
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+      )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$data-requirements")
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+      )
         .to_return(status: 200, body: test_library_response.to_json)
 
       # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
