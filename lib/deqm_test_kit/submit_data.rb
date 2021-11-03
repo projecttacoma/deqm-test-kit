@@ -4,7 +4,7 @@ require 'securerandom'
 
 module DEQMTestKit
   # Perform submit data operation on test client
-  class SubmitData < Inferno::TestGroup
+  class SubmitData < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     id 'submit_data'
     title 'Submit Data'
     description 'Ensure fhir server can receive data via the $submit-data operation'
@@ -109,6 +109,66 @@ module DEQMTestKit
           assert resource.total.positive?,
                  "Search for a #{r.resourceType} with identifier #{identifier} returned no results"
         end
+      end
+    end
+    test do
+      title 'fails if a measureReport is not submitted'
+      id 'submit-data-02'
+      description 'Request returns a 400 error if MeasureReport is not submitted.'
+      input :measure_id
+      run do
+        test_measure = FHIR::Measure.new(id: measure_id)
+
+        params_hash = {
+          resourceType: 'Parameters',
+          parameter: [{
+            name: 'Measure',
+            resource: test_measure
+          }]
+        }
+        params = FHIR::Parameters.new params_hash
+
+        fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
+
+        assert_response_status(400)
+        assert_valid_json(response[:body])
+        assert(resource.resourceType == 'OperationOutcome')
+        assert(resource.issue[0].severity == 'error')
+      end
+    end
+    test do
+      title 'fails if multple measureReports are submitted'
+      id 'submit-data-03'
+      description 'Request returns a 400 error multiple MeasureReports are not submitted.'
+      input :measure_id
+      run do
+        assert(measure_id,
+               'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
+        fhir_read(:measure, measure_id)
+        assert_valid_json(response[:body])
+        measure = resource
+
+        measure_report = create_measure_report(measure.url, '2019-01-01', '2019-12-31')
+
+        params_hash = {
+          resourceType: 'Parameters',
+          parameter: [{
+            name: 'measureReport',
+            resource: measure_report
+          },
+                      {
+                        name: 'measureReport',
+                        resource: measure_report
+                      }]
+        }
+        params = FHIR::Parameters.new params_hash
+
+        fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
+
+        assert_response_status(400)
+        assert_valid_json(response[:body])
+        assert(resource.resourceType == 'OperationOutcome')
+        assert(resource.issue[0].severity == 'error')
       end
     end
     # rubocop:enable Metrics/BlockLength

@@ -21,7 +21,7 @@ RSpec.describe DEQMTestKit::SubmitData do
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
 
-  describe 'submit data test' do
+  describe 'submit data successful upload test' do
     let(:test) { group.tests.first }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
 
@@ -167,6 +167,87 @@ RSpec.describe DEQMTestKit::SubmitData do
         .to_return(status: 200, body: test_bundle.to_json)
 
       result = run(test, url: url, measure_id: measure_id, queries_json: queries_json)
+      expect(result.result).to eq('fail')
+    end
+  end
+  describe '$submit-data failed on Parameters object with no MeasureReport' do
+    let(:test) { group.tests[1] }
+    let(:measure_id) { 'measure-EXM130-7.3.000' }
+
+    it 'passes when server returns 400 with correct operation outcome' do
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 400, body: error_outcome.to_json)
+
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('pass')
+    end
+    it 'fails when server does not return 400' do
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('fail')
+    end
+    it 'fails when server returns 400 with incorrect body' do
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 400, body: '')
+
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('fail')
+    end
+    it 'fails when server returns correct status code with incorrect severity' do
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 400, body: FHIR::OperationOutcome.new(issue: [{ severity: 'warning' }]).to_json)
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('fail')
+    end
+  end
+
+  describe '$submit-data failed on Parameters object with multiple MeasureReports' do
+    let(:test) { group.tests[2] }
+    let(:measure_id) { 'measure-EXM130-7.3.000' }
+
+    it 'passes when server returns 400 with correct operation outcome' do
+      test_measure = FHIR::Measure.new(id: measure_id)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 400, body: error_outcome.to_json)
+
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('pass')
+    end
+    it 'fails when server does not return 400' do
+      test_measure = FHIR::Measure.new(id: measure_id)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('fail')
+    end
+    it 'fails when server returns 400 with incorrect body' do
+      test_measure = FHIR::Measure.new(id: measure_id)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 400, body: '')
+
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
+      expect(result.result).to eq('fail')
+    end
+    it 'fails when server returns correct status code with incorrect severity' do
+      test_measure = FHIR::Measure.new(id: measure_id)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 400, body: FHIR::OperationOutcome.new(issue: [{ severity: 'warning' }]).to_json)
+      result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('fail')
     end
   end
