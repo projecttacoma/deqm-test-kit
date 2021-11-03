@@ -93,9 +93,8 @@ module DEQMTestKit
       description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
       input :measure_id
       run do
-
         # Run our data requirements operation on the test client server
-        fhir_operation('Measure/measure_id/$data-requirements', body: PARAMS)
+        fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)
         assert_response_status(400)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
