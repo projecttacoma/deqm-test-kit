@@ -113,7 +113,7 @@ module DEQMTestKit
     end
 
     test do
-      title 'fails if a measureReport is not submitted'
+      title 'Fails if a measureReport is not submitted'
       id 'submit-data-02'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
       input :measure_id
@@ -139,7 +139,7 @@ module DEQMTestKit
     end
 
     test do
-      title 'fails if multple measureReports are submitted'
+      title 'Fails if multiple measureReports are submitted'
       id 'submit-data-03'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
       input :measure_id

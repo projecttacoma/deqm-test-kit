@@ -21,7 +21,7 @@ RSpec.describe DEQMTestKit::SubmitData do
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
 
-  describe 'submit data successful upload test' do
+  describe '$submit-data successful upload test' do
     let(:test) { group.tests.first }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
 
@@ -61,7 +61,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       expect(result.result).to eq('pass')
     end
 
-    it 'fails if submit data does not return 200' do
+    it 'fails if $submit-data does not return 200' do
       test_bundle = FHIR::Bundle.new(total: 1)
       test_measure = FHIR::Measure.new(id: measure_id)
       identifier = SecureRandom.uuid
