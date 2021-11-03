@@ -181,6 +181,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('pass')
     end
+
     it 'fails when server does not return 400' do
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
         .to_return(status: 200, body: error_outcome.to_json)
@@ -188,6 +189,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('fail')
     end
+
     it 'fails when server returns 400 with incorrect body' do
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
         .to_return(status: 400, body: '')
@@ -195,6 +197,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('fail')
     end
+
     it 'fails when server returns correct status code with incorrect severity' do
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
         .to_return(status: 400, body: FHIR::OperationOutcome.new(issue: [{ severity: 'warning' }]).to_json)
@@ -218,6 +221,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('pass')
     end
+
     it 'fails when server does not return 400' do
       test_measure = FHIR::Measure.new(id: measure_id)
       stub_request(:get, "#{url}/Measure/#{measure_id}")
@@ -229,6 +233,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('fail')
     end
+
     it 'fails when server returns 400 with incorrect body' do
       test_measure = FHIR::Measure.new(id: measure_id)
       stub_request(:get, "#{url}/Measure/#{measure_id}")
@@ -240,6 +245,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       result = run(test, url: url, measure_id: measure_id, queries_json: [])
       expect(result.result).to eq('fail')
     end
+
     it 'fails when server returns correct status code with incorrect severity' do
       test_measure = FHIR::Measure.new(id: measure_id)
       stub_request(:get, "#{url}/Measure/#{measure_id}")

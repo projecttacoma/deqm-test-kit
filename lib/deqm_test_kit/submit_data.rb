@@ -111,6 +111,7 @@ module DEQMTestKit
         end
       end
     end
+
     test do
       title 'fails if a measureReport is not submitted'
       id 'submit-data-02'
@@ -136,6 +137,7 @@ module DEQMTestKit
         assert(resource.issue[0].severity == 'error')
       end
     end
+
     test do
       title 'fails if multple measureReports are submitted'
       id 'submit-data-03'
