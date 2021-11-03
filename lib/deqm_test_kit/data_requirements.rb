@@ -91,10 +91,11 @@ module DEQMTestKit
       title 'Check data requirements returns 400 for missing parameters'
       id 'data-requirements-02'
       description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
-
+      input :measure_id
       run do
+
         # Run our data requirements operation on the test client server
-        fhir_operation('Measure/TEST_ID/$data-requirements', body: PARAMS)
+        fhir_operation('Measure/measure_id/$data-requirements', body: PARAMS)
         assert_response_status(400)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
@@ -103,9 +104,9 @@ module DEQMTestKit
     end
 
     test do
-      title 'Check data requirements returns 400 for invalid measure id'
+      title 'Check data requirements returns 404 for invalid measure id'
       id 'data-requirements-03'
-      description 'Data requirements returns 400 when passed a measure id which is not in the system'
+      description 'Data requirements returns 404 when passed a measure id which is not in the system'
 
       run do
         # Run our data requirements operation on the test client server
@@ -113,7 +114,7 @@ module DEQMTestKit
           "Measure/#{INVALID_ID}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
           body: PARAMS
         )
-        assert_response_status(400)
+        assert_response_status(404)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
         assert(resource.issue[0].severity == 'error')
