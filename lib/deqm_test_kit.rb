@@ -5,7 +5,7 @@ require_relative 'deqm_test_kit/patient_everything'
 require_relative 'deqm_test_kit/measure_availability'
 require_relative 'deqm_test_kit/data_requirements'
 require_relative 'deqm_test_kit/submit_data'
-
+require_relative 'deqm_test_kit/bulk_import'
 module DEQMTestKit
   class Suite < Inferno::TestSuite
     id :deqm_test_suite
@@ -47,5 +47,6 @@ module DEQMTestKit
     group from: :measure_availability
     group from: :data_requirements
     group from: :submit_data
+    group from: :bulk_import
   end
 end
