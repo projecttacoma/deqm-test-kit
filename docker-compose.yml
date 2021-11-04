@@ -10,7 +10,7 @@ services:
     depends_on:
       - validator_service
   cqf_ruler:
-    image: tacoma/cqf-ruler-preloaded:0.5.0.no-vs
+    image: tacoma/cqf-ruler-preloaded:0.6.0.no-vs
     ports:
       - "8080:8080"
   validator_service:
@@ -31,8 +31,8 @@ services:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "80:80"
-    command: [nginx, '-g', 'daemon off;']
-    depends_on: 
+    command: [nginx, "-g", "daemon off;"]
+    depends_on:
       - fhir_validator_app
   redis:
     image: redis

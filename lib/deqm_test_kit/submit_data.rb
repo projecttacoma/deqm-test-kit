@@ -8,9 +8,11 @@ module DEQMTestKit
     id 'submit_data'
     title 'Submit Data'
     description 'Ensure fhir server can receive data via the $submit-data operation'
+    custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}' }
 
     fhir_client do
       url :url
+      headers custom_headers
     end
 
     fhir_client :embedded_client do
@@ -89,7 +91,7 @@ module DEQMTestKit
           }
           params.parameter.push(resource_param)
         end
-        # Submit the data
+        #Submit the data
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
         assert_response_status(200)
         assert_valid_json(response[:body])
