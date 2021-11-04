@@ -91,7 +91,7 @@ module DEQMTestKit
           }
           params.parameter.push(resource_param)
         end
-        #Submit the data
+        # Submit the data
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
         assert_response_status(200)
         assert_valid_json(response[:body])
