@@ -1,4 +1,8 @@
 # frozen_string_literal: true
+require "json"
+
+
+
 
 module DEQMTestKit
   # Perform Patient/$everything operation on test client
@@ -11,105 +15,81 @@ module DEQMTestKit
       url :url
     end
 
-    fhir_client :embedded_client do
-      url 'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
-    end
-
-    # keep going through content from here
+    TEST_PATIENT_ID = 'test-patient'
 
     # rubocop:disable Metrics/BlockLength
     test do
-      title 'Check data requirements against expected return'
-      id 'data-requirements-01'
-      description 'Data requirements on the fhir test server match the data requirements of our embedded client'
-      makes_request :data_requirements
+      title 'Patient/<id>/$everything valid submission'
+      id 'patient-everything-01'
+      description 'Patient data is received for patient on the server'
+      makes_request :patient_everything
       output :queries_json
-      input :measure_id
 
       run do
-        # Get measure resource from client
-        fhir_read(:measure, measure_id)
+        singlePatientBundle = File.open('./lib/fixtures/singlePatientBundle.json')
+        singlePatientData = JSON.parse(singlePatientBundle.read)
+        # Upload single patient bundle to server
+        fhir_operation("/", body: singlePatientData)
+        # Run our Patient/<id>/$everything operation on the test client server
+        fhir_operation("Patient/#{TEST_PATIENT_ID}/$everything", name: :patient_everything)
         assert_response_status(200)
-        assert_resource_type(:measure)
+        assert_resource_type(:bundle)
         assert_valid_json(response[:body])
-        measure_identifier = resource.name
-        measure_version = resource.version
-
-        # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
-                       body: PARAMS, name: :data_requirements)
-        assert_response_status(200)
-        assert_resource_type(:library)
-        assert_valid_json(response[:body])
-
-        actual_dr = resource.dataRequirement
-
-        actual_dr_strings = get_dr_comparison_list actual_dr
-
-        # Search embedded cqf-ruler instance by identifier and version
-        fhir_search(:measure, client: :embedded_client,
-                              params: { name: measure_identifier, version: measure_version }, name: :measure_search)
-        embedded_client_id = resource.entry[0].resource.id
-
-        # Run data requirements operation on embedded cqf-ruler instance
-        fhir_operation(
-          "Measure/#{embedded_client_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
-          body: PARAMS,
-          client: :embedded_client
-        )
-        expected_dr = resource.dataRequirement
-
-        expected_dr_strings = get_dr_comparison_list expected_dr
-
-        diff = expected_dr_strings - actual_dr_strings
-
-        # still output queries even if different from expected.
-        # TODO: output queries only if pass once they align with cqf-ruler
-        queries = get_data_requirements_queries(actual_dr)
-        output queries_json: queries.to_json
-
-        # Ensure both data requirements results libraries are identical
-        assert(diff.blank?,
-               "Client data-requirements is missing expected data requirements for measure #{measure_id}: #{diff}")
-
-        diff = actual_dr_strings - expected_dr_strings
-        assert(diff.blank?,
-               "Client data-requirements contains unexpected data requirements for measure #{measure_id}: #{diff}")
+        # Check all necessary resources are included in the response
+        # Note Condition resource does not include patient ref
+        assert(singlePatientData["entry"].length() - 1 == resource.total, "Expected #{singlePatientData["entry"].length() - 1} in response but received #{resource.total}")
+        # Check that all necessary resources are included in response
+        assert(resource.entry.count { |x| x.resource.resourceType == "Encounter"} == 1)
+        assert(resource.entry.count { |x| x.resource.resourceType == "Procedure"} == 1)
+        assert(resource.entry.count { |x| x.resource.resourceType == "Patient"} == 1)
       end
     end
 
     test do
-      title 'Check data requirements returns 400 for missing parameters'
-      id 'data-requirements-02'
-      description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
-      input :measure_id
+      title 'Patient/$everything valid submission'
+      id 'patient-everything-02'
+      description 'Patient data is received for all patients on the server'
+      makes_request :patient_everything
+      output :queries_json
+
       run do
-        # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)
-        assert_response_status(400)
+        multiplePatientBundle = File.open('./lib/fixtures/multiplePatientBundle.json')
+        multiplePatientData = JSON.parse(multiplePatientBundle.read)
+        # Upload multiple patient bundle to server
+        fhir_operation("/", body: multiplePatientData)
+        # Run our Patient/$everything operation on the test client server
+        fhir_operation("Patient/$everything", name: :patient_everything)
+        assert_response_status(200)
+        assert_resource_type(:bundle)
+        assert_valid_json(response[:body])
+        # Check all necessary resources are included in the response
+        # Note all resources should be included because they all reference a patient
+        assert(resource.total >= multiplePatientData["entry"].length())
+        # Check that all necessary resources are included in response
+        assert(resource.entry.count { |x| x.resource.resourceType == "Patient"} >= 2)
+        assert(resource.entry.count { |x| x.resource.resourceType == "Encounter"} >= 1)
+        assert(resource.entry.count { |x| x.resource.resourceType == "Procedure"} >= 1)
+        assert(resource.entry.count { |x| x.resource.resourceType == "Condition"} >= 1)
+
+      end
+    end
+
+    test do
+      title 'Patient/<id>/$everything patient ID not found'
+      id 'patient-everything-03'
+      description 'Request returns a 404 error if requested patient ID is not found'
+      makes_request :patient_everything
+
+      run do
+        # Run our Patient/$everything operation on the test client server with invalid id
+        fhir_operation("Patient/INVALID/$everything", name: :patient_everything)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
         assert(resource.issue[0].severity == 'error')
       end
     end
 
-    test do
-      title 'Check data requirements returns 404 for invalid measure id'
-      id 'data-requirements-03'
-      description 'Data requirements returns 404 when passed a measure id which is not in the system'
 
-      run do
-        # Run our data requirements operation on the test client server
-        fhir_operation(
-          "Measure/#{INVALID_ID}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
-          body: PARAMS
-        )
-        assert_response_status(404)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
-      end
-    end
     # rubocop:enable Metrics/BlockLength
   end
 end
