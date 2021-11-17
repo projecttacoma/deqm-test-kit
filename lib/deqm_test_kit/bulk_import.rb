@@ -58,10 +58,12 @@ module DEQMTestKit
           wait_time = get_retry_or_backoff_time(wait_time, reply)
           seconds_used = Time.now - start
           # exit loop if we get a successful response or timeout reached
-         break if (reply.code != 202 && reply.code != 429) || (seconds_used > timeout)
-         sleep wait_time
+          break if (reply.code != 202 && reply.code != 429) || (seconds_used > timeout)
+
+          sleep wait_time
         end
       end
     end
   end
+  # rubocop:enable Metrics:BlockLength
 end
