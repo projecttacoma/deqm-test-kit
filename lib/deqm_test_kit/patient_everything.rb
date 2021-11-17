@@ -64,6 +64,7 @@ module DEQMTestKit
         assert_valid_json(response[:body])
         # Check all necessary resources are included in the response
         # Note all resources should be included because they all reference a patient
+        # Use >=, as other data may be retrieved in addition to what we expect
         assert(resource.total >= multiplePatientData["entry"].length())
         # Check that all necessary resources are included in response
         assert(resource.entry.count { |x| x.resource.resourceType == "Patient"} >= 2)
@@ -84,6 +85,7 @@ module DEQMTestKit
         # Run our Patient/$everything operation on the test client server with invalid id
         fhir_operation("Patient/INVALID/$everything", name: :patient_everything)
         assert_valid_json(response[:body])
+        assert_response_status(404)
         assert(resource.resourceType == 'OperationOutcome')
         assert(resource.issue[0].severity == 'error')
       end
