@@ -6,6 +6,9 @@ require_relative 'deqm_test_kit/measure_availability'
 require_relative 'deqm_test_kit/data_requirements'
 require_relative 'deqm_test_kit/submit_data'
 require_relative 'deqm_test_kit/bulk_import'
+require_relative 'deqm_test_kit/evaluate_measure'
+require_relative 'deqm_test_kit/care_gaps'
+
 module DEQMTestKit
   class Suite < Inferno::TestSuite
     id :deqm_test_suite
@@ -47,6 +50,8 @@ module DEQMTestKit
     group from: :measure_availability
     group from: :data_requirements
     group from: :submit_data
+    group from: :evaluate_measure
+    group from: :care_gaps
     group from: :bulk_import
   end
 end
