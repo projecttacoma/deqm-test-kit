@@ -18,16 +18,12 @@ module DEQMTestKit
       title 'Ensure data can be accepted'
       id 'bulk-import-01'
       description 'Send the data to the server and the response is a 202 (or is it?)'
-
       run do
-        # get measure from client
-        puts 'made it into the bulk import test group'
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the bulk import test group.')
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
-        measure = resource
-        measure_report = create_measure_report(measure.url, '2019-01-01', '2019-12-31')
+        measure_id = resourceType
         params = {
           resourceType: 'Parameters',
           parameter: [
