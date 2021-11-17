@@ -17,7 +17,7 @@ module DEQMTestKit
     end
 
     def get_dr_comparison_list(data_requirement)
-      data_requirement.map do |dr|
+      data_requirement.select { |dr| dr.type && dr.type != 'Patient' }.map do |dr|
         cf = dr.codeFilter&.first
         filter_str = get_filter_str cf
 
@@ -41,15 +41,15 @@ module DEQMTestKit
       queries
     end
 
-    def query_for_code_filter(filter, type)
-      q = { endpoint: type, params: {} }
+    def query_for_code_filter(_filter, type)
+      { endpoint: type, params: {} }
+      # TODO: add this back when it works
       # prefer specific code filter first before valueSet
-      if filter&.code&.first
-        q[:params][filter.path.to_s] = filter.code[0].code
-      elsif filter&.valueSet
-        q[:params]["#{filter.path}:in"] = filter.valueSet
-      end
-      q
+      # if filter&.code&.first
+      #   q[:params][filter.path.to_s] = filter.code[0].code
+      # elsif filter&.valueSet
+      #   q[:params]["#{filter.path}:in"] = filter.valueSet
+      # end
     end
   end
 end

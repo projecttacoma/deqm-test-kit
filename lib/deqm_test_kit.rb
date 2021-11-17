@@ -21,24 +21,24 @@ module DEQMTestKit
     end
 
     # Tests and TestGroups can be defined inline
-    group do
-      id :capability_statement
-      title 'Capability Statement'
-      description 'Verify that the server has a CapabilityStatement'
+    # group do
+    #   id :capability_statement
+    #   title 'Capability Statement'
+    #   description 'Verify that the server has a CapabilityStatement'
 
-      test do
-        id :capability_statement_read
-        title 'Read CapabilityStatement'
-        description 'Read CapabilityStatement from /metadata endpoint'
+    #   test do
+    #     id :capability_statement_read
+    #     title 'Read CapabilityStatement'
+    #     description 'Read CapabilityStatement from /metadata endpoint'
 
-        run do
-          fhir_get_capability_statement
+    #     run do
+    #       fhir_get_capability_statement
 
-          assert_response_status(200)
-          assert_resource_type(:capability_statement)
-        end
-      end
-    end
+    #       assert_response_status(200)
+    #       assert_resource_type(:capability_statement)
+    #     end
+    #   end
+    # end
 
     # Tests and TestGroups can be written in separate files and then included
     # using their id

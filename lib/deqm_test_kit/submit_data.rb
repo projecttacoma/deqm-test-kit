@@ -49,7 +49,7 @@ module DEQMTestKit
           ]
         end
         # Call the $updateCodeSystems workaround on embedded cqf-ruler so code:in queries work
-        fhir_operation('$updateCodeSystems', client: :embedded_client)
+        # fhir_operation('$updateCodeSystems', client: :embedded_client)
         reply = fhir_client(:embedded_client).send(:get, '$updateCodeSystems')
         assert reply.response[:code] == 200
 

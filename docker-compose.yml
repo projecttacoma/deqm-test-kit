@@ -10,7 +10,7 @@ services:
     depends_on:
       - validator_service
   cqf_ruler:
-    image: tacoma/cqf-ruler-preloaded:0.6.0.no-vs
+    image: tacoma/cqf-ruler-preloaded:demo
     ports:
       - "8080:8080"
   validator_service:
@@ -50,7 +50,7 @@ services:
   deqm_test_server:
     depends_on:
       - mongo
-    image: tacoma/deqm-test-server:latest
+    image: tacoma/deqm-test-server:demo
     environment:
       DB_HOST: mongo
       DB_PORT: 27017
