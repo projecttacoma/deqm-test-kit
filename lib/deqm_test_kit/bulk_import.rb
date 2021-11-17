@@ -10,6 +10,22 @@ module DEQMTestKit
 
     input :measure_id
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
+    params = {
+      resourceType: 'Parameters',
+      parameter: [
+        {
+          name: 'measureReport',
+          resource: {
+            resourceType: 'MeasureReport',
+            measure: 'http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130'
+          }
+        },
+        {
+          name: 'exportURL',
+          valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
+        }
+      ]
+    }
     fhir_client do
       url :url
       headers custom_headers
@@ -23,45 +39,11 @@ module DEQMTestKit
                'No measure selected. Run Measure Availability prior to running the bulk import test group.')
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
-        measure_id = resourceType
-        params = {
-          resourceType: 'Parameters',
-          parameter: [
-            {
-              name: 'measureReport',
-              resource: {
-                resourceType: 'MeasureReport',
-                measure: 'http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130'
-              }
-            },
-            {
-              name: 'exportURL',
-              valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
-            }
-          ]
-        }
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
         reply = fhir_client(:url).send(:get, '$bulkstatus')
         polling_url = url + reply.headers('Content-Location')
         fhir_operation('$bulkstatus', polling_url)
-        wait_time = 1
-        reply = nil
-        start = Time.now
-        seconds_used = 0
-        loop do
-          reply = nil
-          begin
-            reply = fhir_client.client.get(polling_url)
-          rescue RestClient::TooManyRequests => e
-            reply = e.response
-          end
-          wait_time = get_retry_or_backoff_time(wait_time, reply)
-          seconds_used = Time.now - start
-          # exit loop if we get a successful response or timeout reached
-          break if (reply.code != 202 && reply.code != 429) || (seconds_used > timeout)
-
-          sleep wait_time
-        end
+        loop_on_polling(polling_url)
       end
     end
   end
