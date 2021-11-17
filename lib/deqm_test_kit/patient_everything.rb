@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'json'
 
 module DEQMTestKit
@@ -34,7 +35,7 @@ module DEQMTestKit
         # Check all necessary resources are included in the response
         # Note Condition resource does not include patient ref, so subtract 1
         assert(single_patient_bundle['entry'].length - 1 == resource.total,
-         "Expected #{single_patient_bundle["entry"].length - 1} in response but received #{resource.total}")
+               "Expected #{single_patient_bundle['entry'].length - 1} in response but received #{resource.total}")
         # Check that all necessary resources are included in response
         assert(resource.entry.count { |x| x.resource.resourceType == 'Encounter' } == 1)
         assert(resource.entry.count { |x| x.resource.resourceType == 'Procedure' } == 1)
@@ -62,7 +63,7 @@ module DEQMTestKit
         # Check all necessary resources are included in the response
         # Note all resources should be included because they all reference a patient
         # Use >=, as other data may be retrieved from server in addition to what we expect
-        assert(resource.total >= multiple_patient_bundle['entry'].length())
+        assert(resource.total >= multiple_patient_bundle['entry'].length)
         # Check that all necessary resources are included in response
         assert(resource.entry.count { |x| x.resource.resourceType == 'Patient' } >= 2)
         assert(resource.entry.count { |x| x.resource.resourceType == 'Encounter' } >= 1)
