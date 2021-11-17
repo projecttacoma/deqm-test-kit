@@ -43,8 +43,9 @@ RSpec.describe DEQMTestKit::PatientEverything do
       stub_request(:post, "#{url}/").with(body: single_patient_bundle, headers: single_headers).to_return(
         status: 200, body: '', headers: {}
       )
-      stub_request(:post, "#{url}/Patient/test-patient/$everything").to_return(status: 200,
-        body: single_patient_response, headers: {})
+      stub_request(:post, "#{url}/Patient/test-patient/$everything").to_return(
+        status: 200, body: single_patient_response, headers: {}
+      )
       result = run(test, url: url)
       expect(result.result).to eq('pass')
     end
