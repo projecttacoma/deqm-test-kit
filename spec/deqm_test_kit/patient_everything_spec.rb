@@ -55,9 +55,16 @@ RSpec.describe DEQMTestKit::PatientEverything do
         it 'passes for valid request to Patient/<id>/$everything' do
             stub_request(:post, "#{url}/").with(body: $singlePatientData, headers: $singleHeaders).to_return(status: 200, body: "", headers: {})
             stub_request(:post, "#{url}/Patient/test-patient/$everything").to_return(status: 200, body: $singlePatientResponse, headers: {})
-            # add response above and then test assertions on that
             result = run(test, url: url)
             expect(result.result).to eq('pass')
+        end
+
+        it 'fails when server does not return 200' do
+            stub_request(:post, "#{url}/").with(body: $singlePatientData, headers: $singleHeaders).to_return(status: 200, body: "", headers: {})
+            stub_request(:post, "#{url}/Patient/test-patient/$everything").to_return(status: 404, body: error_outcome.to_json)
+            result = run(test, url: url)
+            expect(result.result).to eq('fail')
+            expect(result.result_message).to match(/200/)
         end
     end
 
@@ -69,6 +76,14 @@ RSpec.describe DEQMTestKit::PatientEverything do
             stub_request(:post, "#{url}/Patient/$everything").to_return(status: 200, body: $multiplePatientResponse, headers: {})
             result = run(test, url: url)
             expect(result.result).to eq('pass')
+        end
+
+        it 'fails when server does not return 200' do
+            stub_request(:post, "#{url}/").with(body: $multiplePatientData, headers: $multHeaders).to_return(status: 200, body: "", headers: {})
+            stub_request(:post, "#{url}/Patient/$everything").to_return(status: 404, body: error_outcome.to_json)
+            result = run(test, url: url)
+            expect(result.result).to eq('fail')
+            expect(result.result_message).to match(/200/)
         end
     end
 
@@ -90,6 +105,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
                 .to_return(status: 200, body: error_outcome.to_json)
             result = run(test, url: url)
             expect(result.result).to eq('fail')
+            expect(result.result_message).to match(/404/)
         end
     end
 end
