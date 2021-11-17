@@ -30,6 +30,7 @@ module DEQMTestKit
       url :url
       headers custom_headers
     end
+    # rubocop:disable Metrics:BlockLength
     test do
       title 'Ensure data can be accepted'
       id 'bulk-import-01'
@@ -43,7 +44,23 @@ module DEQMTestKit
         reply = fhir_client(:url).send(:get, '$bulkstatus')
         polling_url = url + reply.headers('Content-Location')
         fhir_operation('$bulkstatus', polling_url)
-        loop_on_polling(polling_url)
+        wait_time = 1
+        reply = nil
+        start = Time.now
+        seconds_used = 0
+        loop do
+          reply = nil
+          begin
+            reply = fhir_client.client.get(polling_url)
+          rescue RestClient::TooManyRequests => e
+            reply = e.response
+          end
+          wait_time = get_retry_or_backoff_time(wait_time, reply)
+          seconds_used = Time.now - start
+          # exit loop if we get a successful response or timeout reached
+         break if (reply.code != 202 && reply.code != 429) || (seconds_used > timeout)
+         sleep wait_time
+        end
       end
     end
   end
