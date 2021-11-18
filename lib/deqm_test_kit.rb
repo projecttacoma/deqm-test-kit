@@ -47,6 +47,5 @@ module DEQMTestKit
     group from: :measure_availability
     group from: :data_requirements
     group from: :submit_data
-    
   end
 end
