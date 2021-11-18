@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require_relative 'deqm_test_kit/patient_group'
+require_relative 'deqm_test_kit/patient_everything'
 require_relative 'deqm_test_kit/measure_availability'
 require_relative 'deqm_test_kit/data_requirements'
 require_relative 'deqm_test_kit/submit_data'
-require_relative 'deqm_test_kit/patient_everything'
 
 module DEQMTestKit
   class Suite < Inferno::TestSuite
@@ -43,9 +43,10 @@ module DEQMTestKit
     # Tests and TestGroups can be written in separate files and then included
     # using their id
     # group from: :patient_group
+    group from: :patient_everything
     group from: :measure_availability
     group from: :data_requirements
     group from: :submit_data
-    group from: :patient_everything
+    
   end
 end

@@ -19,8 +19,6 @@ module DEQMTestKit
       title 'Patient/<id>/$everything valid submission'
       id 'patient-everything-01'
       description 'Patient data is received for single patient on the server'
-      makes_request :patient_everything
-      output :queries_json
 
       run do
         single_patient_file = File.open('./lib/fixtures/singlePatientBundle.json')
@@ -28,7 +26,7 @@ module DEQMTestKit
         # Upload single patient bundle to server
         fhir_operation('/', body: single_patient_bundle)
         # Run Patient/<id>/$everything operation on the test client server
-        fhir_operation("Patient/#{TEST_PATIENT_ID}/$everything", name: :patient_everything)
+        fhir_operation("Patient/#{TEST_PATIENT_ID}/$everything")
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
@@ -47,8 +45,6 @@ module DEQMTestKit
       title 'Patient/$everything valid submission'
       id 'patient-everything-02'
       description 'Patient data is received for all patients on the server'
-      makes_request :patient_everything
-      output :queries_json
 
       run do
         multiple_patient_file = File.open('./lib/fixtures/multiplePatientBundle.json')
@@ -56,7 +52,7 @@ module DEQMTestKit
         # Upload multiple patient bundle to server
         fhir_operation('/', body: multiple_patient_bundle)
         # Run Patient/$everything operation on the test client server
-        fhir_operation('Patient/$everything', name: :patient_everything)
+        fhir_operation('Patient/$everything')
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
@@ -76,11 +72,10 @@ module DEQMTestKit
       title 'Patient/<id>/$everything patient ID not found'
       id 'patient-everything-03'
       description 'Request returns a 404 error if requested patient ID is not found'
-      makes_request :patient_everything
 
       run do
         # Run Patient/$everything operation on the test client server with invalid id
-        fhir_operation('Patient/INVALID/$everything', name: :patient_everything)
+        fhir_operation('Patient/INVALID/$everything')
         assert_valid_json(response[:body])
         assert_response_status(404)
         assert(resource.resourceType == 'OperationOutcome')
