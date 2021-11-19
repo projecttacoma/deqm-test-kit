@@ -1,0 +1,54 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "lastUpdated": "2021-11-17T15:17:34.454Z"
+  },
+  "type": "searchset",
+  "total": 5,
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Encounter/test-encounter",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "test-encounter",
+        "subject": {
+          "reference": "Patient/test-patient"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Procedure/test-procedure",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "test-procedure",
+        "subject": {
+          "reference": "Patient/test-patient"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Patient/test-patient",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "test-patient"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Condition/test-condition",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "test-condition",
+        "subject": {
+          "reference": "Patient/test-patient2"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Patient/test-patient2",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "test-patient2"
+      }
+    }
+  ]
+}

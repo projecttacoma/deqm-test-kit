@@ -1,0 +1,37 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "lastUpdated": "2021-11-17T15:15:35.164Z"
+  },
+  "type": "searchset",
+  "total": 3,
+  "entry": [
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Encounter/test-encounter",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "test-encounter",
+        "subject": {
+          "reference": "Patient/test-patient"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Procedure/test-procedure",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "test-procedure",
+        "subject": {
+          "reference": "Patient/test-patient"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://localhost:3000/4_0_1/Patient/test-patient",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "test-patient"
+      }
+    }
+  ]
+}

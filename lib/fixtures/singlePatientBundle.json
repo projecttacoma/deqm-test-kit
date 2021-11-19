@@ -1,0 +1,53 @@
+{
+  "resourceType": "Bundle",
+  "id": "single-patient-bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "test-encounter",
+        "subject": {
+          "reference": "Patient/test-patient"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Encounter/test-encounter"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "test-procedure",
+        "subject": {
+          "reference": "Patient/test-patient"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Procedure/test-procedure"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "test-condition"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/test-condition"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "test-patient"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/test-patient"
+      }
+    }
+  ]
+}

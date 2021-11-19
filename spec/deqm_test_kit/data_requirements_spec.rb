@@ -2,7 +2,7 @@
 
 RSpec.describe DEQMTestKit::DataRequirements do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
-  let(:group) { suite.groups[2] }
+  let(:group) { suite.groups[3] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   url = 'http://example.com/fhir'

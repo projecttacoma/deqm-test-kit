@@ -45,7 +45,7 @@ module DEQMTestKit
       output :null
 
       run do
-        measure_identifier = 'NON-EXISTANT_MEASURE_ID'
+        measure_identifier = 'NON-EXISTENT_MEASURE_ID'
         measure_version = '0'
 
         # Search system for measure by identifier and version
