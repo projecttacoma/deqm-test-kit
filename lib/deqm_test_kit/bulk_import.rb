@@ -38,12 +38,12 @@ module DEQMTestKit
       id 'bulk-import-01'
       description 'Send the data to the server and the response is a 202'
       run do
-        assert(measure_id,
+        assert(measure_id, 
                'No measure selected. Run Measure Availability prior to running the bulk import test group.')
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
-        reply = fhir_client.send(:get, '$bulkstatus')
+        reply = fhir_client.send(:get, '')
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
@@ -54,10 +54,12 @@ module DEQMTestKit
         wait_time = 1
         start = Time.now
         seconds_used = 0
+        timeout = 120
         loop do
           reply = nil
           begin
             reply = fhir_client.send(:get, '')
+            # reply = fhir_client.client.get(polling_url)
           rescue RestClient::TooManyRequests => e
             reply = e.response
           end
