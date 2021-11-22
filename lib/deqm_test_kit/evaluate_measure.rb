@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DEQMTestKit
+  # tests for $evaluate-measure
   class EvaluateMeasure < Inferno::TestGroup
     id 'evaluate_measure'
     title 'Evaluate Measure'
@@ -21,7 +22,8 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}")
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}"
+        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
         assert_response_status(200)
         assert_resource_type(:measure_report)
