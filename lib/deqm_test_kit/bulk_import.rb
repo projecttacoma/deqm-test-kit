@@ -38,7 +38,7 @@ module DEQMTestKit
       id 'bulk-import-01'
       description 'Send the data to the server and the response is a 202'
       run do
-        assert(measure_id, 
+        assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the bulk import test group.')
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
@@ -65,7 +65,7 @@ module DEQMTestKit
           seconds_used = Time.now - start
           # exit loop if we get a successful response or timeout reached
           break if (reply.code != 202 && reply.code != 429) || (seconds_used > timeout)
-                    
+
           sleep wait_time
         end
       end
