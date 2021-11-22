@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require_relative '../utils/bulk_import_utils'
+require 'byebug'
 module DEQMTestKit
   # BulkImport test group ensure the fhir server can accept bulk data import requests
   class BulkImport < Inferno::TestGroup
+    include BulkImportUtils
     id 'bulk_import'
     title 'Bulk Import'
     description 'Ensure the fhir server can accept bulk data import requests'
@@ -25,7 +27,7 @@ module DEQMTestKit
           valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
         }
       ]
-    }
+    }.freeze
     fhir_client do
       url :url
       headers custom_headers
@@ -34,7 +36,7 @@ module DEQMTestKit
     test do
       title 'Ensure data can be accepted'
       id 'bulk-import-01'
-      description 'Send the data to the server and the response is a 202 (or is it?)'
+      description 'Send the data to the server and the response is a 202'
       run do
         begin
           assert(measure_id,
@@ -45,20 +47,18 @@ module DEQMTestKit
           reply = fhir_client.send(:get, '$bulkstatus')
           location_header = response[:headers].find { |h| h.name == 'content-location'}
           # temporary fix for extra 4_0_1
-          polling_url = "#{url}/#{location_header.value.sub("4_0_1/", '')}"
-          # fhir_operation('$bulkstatus', body: polling_url)
+          polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
           fhir_client do
             url polling_url
           end
-          reply = fhir_client.send(:get, "")
+          reply = fhir_client.send(:get, '')
           wait_time = 1
-          reply = nil
           start = Time.now
           seconds_used = 0
           loop do
             reply = nil
             begin
-              reply = fhir_client.client.get(polling_url)
+              reply = fhir_client.send(:get, '')
             rescue RestClient::TooManyRequests => e
               reply = e.response
             end
@@ -70,8 +70,9 @@ module DEQMTestKit
             sleep wait_time
           end
         rescue => e
-          assert false, ("url: #{polling_url}, error: #{e.message}, backtrace: #{e.backtrace}")
+          assert false, ( "error: #{e.message}, backtrace: #{e.backtrace}")
         end
+       
       end
     end
   end

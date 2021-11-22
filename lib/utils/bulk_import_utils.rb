@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
-# Utility functions in support of the bulk import test group
 module DEQMTestKit
   # Utility functions in support of the bulk import test group
   module BulkImportUtils
     def get_retry_or_backoff_time(wait_time, reply)
       retry_after = -1
-      unless reply.headers.nil?
-        reply.headers.symbolize_keys
+      is_retry_nil = reply[:headers].find { |h| h.name == 'retry_after' }
+      unless is_retry_nil.nil?
         retry_after = reply.headers[:retry_after].to_i || -1
       end
       if retry_after.positive?
