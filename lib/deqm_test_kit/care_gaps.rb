@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DEQMTestKit
+  # tests for $care-gaps
   class CareGaps < Inferno::TestGroup
     id 'care_gaps'
     title 'Gaps in Care'
@@ -21,7 +22,8 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        fhir_operation("/Measure/$care-gaps?measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open")
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}"
+        fhir_operation("/Measure/$care-gaps?#{params}&status=open")
 
         assert_response_status(200)
         assert_resource_type(:bundle)
