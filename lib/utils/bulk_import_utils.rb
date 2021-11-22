@@ -7,8 +7,9 @@ module DEQMTestKit
       retry_after = -1
       is_retry_nil = reply[:headers].find { |h| h.name == 'retry_after' }
       unless is_retry_nil.nil?
-        retry_after = reply.headers[:retry_after].to_i || -1
+        retry_after = is_retry_nil.to_i || -1
       end
+
       if retry_after.positive?
         retry_after
       else
