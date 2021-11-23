@@ -66,6 +66,7 @@ module DEQMTestKit
 
           sleep wait_time
         end
+        assert_response_status(200)
       end
     end
   end
