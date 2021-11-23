@@ -47,10 +47,7 @@ module DEQMTestKit
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
-        fhir_client do
-          url polling_url
-        end
-        reply = fhir_client.send(:get, '')
+        reply = get(polling_url)
         wait_time = 1
         start = Time.now
         seconds_used = 0
@@ -58,15 +55,14 @@ module DEQMTestKit
         loop do
           reply = nil
           begin
-            reply = fhir_client.send(:get, '')
-            # reply = fhir_client.client.get(polling_url)
+            reply = get(polling_url)
           rescue RestClient::TooManyRequests => e
             reply = e.response
           end
           wait_time = get_retry_or_backoff_time(wait_time, response)
           seconds_used = Time.now - start
           # exit loop if we get a successful response or timeout reached
-          break if (reply.code != 202 && reply.code != 429) || (seconds_used > timeout)
+          break if( response[:status] !=202 && response[:status]  != 429 )|| (seconds_used > timeout)
 
           sleep wait_time
         end
