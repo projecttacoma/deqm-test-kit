@@ -22,7 +22,7 @@ RSpec.describe DEQMTestKit::BulkImport do
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     it 'can proceed if a Measure was received' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}", custom_headers)
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
       result = run(test, url: url)
       expect(result.result).to eq('pass')
