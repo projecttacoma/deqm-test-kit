@@ -6,6 +6,7 @@ RSpec.describe DEQMTestKit::BulkImport do
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   url = 'http://example.com/fhir'
+  custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
@@ -21,14 +22,14 @@ RSpec.describe DEQMTestKit::BulkImport do
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     it 'can proceed if a Measure was received' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}", custom_headers)
         .to_return(status: 200, body: resource.to_json)
       result = run(test, url: url)
       expect(result.result).to eq('pass')
     end
     it 'can proceed since the measure exists' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
-      stub_request(:get, "#{url}'/bulkstatus'").to_return(status: 202, body: resource.to_json)
+      stub_request(:get, "#{url}'/bulkstatus'", custom_headers).to_return(status: 202, body: resource.to_json)
       result = run(test, url: url)
       # check that we get a 202 off a bulk data request
       expect(result.result).to eq('pass')
