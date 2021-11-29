@@ -31,7 +31,7 @@ RSpec.describe DEQMTestKit::BulkImport do
       stub_request(:get, "#{url}'/bulkstatus'").to_return(status: 202, body: resource.to_json)
       result = run(test, url: url)
       # check that we get a 202 off a bulk data request
-      # expect(result.result).to eq('pass')
+      expect(result.result).to eq('pass')
     end
   end
 end
