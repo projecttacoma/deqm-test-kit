@@ -29,9 +29,9 @@ RSpec.describe DEQMTestKit::BulkImport do
     end
     it 'can proceed since the measure exists' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
-      custom_url = "#{url}/Measure/#{measure_id}/$submit-data"
-      stub_request(:get,custom_url).to_return(status: 200, body: resource.to_json)
-      result = run(test, url: custom_url)
+      stub_request(:get, "#{url}/Measure/#{measure_id}/$submit-data")
+        .to_return(status: 200, body: resource.to_json)
+      result = run(test, url: url)
       # check that we get a 202 off a bulk data request
       expect(result.result).to eq('pass')
     end
