@@ -46,12 +46,12 @@ module DEQMTestKit
     # Tests and TestGroups can be written in separate files and then included
     # using their id
     # group from: :patient_group
-    group from: :patient_everything
     group from: :measure_availability
     group from: :data_requirements
     group from: :submit_data
     group from: :evaluate_measure
     group from: :care_gaps
     group from: :bulk_import
+    group from: :patient_everything
   end
 end
