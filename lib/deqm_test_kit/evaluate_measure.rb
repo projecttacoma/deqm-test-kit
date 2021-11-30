@@ -2,6 +2,7 @@
 
 module DEQMTestKit
   # tests for $evaluate-measure
+  # rubocop:disable Metrics/ClassLength
   class EvaluateMeasure < Inferno::TestGroup
     id 'evaluate_measure'
     title 'Evaluate Measure'
@@ -13,7 +14,6 @@ module DEQMTestKit
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
-
     test do
       title 'Check $evaluate-measure proper calculation'
       id 'evaluate-measure-01'
@@ -129,7 +129,7 @@ module DEQMTestKit
     test do
       title 'Check $evaluate-measure fails for inclusion of unsupported param'
       id 'evaluate-measure-07'
-      description 'Request returns 400 when an unsupported parameter (measure, practitioner, lastReceivedOn) is specified'
+      description 'Request returns 400 when an unsupported parameter is specified'
       input :measure_id, :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -148,7 +148,7 @@ module DEQMTestKit
     test do
       title 'Check $evaluate-measure fails for invalid reportType'
       id 'evaluate-measure-08'
-      description 'Request returns 400 when an invalid report type is specified (not individual, population, or subject-list)'
+      description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -164,4 +164,5 @@ module DEQMTestKit
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
