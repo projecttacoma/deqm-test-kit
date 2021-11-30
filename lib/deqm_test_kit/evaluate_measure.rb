@@ -11,7 +11,8 @@ module DEQMTestKit
       url :url
     end
 
-    INVALID_ID = 'INVALID_ID'
+    INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
+    INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
 
     test do
       title 'Check $evaluate-measure proper calculation'
@@ -41,7 +42,7 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}"
-        fhir_operation("/Measure/#{INVALID_ID}/$evaluate-measure?#{params}")
+        fhir_operation("/Measure/#{INVALID_MEASURE_ID}/$evaluate-measure?#{params}")
 
         assert_response_status(404)
         assert_valid_json(response[:body])
@@ -59,7 +60,7 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_ID}"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
         assert_response_status(404)
