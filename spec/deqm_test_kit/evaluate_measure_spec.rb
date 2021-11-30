@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
+INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
+
 RSpec.describe DEQMTestKit::EvaluateMeasure do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[5] }
@@ -54,7 +57,6 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}" }
-    let(:INVALID_MEASURE_ID) { 'INVALID_MEASURE_ID' }
 
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
@@ -83,7 +85,6 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:INVALID_PATIENT_ID) { 'INVALID_PATIENT_ID' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}" }
 
     it 'passes with correct Operation-Outcome returned' do
