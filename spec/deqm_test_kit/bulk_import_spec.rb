@@ -32,7 +32,7 @@ RSpec.describe DEQMTestKit::BulkImport do
      
       stub_request(:get, "#{url}/Measure/#{measure_id}/$submit-data")
         .to_return(status: 200, body: resource.to_json, headers: { 'content-location': 'location' })
-      polling_url = "#{url}/#{location.value.sub('4_0_1/', '')}"
+      polling_url = "#{url}/4_0_1/location"
       stub_request(:get, polling_url)
         .to_return(status: 202, body: resource.to_json)
       result = run(test, url: url)
