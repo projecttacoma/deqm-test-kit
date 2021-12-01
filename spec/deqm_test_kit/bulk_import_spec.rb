@@ -29,9 +29,10 @@ RSpec.describe DEQMTestKit::BulkImport do
     end
     it 'can proceed since the measure exists' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
+     
       stub_request(:get, "#{url}/Measure/#{measure_id}/$submit-data")
-        .to_return(status: 200, body: resource.to_json, header: { 'content-location': LOCATION })
-      polling_url = "#{url}/#{header.value.sub('4_0_1/', '')}"
+        .to_return(status: 200, body: resource.to_json, header: { 'content-location': 'location' })
+      polling_url = "#{url}/#{location.value.sub('4_0_1/', '')}"
       stub_request(:get, polling_url)
         .to_return(status: 202, body: resource.to_json)
       result = run(test, url: url)
