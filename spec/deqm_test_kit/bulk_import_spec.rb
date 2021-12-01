@@ -41,11 +41,8 @@ RSpec.describe DEQMTestKit::BulkImport do
         .to_return(status: 200, body: resource.to_json, headers: { 'content-location': 'location' })
       polling_url = "#{url}/4_0_1/location"
       stub_request(:get, polling_url)
-        .to_return(status: 202, body: resource.to_json)
-      stub_request(:get, polling_url)
-        .to_return(status: 202, body: resource.to_json)
-      stub_request(:get, polling_url)
-        .to_return(status: 202, body: resource.to_json)
+        .to_return(status: 202, body: resource.to_json).times(3)
+   
       stub_request(:get, polling_url)
         .to_return(status: 200, body: resource.to_json)
       result = run(test, url: url, measure_id: measure_id)
