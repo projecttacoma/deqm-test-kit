@@ -6,7 +6,7 @@ RSpec.describe DEQMTestKit::BulkImport do
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
   url = 'http://example.com/fhir'
-  
+
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
@@ -15,34 +15,26 @@ RSpec.describe DEQMTestKit::BulkImport do
     end
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
+
   describe 'The server is able to perform bulk data tasks' do
-    let(:test) { group.tests[1]}
-    let(:measure_name) { 'EXM130' }
-    let(:measure_version) { '7.3.000' }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
-    it 'can proceed if a Measure was received' do
-      resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
-        .to_return(status: 200, body: resource.to_json)
-      result = run(test, url: url)
-      expect(result.result).to eq('pass')
-    end
-  end
-  describe 'The server is able to perform bulk data tasks' do
-    let(:test) { group.tests[2] }
+    let(:test) { group.tests[0] }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     url = 'http://example.com/fhir'
     it 'can proceed since the measure exists' do
+      test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
-     
-      stub_request(:get, "#{url}/Measure/#{measure_id}/$submit-data")
+
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .to_return(status: 200, body: test_measure.to_json)
+
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
         .to_return(status: 200, body: resource.to_json, headers: { 'content-location': 'location' })
-      polling_url = "#{url}/4_0_1/location"
+      polling_url = "#{url}/location"
       stub_request(:get, polling_url)
         .to_return(status: 202, body: resource.to_json).times(3)
-   
+
       stub_request(:get, polling_url)
         .to_return(status: 200, body: resource.to_json)
       result = run(test, url: url, measure_id: measure_id)

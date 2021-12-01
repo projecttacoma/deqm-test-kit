@@ -43,7 +43,6 @@ module DEQMTestKit
         fhir_read(:measure, measure_id)
         assert_valid_json(response[:body])
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
-        reply = fhir_client.send(:get, '')
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"

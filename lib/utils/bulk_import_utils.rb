@@ -6,9 +6,7 @@ module DEQMTestKit
     def get_retry_or_backoff_time(wait_time, reply)
       retry_after = -1
       is_retry_nil = reply[:headers].find { |h| h.name == 'retry_after' }
-      unless is_retry_nil.nil?
-        retry_after = is_retry_nil.to_i || -1
-      end
+      retry_after = is_retry_nil.to_i || -1 unless is_retry_nil.nil?
 
       if retry_after.positive?
         retry_after
