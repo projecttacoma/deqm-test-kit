@@ -16,7 +16,7 @@ RSpec.describe DEQMTestKit::BulkImport do
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
   describe 'The server is able to perform bulk data tasks' do
-    let(:test) { group.tests.first }
+    let(:test) { group.tests[1]}
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -27,6 +27,13 @@ RSpec.describe DEQMTestKit::BulkImport do
       result = run(test, url: url)
       expect(result.result).to eq('pass')
     end
+  end
+  describe 'The server is able to perform bulk data tasks' do
+    let(:test) { group.tests[2] }
+    let(:measure_name) { 'EXM130' }
+    let(:measure_version) { '7.3.000' }
+    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    url = 'http://example.com/fhir'
     it 'can proceed since the measure exists' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
      
@@ -35,7 +42,13 @@ RSpec.describe DEQMTestKit::BulkImport do
       polling_url = "#{url}/4_0_1/location"
       stub_request(:get, polling_url)
         .to_return(status: 202, body: resource.to_json)
-      result = run(test, url: url)
+      stub_request(:get, polling_url)
+        .to_return(status: 202, body: resource.to_json)
+      stub_request(:get, polling_url)
+        .to_return(status: 202, body: resource.to_json)
+      stub_request(:get, polling_url)
+        .to_return(status: 200, body: resource.to_json)
+      result = run(test, url: url, measure_id: measure_id)
       # check that we get a 202 off a bulk data request
       expect(result.result).to eq('pass')
     end
