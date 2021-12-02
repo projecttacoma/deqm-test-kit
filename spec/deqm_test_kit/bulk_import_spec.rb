@@ -22,7 +22,7 @@ RSpec.describe DEQMTestKit::BulkImport do
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     url = 'http://example.com/fhir'
-    it 'can proceed since the measure exists' do
+    it 'passes on successful $bulkImport' do
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 
