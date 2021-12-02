@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../utils/bulk_import_utils'
-require 'byebug'
 module DEQMTestKit
   # BulkImport test group ensure the fhir server can accept bulk data import requests
   class BulkImport < Inferno::TestGroup
