@@ -45,17 +45,16 @@ module DEQMTestKit
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
-        reply = get(polling_url)
+        get(polling_url)
         wait_time = 1
         start = Time.now
         seconds_used = 0
         timeout = 120
         loop do
-          reply = nil
           begin
-            reply = get(polling_url)
+             get(polling_url)
           rescue RestClient::TooManyRequests => e
-            reply = e.response
+             e.response
           end
           wait_time = get_retry_or_backoff_time(wait_time, response)
           seconds_used = Time.now - start
