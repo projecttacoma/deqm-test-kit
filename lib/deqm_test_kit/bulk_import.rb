@@ -11,22 +11,23 @@ module DEQMTestKit
 
     input :measure_id
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
-    params = {
-      resourceType: 'Parameters',
-      parameter: [
-        {
-          name: 'measureReport',
-          resource: {
-            resourceType: 'MeasureReport',
-            measure: 'http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130'
-          }
-        },
-        {
-          name: 'exportURL',
-          valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
+    params = FHIR::Parameters.new params_hash
+    resource_param = [
+      {
+        name: 'measureReport',
+        resource: {
+          resourceType: 'MeasureReport',
+          measure: 'http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130'
         }
-      ]
-    }.freeze
+      },
+      {
+        name: 'exportURL',
+        valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
+      }
+    ]
+    params.parameter.push(resource_param)
+    params.resourceType('Parameters')
+    
     fhir_client do
       url :url
       headers custom_headers
