@@ -52,13 +52,13 @@ module DEQMTestKit
         timeout = 120
         loop do
           begin
-             get(polling_url)
+            get(polling_url)
           rescue RestClient::TooManyRequests => e
-             e.response
+            e.response
           end
           wait_time = get_retry_or_backoff_time(wait_time, response)
           seconds_used = Time.now - start
-          # exit loop if we get a successful response or timeout reached
+          # exit loop if we get a response  we don't expect or timeout reached
           break if (response[:status] != 202 && response[:status] != 429) || (seconds_used > timeout)
 
           sleep wait_time
