@@ -31,7 +31,6 @@ module DEQMTestKit
       url :url
       headers custom_headers
     end
-    # rubocop:disable Metrics:BlockLength
     test do
       title 'Ensure data can be accepted'
       id 'bulk-import-01'
@@ -44,7 +43,7 @@ module DEQMTestKit
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
-        polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}" 
+        polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
         wait_time = 1
         start = Time.now
         seconds_used = 0
@@ -62,5 +61,4 @@ module DEQMTestKit
       end
     end
   end
-  # rubocop:enable Metrics:BlockLength
 end
