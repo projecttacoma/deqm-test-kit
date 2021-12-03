@@ -45,7 +45,7 @@ module DEQMTestKit
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
-        get(polling_url)
+        
         wait_time = 1
         start = Time.now
         seconds_used = 0
