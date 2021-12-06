@@ -2,6 +2,7 @@
 
 module DEQMTestKit
   # tests for $care-gaps
+  # rubocop:disable Metrics/ClassLength
   class CareGaps < Inferno::TestGroup
     id 'care_gaps'
     title 'Gaps in Care'
@@ -22,8 +23,8 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=\
-        #{period_end}&subject=#{patient_id}&status=open"
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+                 "&subject=#{patient_id}&status=open"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
         assert_response_status(200)
@@ -58,7 +59,8 @@ module DEQMTestKit
 
       run do
         # A request with invalid practitioner and organization ids
-        invalid_optional = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open&practitioner=INVALID&organization=INVALID"
+        invalid_optional = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+                           '&status=open&practitioner=INVALID&organization=INVALID'
         fhir_operation("/Measure/$care-gaps?#{invalid_optional}")
 
         assert_response_status(404)
@@ -77,7 +79,8 @@ module DEQMTestKit
 
       run do
         # Parameters with an invalid patient id for subject
-        invalid_subject = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open&subject=INVALID"
+        invalid_subject = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+                          '&status=open&subject=INVALID'
         fhir_operation("/Measure/$care-gaps?#{invalid_subject}")
 
         assert_response_status(404)
@@ -113,7 +116,8 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+        params = "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}"\
+                 "&subject=#{patient_id}&status=open"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
         assert_response_status(404)
@@ -123,4 +127,5 @@ module DEQMTestKit
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
