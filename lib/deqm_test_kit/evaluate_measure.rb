@@ -33,7 +33,7 @@ module DEQMTestKit
       end
     end
 
-    # NOTE: this test will fail for deqm-test-server 
+    # NOTE: this test will fail for deqm-test-server
     test do
       title 'Check $evaluate-measure proper calculation for subject-list report'
       id 'evaluate-measure-02'
@@ -70,7 +70,7 @@ module DEQMTestKit
       end
     end
 
-    # NOTE: this test will fail for deqm-test-server 
+    # NOTE: this test will fail for deqm-test-server
     test do
       title 'Check $evaluate-measure supports non-required params'
       id 'evaluate-measure-04'

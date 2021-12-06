@@ -260,7 +260,6 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     end
   end
 
-
   describe '$evaluate-measure fails for invalid reportType' do
     let(:test) { group.tests[8] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
