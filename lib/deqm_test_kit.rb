@@ -6,6 +6,9 @@ require_relative 'deqm_test_kit/measure_availability'
 require_relative 'deqm_test_kit/data_requirements'
 require_relative 'deqm_test_kit/submit_data'
 require_relative 'deqm_test_kit/bulk_import'
+require_relative 'deqm_test_kit/evaluate_measure'
+require_relative 'deqm_test_kit/care_gaps'
+
 module DEQMTestKit
   class Suite < Inferno::TestSuite
     id :deqm_test_suite
@@ -43,10 +46,12 @@ module DEQMTestKit
     # Tests and TestGroups can be written in separate files and then included
     # using their id
     # group from: :patient_group
-    group from: :patient_everything
     group from: :measure_availability
     group from: :data_requirements
     group from: :submit_data
+    group from: :evaluate_measure
+    group from: :care_gaps
     group from: :bulk_import
+    group from: :patient_everything
   end
 end
