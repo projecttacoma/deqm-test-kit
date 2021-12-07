@@ -111,41 +111,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     end
   end
 
-  describe '$evaluate-measure successful inclusion of unsupported params' do
-    let(:test) { group.tests[3] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
-    let(:patient_id) { 'numer-EXM130' }
-    let(:period_start) { '2019-01-01' }
-    let(:period_end) { '2019-12-31' }
-    let(:params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&lastReceivedOn=2019-12-31"
-    end
-
-    it 'passes for inclusion of lastReceivedOn' do
-      test_measure_report = FHIR::MeasureReport.new(entry: [{ resource: { resourceType: 'MeasureReport',
-                                                                          measure: measure_id } }])
-      stub_request(
-        :post,
-        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
-      )
-        .to_return(status: 200, body: test_measure_report.to_json)
-    end
-
-    it 'fails if server does not return 200 for unsupported param' do
-      stub_request(
-        :post,
-        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
-      )
-        .to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
-      expect(result.result).to eq('fail')
-      expect(result.result_message).to match(/200/)
-    end
-  end
-
   describe '$evaluate-measure fails for invalid measure id' do
-    let(:test) { group.tests[4] }
+    let(:test) { group.tests[3] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -174,7 +141,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for invalid patient id' do
-    let(:test) { group.tests[5] }
+    let(:test) { group.tests[4] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -203,7 +170,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for missing required params' do
-    let(:test) { group.tests[6] }
+    let(:test) { group.tests[5] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_end) { '2019-12-31' }
@@ -232,7 +199,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for missing subject param for individual report type' do
-    let(:test) { group.tests[7] }
+    let(:test) { group.tests[6] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -261,7 +228,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for invalid reportType' do
-    let(:test) { group.tests[8] }
+    let(:test) { group.tests[7] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
