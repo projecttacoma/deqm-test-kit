@@ -30,6 +30,7 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:measure_report)
         assert_valid_json(response[:body])
+        assert(resource.type == 'individual')
       end
     end
 
@@ -49,6 +50,7 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:measure_report)
         assert_valid_json(response[:body])
+        assert(resource.type == 'subject-list')
       end
     end
 
@@ -67,6 +69,7 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:measure_report)
         assert_valid_json(response[:body])
+        assert(resource.type == 'summary')
       end
     end
 
