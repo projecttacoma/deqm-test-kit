@@ -22,7 +22,7 @@ module DEQMTestKit
           }
         },
         {
-          name: 'exportURL',
+          name: 'exportUrl',
           valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
         }
       ]
