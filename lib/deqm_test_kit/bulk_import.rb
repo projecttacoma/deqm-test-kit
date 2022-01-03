@@ -6,7 +6,7 @@ module DEQMTestKit
   class BulkImport < Inferno::TestGroup
     include BulkImportUtils
     id 'bulk_import'
-    title 'Bulk Import'
+    title 'Non-Measure-Specific Bulk Import'
     description 'Ensure the fhir server can accept bulk data import requests in the non-measure-specific case'
 
     params = {
