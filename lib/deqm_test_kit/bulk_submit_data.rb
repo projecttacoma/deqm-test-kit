@@ -3,30 +3,44 @@
 require_relative '../utils/bulk_import_utils'
 module DEQMTestKit
   # BulkImport test group ensure the fhir server can accept bulk data import requests
-  class BulkImport < Inferno::TestGroup
+  class BulkSubmitData < Inferno::TestGroup
     include BulkImportUtils
-    id 'bulk_import'
-    title 'Bulk Import'
-    description 'Ensure the fhir server can accept bulk data import requests in the non-measure-specific case'
+    id 'bulk_submit_data'
+    title 'Bulk Submit Data'
+    description 'Ensure the fhir server can accept bulk data import requests when a measure is specified'
 
+    input :measure_id
+    custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
     params = {
       resourceType: 'Parameters',
       parameter: [
         {
+          name: 'measureReport',
+          resource: {
+            resourceType: 'MeasureReport',
+            measure: 'http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130'
+          }
+        },
+        {
           name: 'exportUrl',
-          valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
+          valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
         }
       ]
     }.freeze
     fhir_client do
       url :url
+      headers custom_headers
     end
     test do
       title 'Ensure data can be accepted'
-      id 'bulk-import-01'
-      description 'POST to $import and the response is a 202'
+      id 'bulk-submit-data-01'
+      description 'Send the data to the server and the response is a 202'
       run do
-        fhir_operation("$import", body: params, name: :bulk_import)
+        assert(measure_id,
+               'No measure selected. Run Measure Availability prior to running the bulk import test group.')
+        fhir_read(:measure, measure_id)
+        assert_valid_json(response[:body])
+        fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
