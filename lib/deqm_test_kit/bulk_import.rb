@@ -26,7 +26,7 @@ module DEQMTestKit
       id 'bulk-import-01'
       description 'POST to $import and the response is a 202'
       run do
-        fhir_operation("$import", body: params, name: :bulk_import)
+        fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
         polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
