@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# rubocop:disable Style/FrozenStringLiteralComment
 
 require_relative '../utils/bulk_import_utils'
 module DEQMTestKit
@@ -9,6 +9,8 @@ module DEQMTestKit
     title 'Non-Measure-Specific Bulk Import'
     description 'Ensure the fhir server can accept bulk data import requests in the non-measure-specific case'
 
+    input :types, optional: true,
+                  description: 'string of comma-delimited FHIR resource types'
     params = {
       resourceType: 'Parameters',
       parameter: [
@@ -17,7 +19,7 @@ module DEQMTestKit
           valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
         }
       ]
-    }.freeze
+    }
     fhir_client do
       url :url
     end
@@ -26,6 +28,7 @@ module DEQMTestKit
       id 'bulk-import-01'
       description 'POST to $import and the response is a 202'
       run do
+        params[:parameter][0][:valueString].concat "?_type=#{types}" if types
         fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         # temporary fix for extra 4_0_1
@@ -48,3 +51,4 @@ module DEQMTestKit
     end
   end
 end
+# rubocop:enable Style/FrozenStringLiteralComment
