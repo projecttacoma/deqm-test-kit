@@ -26,7 +26,7 @@ module DEQMTestKit
     test do
       title 'Ensure data can be accepted'
       id 'bulk-import-01'
-      description 'POST to $import and the response is a 202'
+      description 'POST to $import returns 202 response, bulk status endpoint returns 200 response'
       run do
         params[:parameter][0][:valueString].concat "?_type=#{types}" if types
         fhir_operation('$import', body: params, name: :bulk_import)

@@ -34,7 +34,7 @@ module DEQMTestKit
     test do
       title 'Ensure data can be accepted'
       id 'bulk-submit-data-01'
-      description 'Send the data to the server and the response is a 202'
+      description 'POST to $submit-data returns 202 response, bulk status endpoint returns 200 response'
       run do
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the bulk import test group.')
