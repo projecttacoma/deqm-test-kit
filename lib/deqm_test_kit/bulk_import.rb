@@ -16,7 +16,7 @@ module DEQMTestKit
       parameter: [
         {
           name: 'exportUrl',
-          valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
+          valueUrl: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
         }
       ]
     }
@@ -28,11 +28,10 @@ module DEQMTestKit
       id 'bulk-import-01'
       description 'POST to $import returns 202 response, bulk status endpoint returns 200 response'
       run do
-        params[:parameter][0][:valueString].concat "?_type=#{types}" if types
+        params[:parameter][0][:valueUrl].concat "?_type=#{types}" if types
         fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
-        # temporary fix for extra 4_0_1
-        polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
+        polling_url = location_header.value
         wait_time = 1
         start = Time.now
         seconds_used = 0
