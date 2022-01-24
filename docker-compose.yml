@@ -53,12 +53,16 @@ services:
       - redis
     image: tacoma/deqm-test-server:latest
     environment:
+      HOST: deqm_test_server
+      PORT: 3000
       DB_HOST: mongo
       DB_PORT: 27017
       DB_NAME: deqm-test-server-dev
       REDIS_HOST: redis
       REDIS_PORT: 6379
       NODE_TLS_REJECT_UNAUTHORIZED: 0
+      IMPORT_WORKERS: 2
+      NDJSON_WORKERS: 2
     ports:
       - "3000:3000"
     command: npm start

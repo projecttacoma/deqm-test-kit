@@ -26,12 +26,14 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 
+      polling_url = "#{url}/location"
+
       stub_request(:get, "#{url}/Measure/#{measure_id}")
         .to_return(status: 200, body: test_measure.to_json)
 
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
-        .to_return(status: 200, body: resource.to_json, headers: { 'content-location': 'location' })
-      polling_url = "#{url}/location"
+        .to_return(status: 200, body: resource.to_json, headers: { 'content-location': polling_url })
+
       stub_request(:get, polling_url)
         .to_return(status: 202, body: resource.to_json).times(3)
 

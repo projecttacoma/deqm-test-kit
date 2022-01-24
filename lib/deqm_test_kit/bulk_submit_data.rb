@@ -23,7 +23,7 @@ module DEQMTestKit
         },
         {
           name: 'exportUrl',
-          valueString: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
+          valueUrl: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir'
         }
       ]
     }.freeze
@@ -42,8 +42,7 @@ module DEQMTestKit
         assert_valid_json(response[:body])
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
-        # temporary fix for extra 4_0_1
-        polling_url = "#{url}/#{location_header.value.sub('4_0_1/', '')}"
+        polling_url = location_header.value
         wait_time = 1
         start = Time.now
         seconds_used = 0
