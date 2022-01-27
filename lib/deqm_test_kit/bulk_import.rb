@@ -9,26 +9,31 @@ module DEQMTestKit
     title 'Non-Measure-Specific Bulk Import'
     description 'Ensure the fhir server can accept bulk data import requests in the non-measure-specific case'
 
-    input :types, optional: true,
-                  description: 'string of comma-delimited FHIR resource types'
-    params = {
-      resourceType: 'Parameters',
-      parameter: [
-        {
-          name: 'exportUrl',
-          valueUrl: 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
-        }
-      ]
-    }
+    default_url = 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
+
     fhir_client do
       url :url
     end
+    # rubocop:disable Metrics/BlockLength
     test do
       title 'Ensure data can be accepted'
       id 'bulk-import-01'
       description 'POST to $import returns 202 response, bulk status endpoint returns 200 response'
+
+      input :types, optional: true,
+                    description: 'string of comma-delimited FHIR resource types'
+
+      params = {
+        resourceType: 'Parameters',
+        parameter: [
+          {
+            name: 'exportUrl',
+            valueUrl: default_url
+          }
+        ]
+      }
       run do
-        params[:parameter][0][:valueUrl].concat "?_type=#{types}" if types
+        params[:parameter][0][:valueUrl] = default_url + "?_type=#{types}" if types.length.positive?
         fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         polling_url = location_header.value
@@ -36,6 +41,7 @@ module DEQMTestKit
         start = Time.now
         seconds_used = 0
         timeout = 120
+
         loop do
           get(polling_url)
           wait_time = get_retry_or_backoff_time(wait_time, response)
@@ -48,6 +54,7 @@ module DEQMTestKit
         assert_response_status(200)
       end
     end
+    # rubocop:enable Metrics/BlockLength
   end
 end
 # rubocop:enable Style/FrozenStringLiteralComment
