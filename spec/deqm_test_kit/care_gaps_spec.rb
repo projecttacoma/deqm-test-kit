@@ -27,7 +27,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
     end
     test_bundle = FHIR::Bundle.new(total: 1)
     it 'passes if request has valid parameters, patient id, and measure id' do
@@ -68,7 +68,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:test_bundle) { FHIR::Bundle.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -108,7 +108,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
       "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
-        '&status=open&practitioner=INVALID&organization=INVALID'
+        '&status=open-gap&practitioner=INVALID&organization=INVALID'
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -147,7 +147,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:test_bundle) { FHIR::Bundle.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open&subject=INVALID"
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open-gap&subject=INVALID"
     end
     it 'passes if request returns 404 with OperationOutcome' do
       stub_request(
@@ -186,7 +186,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:test_bundle) { FHIR::Bundle.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -225,7 +225,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:test_bundle) { FHIR::Bundle.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
