@@ -5,20 +5,20 @@ RSpec.describe DEQMTestKit::BulkImport do
   let(:group) { suite.groups[7] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
-  url = 'http://example.com/fhir'
+  # let(:url) { 'http://example.com/fhir' }
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value)
+      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
     end
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
 
   describe 'The server is able to perform bulk data tasks' do
     let(:test) { group.tests[0] }
-    url = 'http://example.com/fhir'
+    let(:url) { String.new('http://example.com/fhir') }
 
     it 'passes on successful $import' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
