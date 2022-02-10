@@ -40,7 +40,7 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        invalid_params = "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+        invalid_params = "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{invalid_params}")
 
         assert_response_status(400)
