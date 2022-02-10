@@ -10,7 +10,7 @@ services:
     depends_on:
       - validator_service
   cqf_ruler:
-    image: tacoma/cqf-ruler-preloaded:0.6.0.no-vs
+    image: mitrehealthdocker/cqf-ruler-preloaded:0.6.0.no-vs
     ports:
       - "8080:8080"
   validator_service:
@@ -51,7 +51,7 @@ services:
     depends_on:
       - mongo
       - redis
-    image: tacoma/deqm-test-server:latest
+    image: mitrehealthdocker/deqm-test-server:latest
     environment:
       HOST: deqm_test_server
       PORT: 3000
