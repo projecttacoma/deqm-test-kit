@@ -66,7 +66,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_parameters) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
       "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
