@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DEQMTestKit::DataRequirements do
+RSpec.describe DEQMTestKit::CareGaps do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[5] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
@@ -12,7 +12,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value)
+      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
     end
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
@@ -23,18 +23,19 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_bundle) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        "&subject=#{patient_id}&status=open-gap"
     end
-    test_bundle = FHIR::Bundle.new(total: 1)
+    test_parameters = FHIR::Parameters.new(total: 1)
     it 'passes if request has valid parameters, patient id, and measure id' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 200, body: test_bundle.to_json)
+      ).to_return(status: 200, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('pass')
@@ -44,7 +45,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 400, body: test_bundle.to_json)
+      ).to_return(status: 400, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
@@ -65,10 +66,10 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_bundle) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -88,11 +89,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
                          period_end: period_end)
       expect(result.result).to eq('fail')
     end
-    it 'fails if request returns a bundle' do
+    it 'fails if request returns a parameters object' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 400, body: test_bundle.to_json)
+      ).to_return(status: 400, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
@@ -104,17 +105,17 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_bundle) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
       "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
-        '&status=open&practitioner=INVALID&organization=INVALID'
+        "&status=open-gap&practitioner=INVALID&organization=INVALID&subject=#{patient_id}"
     end
-    it 'passes if request returns 400 with OperationOutcome' do
+    it 'passes if request returns 501 with OperationOutcome' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 404, body: error_outcome.to_json)
+      ).to_return(status: 501, body: error_outcome.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('pass')
@@ -132,7 +133,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 404, body: test_bundle.to_json)
+      ).to_return(status: 404, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
@@ -144,10 +145,10 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_bundle) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open&subject=INVALID"
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open-gap&subject=INVALID"
     end
     it 'passes if request returns 404 with OperationOutcome' do
       stub_request(
@@ -167,11 +168,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
                          period_end: period_end)
       expect(result.result).to eq('fail')
     end
-    it 'fails if request returns a bundle' do
+    it 'fails if request returns a parameters object' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 404, body: test_bundle.to_json)
+      ).to_return(status: 404, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
@@ -183,10 +184,10 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_bundle) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -206,11 +207,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
                          period_end: period_end)
       expect(result.result).to eq('fail')
     end
-    it 'fails if request returns a bundle' do
+    it 'fails if request returns a parameters object' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 400, body: test_bundle.to_json)
+      ).to_return(status: 400, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
@@ -222,10 +223,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:test_bundle) { FHIR::Bundle.new(total: 1) }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open"
+      "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        "&subject=#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -245,11 +247,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
                          period_end: period_end)
       expect(result.result).to eq('fail')
     end
-    it 'fails if request returns a bundle' do
+    it 'fails if request returns a parameters object' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 404, body: test_bundle.to_json)
+      ).to_return(status: 404, body: test_parameters.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
