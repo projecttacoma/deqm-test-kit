@@ -18,7 +18,31 @@ module DEQMTestKit
       title 'Check $care-gaps proper calculation'
       id 'care-gaps-01'
       description 'Server should properly return a gaps report'
-      input :measure_id, :patient_id
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
+      input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
@@ -36,7 +60,31 @@ module DEQMTestKit
       title 'Check $care-gaps missing required parameter'
       id 'care-gaps-02'
       description 'Server should return a 400 response code'
-      input :measure_id, :patient_id
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
+      input :patient_id
       input :period_end, default: '2019-12-31'
 
       run do
@@ -53,7 +101,31 @@ module DEQMTestKit
       title 'Check $care-gaps with invalid optional parameters'
       id 'care-gaps-03'
       description 'Server should return a 501 response code'
-      input :measure_id, :patient_id
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
+      input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
@@ -73,6 +145,30 @@ module DEQMTestKit
       title 'Check $care-gaps with invalid subject'
       id 'care-gaps-04'
       description 'Server should return a 404 response code'
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
       input :measure_id, :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'

@@ -11,19 +11,43 @@ module DEQMTestKit
       url :url
     end
 
-    MEASURES = ['EXM130|7.3.000', 'EXM125|7.3.000'].freeze
+    #MEASURES = ['EXM130|7.3.000', 'EXM125|7.3.000'].freeze
 
     test do
       title 'Measure can be found'
       id 'measure-availability-01'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
+      input :selected_measure_id, type: 'radio', optional: false, default: 'EXM130|7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'EXM104|8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'EXM105|8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'EXM124|9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'EXM125|7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'EXM130|7.3.000'
+          }
+        ]
+      }
       output :measure_id
 
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
         # TODO: actually pull measure from user input drop down (populated from embedded client)
-        measure_to_test = MEASURES[0]
+        measure_to_test = selected_measure_id
         measure_identifier, measure_version = measure_to_test.split('|')
 
         # Search system for measure by identifier and version

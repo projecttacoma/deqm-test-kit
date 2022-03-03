@@ -26,7 +26,30 @@ module DEQMTestKit
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'
       makes_request :submit_data
       input :queries_json
-      input :measure_id
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
 
       run do
         # get measure from client
@@ -118,7 +141,30 @@ module DEQMTestKit
       title 'Fails if a measureReport is not submitted'
       id 'submit-data-02'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
-      input :measure_id
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
       run do
         test_measure = FHIR::Measure.new(id: measure_id)
 
@@ -144,7 +190,30 @@ module DEQMTestKit
       title 'Fails if multiple measureReports are submitted'
       id 'submit-data-03'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
-      input :measure_id
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
+        list_options: [
+          {
+            label: 'EXM104',
+            value: 'measure-EXM104-8.2.000'
+          },
+          {
+            label: 'EXM105',
+            value: 'measure-EXM105-8.2.000'
+          },
+          {
+            label: 'EXM124',
+            value: 'measure-EXM124-9.0.000'
+          },
+          {
+            label: 'EXM125',
+            value: 'measure-EXM125-7.3.000'
+          },
+          {
+            label: 'EXM130',
+            value: 'measure-EXM130-7.3.000'
+          }
+        ]
+      }
       run do
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
