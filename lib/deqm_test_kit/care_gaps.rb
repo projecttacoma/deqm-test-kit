@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'json'
+$measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
 
 module DEQMTestKit
   # tests for $care-gaps
@@ -18,30 +20,7 @@ module DEQMTestKit
       title 'Check $care-gaps proper calculation'
       id 'care-gaps-01'
       description 'Server should properly return a gaps report'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'measure-EXM104-8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'measure-EXM105-8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'measure-EXM124-9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'measure-EXM125-7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'measure-EXM130-7.3.000'
-          }
-        ]
-      }
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -60,30 +39,7 @@ module DEQMTestKit
       title 'Check $care-gaps missing required parameter'
       id 'care-gaps-02'
       description 'Server should return a 400 response code'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'measure-EXM104-8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'measure-EXM105-8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'measure-EXM124-9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'measure-EXM125-7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'measure-EXM130-7.3.000'
-          }
-        ]
-      }
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
       input :patient_id
       input :period_end, default: '2019-12-31'
 
@@ -101,30 +57,7 @@ module DEQMTestKit
       title 'Check $care-gaps with invalid optional parameters'
       id 'care-gaps-03'
       description 'Server should return a 501 response code'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'measure-EXM104-8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'measure-EXM105-8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'measure-EXM124-9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'measure-EXM125-7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'measure-EXM130-7.3.000'
-          }
-        ]
-      }
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -144,31 +77,8 @@ module DEQMTestKit
     test do
       title 'Check $care-gaps with invalid subject'
       id 'care-gaps-04'
-      description 'Server should return a 404 response code'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'measure-EXM104-8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'measure-EXM105-8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'measure-EXM124-9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'measure-EXM125-7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'measure-EXM130-7.3.000'
-          }
-        ]
-      }
+      description 'Server should return a 400 response code'
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
       input :measure_id, :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -179,7 +89,7 @@ module DEQMTestKit
                           '&status=open-gap&subject=INVALID'
         fhir_operation("/Measure/$care-gaps?#{invalid_subject}")
 
-        assert_response_status(404)
+        assert_response_status(400)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
         assert(resource.issue[0].severity == 'error')
@@ -188,7 +98,7 @@ module DEQMTestKit
     test do
       title 'Check $care-gaps with no measure identifier'
       id 'care-gaps-05'
-      description 'Server should return a 400 response code'
+      description 'Server should return a 200 response code'
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -197,10 +107,9 @@ module DEQMTestKit
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
-        assert_response_status(400)
+        assert_response_status(200)
+        assert_resource_type(:parameters)
         assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
       end
     end
     test do

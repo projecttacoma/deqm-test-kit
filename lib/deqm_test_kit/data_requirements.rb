@@ -1,6 +1,7 @@
 # frozen_string_literal: true
-
 require_relative '../utils/data_requirements_utils'
+require 'json'
+$measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
 
 module DEQMTestKit
   # GET [base]/Measure/CMS146/$data-requirements?periodStart=2014&periodEnd=2014
@@ -33,30 +34,7 @@ module DEQMTestKit
       description 'Data requirements on the fhir test server match the data requirements of our embedded client'
       makes_request :data_requirements
       output :queries_json
-      input :measure_id, type: 'radio', optional: false, options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'measure-EXM104-8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'measure-EXM105-8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'measure-EXM124-9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'measure-EXM125-7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'measure-EXM130-7.3.000'
-          }
-        ]
-      }
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
 
       run do
         # Get measure resource from client
@@ -114,30 +92,7 @@ module DEQMTestKit
       title 'Check data requirements returns 400 for missing parameters'
       id 'data-requirements-02'
       description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
-      input :measure_id, type: 'radio', optional: false, options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'measure-EXM104-8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'measure-EXM105-8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'measure-EXM124-9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'measure-EXM125-7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'measure-EXM130-7.3.000'
-          }
-        ]
-      }
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
       run do
         # Run our data requirements operation on the test client server
         fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)
