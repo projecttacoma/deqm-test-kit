@@ -10,38 +10,38 @@ module DEQMTestKit
     fhir_client do
       url :url
     end
-
+    # rubocop:disable Metrics/BlockLength
     test do
       title 'Measure can be found'
       id 'measure-availability-01'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
-      input :selected_measure_id, type: 'radio', optional: false, default: 'EXM130|7.3.000', options: {
-        list_options: [
-          {
-            label: 'EXM104',
-            value: 'EXM104|8.2.000'
-          },
-          {
-            label: 'EXM105',
-            value: 'EXM105|8.2.000'
-          },
-          {
-            label: 'EXM124',
-            value: 'EXM124|9.0.000'
-          },
-          {
-            label: 'EXM125',
-            value: 'EXM125|7.3.000'
-          },
-          {
-            label: 'EXM130',
-            value: 'EXM130|7.3.000'
-          }
-        ]
-      }
+      input :selected_measure_id, type: 'radio', optional: false,
+                                  default: 'EXM130|7.3.000', options: {
+                                    list_options: [
+                                      {
+                                        label: 'EXM104',
+                                        value: 'EXM104|8.2.000'
+                                      },
+                                      {
+                                        label: 'EXM105',
+                                        value: 'EXM105|8.2.000'
+                                      },
+                                      {
+                                        label: 'EXM124',
+                                        value: 'EXM124|9.0.000'
+                                      },
+                                      {
+                                        label: 'EXM125',
+                                        value: 'EXM125|7.3.000'
+                                      },
+                                      {
+                                        label: 'EXM130',
+                                        value: 'EXM130|7.3.000'
+                                      }
+                                    ]
+                                  }
       output :measure_id
-
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
         # TODO: actually pull measure from user input drop down (populated from embedded client)
@@ -58,6 +58,7 @@ module DEQMTestKit
         output measure_id: resource.entry[0].resource.id
       end
     end
+    # rubocop:enable Metrics/BlockLength
 
     test do
       title 'Measure cannot be found returns empty bundle'

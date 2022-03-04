@@ -1,6 +1,6 @@
 # frozen_string_literal: true
+
 require 'json'
-$measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
 
 module DEQMTestKit
   # tests for $care-gaps
@@ -14,13 +14,15 @@ module DEQMTestKit
       url :url
     end
 
+    measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+
     INVALID_ID = 'INVALID_ID'
 
     test do
       title 'Check $care-gaps proper calculation'
       id 'care-gaps-01'
       description 'Server should properly return a gaps report'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -39,7 +41,7 @@ module DEQMTestKit
       title 'Check $care-gaps missing required parameter'
       id 'care-gaps-02'
       description 'Server should return a 400 response code'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
       input :patient_id
       input :period_end, default: '2019-12-31'
 
@@ -57,7 +59,7 @@ module DEQMTestKit
       title 'Check $care-gaps with invalid optional parameters'
       id 'care-gaps-03'
       description 'Server should return a 501 response code'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -78,7 +80,7 @@ module DEQMTestKit
       title 'Check $care-gaps with invalid subject'
       id 'care-gaps-04'
       description 'Server should return a 400 response code'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
+      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
       input :measure_id, :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'

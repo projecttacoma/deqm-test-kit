@@ -2,7 +2,6 @@
 
 require_relative '../utils/bulk_import_utils'
 require 'json'
-$measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
 
 module DEQMTestKit
   # BulkImport test group ensure the fhir server can accept bulk data import requests
@@ -12,7 +11,8 @@ module DEQMTestKit
     title 'Bulk Submit Data'
     description 'Ensure the fhir server can accept bulk data import requests when a measure is specified'
 
-    input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: $measure_options
+    measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+    input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
     params = {
       resourceType: 'Parameters',
