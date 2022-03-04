@@ -11,8 +11,6 @@ module DEQMTestKit
       url :url
     end
 
-    #MEASURES = ['EXM130|7.3.000', 'EXM125|7.3.000'].freeze
-
     test do
       title 'Measure can be found'
       id 'measure-availability-01'
