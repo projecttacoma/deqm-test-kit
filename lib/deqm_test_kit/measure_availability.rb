@@ -14,9 +14,8 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureAvailabilityRadioButton.json'))
-    measure_id_args = {type: 'radio', optional: false, default: 'EXM130|7.3.000', options: measure_options}
+    measure_id_args = { type: 'radio', optional: false, default: 'EXM130|7.3.000', options: measure_options }
 
-    # rubocop:disable Metrics/BlockLength
     test do
       title 'Measure can be found'
       id 'measure-availability-01'
@@ -40,8 +39,6 @@ module DEQMTestKit
         output measure_id: resource.entry[0].resource.id
       end
     end
-    # rubocop:enable Metrics/BlockLength
-
     test do
       title 'Measure cannot be found returns empty bundle'
       id 'measure-availability-02'
