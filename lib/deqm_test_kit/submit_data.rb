@@ -11,6 +11,7 @@ module DEQMTestKit
     description 'Ensure fhir server can receive data via the $submit-data operation'
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}' }
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+    measure_id_args = {type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options}
 
     fhir_client do
       url :url
@@ -28,7 +29,7 @@ module DEQMTestKit
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'
       makes_request :submit_data
       input :queries_json
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
 
       run do
         # get measure from client
@@ -120,7 +121,7 @@ module DEQMTestKit
       title 'Fails if a measureReport is not submitted'
       id 'submit-data-02'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       run do
         test_measure = FHIR::Measure.new(id: measure_id)
 
@@ -146,7 +147,7 @@ module DEQMTestKit
       title 'Fails if multiple measureReports are submitted'
       id 'submit-data-03'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       run do
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the Submit Data test group.')

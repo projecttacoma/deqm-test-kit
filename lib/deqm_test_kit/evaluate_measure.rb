@@ -15,6 +15,7 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+    measure_id_args = {type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options}
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
@@ -23,7 +24,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure proper calculation for individual report'
       id 'evaluate-measure-01'
       description 'Server should properly return an individual measure report'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -44,7 +45,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure proper calculation for subject-list report'
       id 'evaluate-measure-02'
       description 'Server should properly return a subject-list measure report'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
@@ -63,7 +64,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure proper calculation for population report'
       id 'evaluate-measure-03'
       description 'Server should properly return a population measure report'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
@@ -101,7 +102,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure fails for invalid patient ID'
       id 'evaluate-measure-05'
       description 'Request returns a 404 error when the given patient ID cannot be found'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
@@ -120,7 +121,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure fails for missing required param'
       id 'evaluate-measure-06'
       description 'Request returns a 400 error for missing required param (periodStart)'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :patient_id
       input :period_end, default: '2019-12-31'
 
@@ -139,7 +140,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure fails for missing subject param (individual report type)'
       id 'evaluate-measure-07'
       description 'Request returns 400 for missing subject param when individual report type is specified'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
@@ -159,7 +160,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure fails for invalid reportType'
       id 'evaluate-measure-08'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'

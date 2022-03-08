@@ -21,6 +21,7 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+    measure_id_args = {type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options}
 
     PARAMS = {
       resourceType: 'Parameters',
@@ -36,7 +37,7 @@ module DEQMTestKit
       description 'Data requirements on the fhir test server match the data requirements of our embedded client'
       makes_request :data_requirements
       output :queries_json
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
 
       run do
         # Get measure resource from client
@@ -94,7 +95,7 @@ module DEQMTestKit
       title 'Check data requirements returns 400 for missing parameters'
       id 'data-requirements-02'
       description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
-      input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+      input :measure_id, measure_id_args
       run do
         # Run our data requirements operation on the test client server
         fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)

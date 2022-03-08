@@ -12,7 +12,9 @@ module DEQMTestKit
     description 'Ensure the fhir server can accept bulk data import requests when a measure is specified'
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    input :measure_id, type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options
+    measure_id_args = {type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options}
+
+    input :measure_id, measure_id_args
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
     params = {
       resourceType: 'Parameters',
