@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative '../utils/bulk_import_utils'
+require 'json'
+
 module DEQMTestKit
   # BulkImport test group ensure the fhir server can accept bulk data import requests
   class BulkSubmitData < Inferno::TestGroup
@@ -9,7 +11,10 @@ module DEQMTestKit
     title 'Bulk Submit Data'
     description 'Ensure the fhir server can accept bulk data import requests when a measure is specified'
 
-    input :measure_id
+    measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+    measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options }
+
+    input :measure_id, measure_id_args
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
     params = {
       resourceType: 'Parameters',

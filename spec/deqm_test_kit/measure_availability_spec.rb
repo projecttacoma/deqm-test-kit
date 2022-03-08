@@ -21,6 +21,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
     let(:test) { group.tests.first }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
+    let(:selected_measure_id) { 'EXM130|7.3.000' }
 
     it 'passes if a Measure was received' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
@@ -29,7 +30,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
         .to_return(status: 200, body: resource.to_json)
 
       # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
-      result = run(test, url: url)
+      result = run(test, selected_measure_id: selected_measure_id, url: url)
 
       expect(result.result).to eq('pass')
     end
@@ -39,7 +40,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 201, body: resource.to_json)
 
-      result = run(test, url: url)
+      result = run(test, selected_measure_id: selected_measure_id, url: url)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
@@ -50,7 +51,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, url: url)
+      result = run(test, selected_measure_id: selected_measure_id, url: url)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/measure/)

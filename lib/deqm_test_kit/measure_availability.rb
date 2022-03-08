@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module DEQMTestKit
   # MeasureAvailability test group ensures selected measures are available on the fhir server
   class MeasureAvailability < Inferno::TestGroup
@@ -11,19 +13,20 @@ module DEQMTestKit
       url :url
     end
 
-    MEASURES = ['EXM130|7.3.000', 'EXM125|7.3.000'].freeze
+    measure_options = JSON.parse(File.read('./lib/fixtures/measureAvailabilityRadioButton.json'))
+    measure_id_args = { type: 'radio', optional: false, default: 'EXM130|7.3.000', options: measure_options }
 
     test do
       title 'Measure can be found'
       id 'measure-availability-01'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
+      input :selected_measure_id, measure_id_args
       output :measure_id
-
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
         # TODO: actually pull measure from user input drop down (populated from embedded client)
-        measure_to_test = MEASURES[0]
+        measure_to_test = selected_measure_id
         measure_identifier, measure_version = measure_to_test.split('|')
 
         # Search system for measure by identifier and version
@@ -36,7 +39,6 @@ module DEQMTestKit
         output measure_id: resource.entry[0].resource.id
       end
     end
-
     test do
       title 'Measure cannot be found returns empty bundle'
       id 'measure-availability-02'
