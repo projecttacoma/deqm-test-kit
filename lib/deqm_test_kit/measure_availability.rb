@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module DEQMTestKit
   # MeasureAvailability test group ensures selected measures are available on the fhir server
   class MeasureAvailability < Inferno::TestGroup
@@ -10,6 +12,8 @@ module DEQMTestKit
     fhir_client do
       url :url
     end
+
+    measure_options = JSON.parse(File.read('./lib/fixtures/measureAvailabilityRadioButton.json'))
     # rubocop:disable Metrics/BlockLength
     test do
       title 'Measure can be found'
@@ -17,30 +21,7 @@ module DEQMTestKit
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
       input :selected_measure_id, type: 'radio', optional: false,
-                                  default: 'EXM130|7.3.000', options: {
-                                    list_options: [
-                                      {
-                                        label: 'EXM104',
-                                        value: 'EXM104|8.2.000'
-                                      },
-                                      {
-                                        label: 'EXM105',
-                                        value: 'EXM105|8.2.000'
-                                      },
-                                      {
-                                        label: 'EXM124',
-                                        value: 'EXM124|9.0.000'
-                                      },
-                                      {
-                                        label: 'EXM125',
-                                        value: 'EXM125|7.3.000'
-                                      },
-                                      {
-                                        label: 'EXM130',
-                                        value: 'EXM130|7.3.000'
-                                      }
-                                    ]
-                                  }
+                                  default: 'EXM130|7.3.000', options: measure_options
       output :measure_id
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
