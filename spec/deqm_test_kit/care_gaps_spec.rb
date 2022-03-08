@@ -30,10 +30,6 @@ RSpec.describe DEQMTestKit::CareGaps do
       "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
         "&subject=#{patient_id}&status=open-gap"
     end
-    let(:no_measure_params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}"\
-        "&subject=#{patient_id}&status=open-gap"
-    end
     test_parameters = FHIR::Parameters.new(total: 1)
     it 'passes if request has valid parameters, patient id, and measure id' do
       stub_request(
@@ -62,15 +58,6 @@ RSpec.describe DEQMTestKit::CareGaps do
                          period_end: period_end)
       expect(result.result).to eq('fail')
     end
-    # it 'passes if request has valid parameters and patient id without measure id' do
-    #   stub_request(
-    #     :post,
-    #     "#{url}/Measure/$care-gaps?#{no_measure_params}"
-    #   ).to_return(status: 200, body: test_parameters.to_json)
-    #   result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-    #                      period_end: period_end)
-    #   expect(result.result).to eq('pass')
-    # end
   end
   describe '$care-gaps missing required parameter test' do
     let(:test) { group.tests[1] }
@@ -188,6 +175,28 @@ RSpec.describe DEQMTestKit::CareGaps do
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
+    end
+  end
+  describe '$care-gaps successful test with no measure identifier' do
+    let(:test) { group.tests[4] }
+    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:patient_id) { 'Patient/numer-EXM130' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:test_parameters) { FHIR::Parameters.new(total: 1) }
+    let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
+    let(:params) do
+      "periodStart=#{period_start}&periodEnd=#{period_end}"\
+        "&subject=#{patient_id}&status=open-gap"
+    end
+    it 'passes if request has valid parameters and patient id without measure id' do
+      stub_request(
+        :post,
+        "#{url}/Measure/$care-gaps?#{params}"
+      ).to_return(status: 200, body: test_parameters.to_json)
+      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
+                         period_end: period_end)
+      expect(result.result).to eq('pass')
     end
   end
   describe '$care-gaps has invalid measure id test' do
