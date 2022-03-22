@@ -59,8 +59,11 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list" }
 
     it 'passes for valid subject-list report' do
+      # rubocop:disable Layout/LineLength
       test_measure_report = FHIR::MeasureReport.new(entry: [{ resource: { resourceType: 'MeasureReport',
                                                                           measure: measure_id } }], type: 'subject-list')
+      # rubocop:enable Layout/LineLength
+
       stub_request(
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
@@ -169,8 +172,11 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     end
 
     it 'fails if $evaluate-measure does not return MeasureReport of type summary' do
+      # rubocop:disable Layout/LineLength
+
       test_measure_report = FHIR::MeasureReport.new(entry: [{ resource: { resourceType: 'MeasureReport',
                                                                           measure: measure_id } }], type: 'subject-list')
+      # rubocop:enable Layout/LineLength
       stub_request(
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"

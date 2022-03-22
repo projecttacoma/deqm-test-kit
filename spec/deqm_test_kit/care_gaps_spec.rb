@@ -40,7 +40,7 @@ RSpec.describe DEQMTestKit::CareGaps do
                          period_end: period_end)
       expect(result.result).to eq('pass')
     end
-    it 'passes if request has valid parameters, patient id, and measure id' do
+    it 'fails if $care-gaps does not return 200' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
@@ -49,11 +49,11 @@ RSpec.describe DEQMTestKit::CareGaps do
                          period_end: period_end)
       expect(result.result).to eq('fail')
     end
-    it 'passes if request has valid parameters, patient id, and measure id' do
+    it 'fails if $care-gaps does not return a Parameters object' do
       stub_request(
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
-      ).to_return(status: 400, body: error_outcome.to_json)
+      ).to_return(status: 200, body: error_outcome.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
       expect(result.result).to eq('fail')
