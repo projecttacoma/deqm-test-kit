@@ -30,7 +30,26 @@ module DEQMTestKit
 
       run do
         params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
-                 "&subject=#{patient_id}&status=open-gap"
+                 "&subject=Patient/#{patient_id}&status=open-gap"
+        fhir_operation("/Measure/$care-gaps?#{params}")
+
+        assert_response_status(200)
+        assert_resource_type(:parameters)
+        assert_valid_json(response[:body])
+      end
+    end
+    test do
+      title 'Check $care-gaps proper calculation for Group subject'
+      id 'care-gaps-02'
+      description 'Server should properly return a gaps report'
+      input :measure_id, measure_id_args
+      input :period_start, default: '2019-01-01'
+      input :period_end, default: '2019-12-31'
+      input :group_id
+
+      run do
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+                 "&subject=Group/#{group_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
         assert_response_status(200)
@@ -40,14 +59,14 @@ module DEQMTestKit
     end
     test do
       title 'Check $care-gaps missing required parameter'
-      id 'care-gaps-02'
+      id 'care-gaps-03'
       description 'Server should return a 400 response code'
       input :measure_id, measure_id_args
       input :patient_id
       input :period_end, default: '2019-12-31'
 
       run do
-        invalid_params = "measureId=#{measure_id}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
+        invalid_params = "measureId=#{measure_id}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{invalid_params}")
 
         assert_response_status(400)
@@ -57,9 +76,9 @@ module DEQMTestKit
       end
     end
     test do
-      title 'Check $care-gaps with invalid optional parameters'
-      id 'care-gaps-03'
-      description 'Server should return a 501 response code'
+      title 'Check $care-gaps with subject and organization'
+      id 'care-gaps-04'
+      description 'Server should return a 400 response code'
       input :measure_id, measure_id_args
       input :patient_id
       input :period_start, default: '2019-01-01'
@@ -68,10 +87,10 @@ module DEQMTestKit
       run do
         # A request with invalid practitioner and organization ids
         invalid_optional = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
-                           "&subject=#{patient_id}&status=open-gap&practitioner=INVALID&organization=INVALID"
+                           "&subject=Patient/#{patient_id}&status=open-gap&organization=Organization/testOrganization"
         fhir_operation("/Measure/$care-gaps?#{invalid_optional}")
 
-        assert_response_status(501)
+        assert_response_status(400)
         assert_valid_json(response[:body])
         assert(resource.resourceType == 'OperationOutcome')
         assert(resource.issue[0].severity == 'error')
@@ -79,7 +98,7 @@ module DEQMTestKit
     end
     test do
       title 'Check $care-gaps with invalid subject'
-      id 'care-gaps-04'
+      id 'care-gaps-05'
       description 'Server should return a 400 response code'
       input :measure_id, measure_id_args
       input :measure_id, :patient_id
@@ -100,14 +119,14 @@ module DEQMTestKit
     end
     test do
       title 'Check $care-gaps with no measure identifier'
-      id 'care-gaps-05'
+      id 'care-gaps-06'
       description 'Server should return a 200 response code'
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&status=open-gap"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
         assert_response_status(200)
@@ -117,7 +136,7 @@ module DEQMTestKit
     end
     test do
       title 'Check $care-gaps with invalid measure id'
-      id 'care-gaps-06'
+      id 'care-gaps-07'
       description 'Server should return a 404 response code'
       input :patient_id
       input :period_start, default: '2019-01-01'
@@ -125,7 +144,7 @@ module DEQMTestKit
 
       run do
         params = "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}"\
-                 "&subject=#{patient_id}&status=open-gap"
+                 "&subject=Patient/#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
         assert_response_status(404)

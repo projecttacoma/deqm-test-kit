@@ -30,7 +30,7 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
         assert_response_status(200)
@@ -78,17 +78,35 @@ module DEQMTestKit
         assert(resource.type == 'summary')
       end
     end
+    test do
+      title 'Check $evaluate-measure proper calculation for population report with group subject'
+      id 'evaluate-measure-04'
+      description 'Server should properly return a population measure report'
+      input :measure_id, measure_id_args
+      input :period_start, default: '2019-01-01'
+      input :period_end, default: '2019-12-31'
+      input :group_id
 
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
+        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+
+        assert_response_status(200)
+        assert_resource_type(:measure_report)
+        assert_valid_json(response[:body])
+        assert(resource.type == 'summary')
+      end
+    end
     test do
       title 'Check $evaluate-measure fails for invalid measure ID'
-      id 'evaluate-measure-04'
+      id 'evaluate-measure-05'
       description 'Request returns a 404 error when the given measure ID cannot be found'
       input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
         fhir_operation("/Measure/#{INVALID_MEASURE_ID}/$evaluate-measure?#{params}")
 
         assert_response_status(404)
@@ -100,7 +118,7 @@ module DEQMTestKit
 
     test do
       title 'Check $evaluate-measure fails for invalid patient ID'
-      id 'evaluate-measure-05'
+      id 'evaluate-measure-06'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, measure_id_args
       input :period_start, default: '2019-01-01'
@@ -119,14 +137,14 @@ module DEQMTestKit
 
     test do
       title 'Check $evaluate-measure fails for missing required param'
-      id 'evaluate-measure-06'
+      id 'evaluate-measure-07'
       description 'Request returns a 400 error for missing required param (periodStart)'
       input :measure_id, measure_id_args
       input :patient_id
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "periodEnd=#{period_end}&subject=#{patient_id}"
+        params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
         assert_response_status(400)
@@ -138,7 +156,7 @@ module DEQMTestKit
 
     test do
       title 'Check $evaluate-measure fails for missing subject param (individual report type)'
-      id 'evaluate-measure-07'
+      id 'evaluate-measure-08'
       description 'Request returns 400 for missing subject param when individual report type is specified'
       input :measure_id, measure_id_args
       input :patient_id
@@ -158,7 +176,7 @@ module DEQMTestKit
 
     test do
       title 'Check $evaluate-measure fails for invalid reportType'
-      id 'evaluate-measure-08'
+      id 'evaluate-measure-09'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, measure_id_args
       input :patient_id
@@ -166,7 +184,7 @@ module DEQMTestKit
       input :period_end, default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{patient_id}&reportType=INVALID"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&reportType=INVALID"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
         assert_response_status(400)
