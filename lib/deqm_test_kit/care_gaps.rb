@@ -43,7 +43,6 @@ module DEQMTestKit
       id 'care-gaps-02'
       description 'Server should properly return a gaps report'
       input :measure_id, measure_id_args
-      input :patient_id
       input :period_start, default: '2019-01-01'
       input :period_end, default: '2019-12-31'
       input :group_id
