@@ -153,6 +153,44 @@ module DEQMTestKit
         assert(resource.issue[0].severity == 'error')
       end
     end
+    test do
+      title 'Check $care-gaps proper calculation with practitioner and organization parameters'
+      id 'care-gaps-08'
+      description 'Server should properly return a gaps report for request with practitioner and organization'
+      input :measure_id, measure_id_args
+      input :period_start, default: '2019-01-01'
+      input :period_end, default: '2019-12-31'
+      input :practitioner_id
+      input :org_id
+
+      run do
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+                 "&status=open-gap&practitioner=Practitioner/#{practitioner_id}&organization=Organization/#{org_id}"
+        fhir_operation("/Measure/$care-gaps?#{params}")
+
+        assert_response_status(200)
+        assert_resource_type(:parameters)
+        assert_valid_json(response[:body])
+      end
+    end
+    test do
+      title 'Check $care-gaps proper calculation with program parameter'
+      id 'care-gaps-09'
+      description 'Server should properly return a gaps report for request with program'
+      input :patient_id
+      input :period_start, default: '2019-01-01'
+      input :period_end, default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}"\
+                 "&subject=Patient/#{patient_id}&status=open-gap&program=eligible-provider"
+        fhir_operation("/Measure/$care-gaps?#{params}")
+
+        assert_response_status(200)
+        assert_resource_type(:parameters)
+        assert_valid_json(response[:body])
+      end
+    end
   end
   # rubocop:enable Metrics/ClassLength
 end
