@@ -191,7 +191,8 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}&status=open-gap&subject=INVALID"
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        '&status=open-gap&subject=INVALID_SUBJECT_ID'
     end
     it 'passes if request returns 400 with OperationOutcome' do
       stub_request(
@@ -252,7 +253,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=INVALID_MEASURE&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=INVALID_MEASURE_ID&periodStart=#{period_start}&periodEnd=#{period_end}"\
         "&subject=Patient/#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 400 with OperationOutcome' do

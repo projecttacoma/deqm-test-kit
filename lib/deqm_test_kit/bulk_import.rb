@@ -2,12 +2,16 @@
 
 require_relative '../utils/bulk_import_utils'
 module DEQMTestKit
-  # BulkImport test group ensure the fhir server can accept bulk data import requests
+  # BulkImport test group - ensure the FHIR server can accept bulk data import requests
   class BulkImport < Inferno::TestGroup
     include BulkImportUtils
     id 'bulk_import'
     title 'Non-Measure-Specific Bulk Import'
-    description 'Ensure the fhir server can accept bulk data import requests in the non-measure-specific case'
+    description %(
+        This test inspects the response to POST \[base\]/$import and GET \[bulk status endpoint\]
+        to ensure that the FHIR server can accept bulk data import requests in the
+        non-measure-specific case
+      )
 
     default_url = 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
 
@@ -16,12 +20,15 @@ module DEQMTestKit
     end
     # rubocop:disable Metrics/BlockLength
     test do
-      title 'Ensure data can be accepted'
+      title 'Ensure FHIR server can accept bulk data import requests'
       id 'bulk-import-01'
-      description 'POST to $import returns 202 response, bulk status endpoint returns 200 response'
+      description %(POST request to $import returns 202 response,
+      GET request to bulk status endpoint returns 200 response)
 
       input :types, optional: true,
-                    description: 'string of comma-delimited FHIR resource types'
+                    title: 'FHIR resource types',
+                    description: %(string of comma-delimited FHIR resource types used to filter
+                    exported resources in bulk import operation)
 
       params = {
         resourceType: 'Parameters',

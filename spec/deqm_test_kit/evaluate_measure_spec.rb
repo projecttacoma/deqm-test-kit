@@ -2,6 +2,7 @@
 
 INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
 INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
+INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
 
 RSpec.describe DEQMTestKit::EvaluateMeasure do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
@@ -311,7 +312,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&reportType=INVALID"
+      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"\
+        "&reportType=#{INVALID_REPORT_TYPE}"
     end
 
     it 'passes with correct Operation-Outcome returned' do

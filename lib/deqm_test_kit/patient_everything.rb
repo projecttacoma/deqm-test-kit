@@ -7,7 +7,7 @@ module DEQMTestKit
   class PatientEverything < Inferno::TestGroup
     id 'patient_everything'
     title 'Patient/$everything'
-    description 'Ensure fhir server can respond to the Patient/$everything request'
+    description 'Ensure FHIR server can respond to the Patient/$everything request'
 
     fhir_client do
       url :url

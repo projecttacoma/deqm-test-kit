@@ -1,0 +1,24 @@
+{
+  "list_options": [
+    {
+      "label": "EXM104",
+      "value": ["http://hl7.org/fhir/us/cqfmeasures/Measure/EXM104"]
+    },
+    {
+      "label": "EXM105",
+      "value": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM105"
+    },
+    {
+      "label": "EXM124",
+      "value": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM124"
+    },
+    {
+      "label": "EXM125",
+      "value": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM125"
+    },
+    {
+      "label": "EXM130",
+      "value": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130"
+    }
+  ]
+}

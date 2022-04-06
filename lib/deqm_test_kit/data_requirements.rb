@@ -10,7 +10,7 @@ module DEQMTestKit
 
     id 'data_requirements'
     title 'Data Requirements'
-    description 'Ensure fhir server can respond to the $data-requirements request'
+    description 'Ensure FHIR server can respond to the $data-requirements request'
 
     fhir_client do
       url :url
@@ -34,7 +34,7 @@ module DEQMTestKit
     test do
       title 'Check data requirements against expected return'
       id 'data-requirements-01'
-      description 'Data requirements on the fhir test server match the data requirements of our embedded client'
+      description 'Data requirements on the FHIR test server match the data requirements of our embedded client'
       makes_request :data_requirements
       output :queries_json
       input :measure_id, measure_id_args
