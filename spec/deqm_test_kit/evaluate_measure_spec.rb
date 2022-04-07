@@ -9,7 +9,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   let(:group) { suite.groups[4] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
-  url = 'http://example.com/fhir'
+  let (:url) { 'http://example.com/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
   def run(runnable, inputs = {})
