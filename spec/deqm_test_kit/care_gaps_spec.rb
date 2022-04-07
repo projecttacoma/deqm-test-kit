@@ -4,7 +4,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[5] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
-  let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
+  let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   url = 'http://example.com/fhir'
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 

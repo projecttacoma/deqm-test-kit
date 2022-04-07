@@ -90,7 +90,7 @@ module DEQMTestKit
       input :measure_id, measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
-      input :group_id, title: 'Groupo ID'
+      input :group_id, title: 'Group ID'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"

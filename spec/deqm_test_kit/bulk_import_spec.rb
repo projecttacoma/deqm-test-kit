@@ -4,7 +4,7 @@ RSpec.describe DEQMTestKit::BulkImport do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[7] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
-  let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
+  let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
