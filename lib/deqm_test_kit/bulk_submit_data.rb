@@ -20,7 +20,6 @@ module DEQMTestKit
     measure_mappings = JSON.parse(File.read('./lib/fixtures/measureCanonicalUrlMapping.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options,
                         title: 'Measure ID' }
-    input :measure_id, measure_id_args
 
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
 
@@ -34,6 +33,10 @@ module DEQMTestKit
       id 'bulk-submit-data-01'
       description %(POST request to $submit-data returns 202 response,
       GET request to bulk status endpoint returns 200 response')
+
+      input :measure_id, measure_id_args
+      input :exportUrl, title: 'Data Provider URL',
+                        description: %(Export Server to use for bulk import requests), default: default_url
       run do
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the bulk submit data test group.')
@@ -51,7 +54,7 @@ module DEQMTestKit
             },
             {
               name: 'exportUrl',
-              valueUrl: default_url
+              valueUrl: exportUrl
             }
           ]
         }.freeze

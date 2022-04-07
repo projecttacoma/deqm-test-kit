@@ -29,17 +29,20 @@ module DEQMTestKit
                     title: 'FHIR resource types',
                     description: %(string of comma-delimited FHIR resource types used to filter
                     exported resources in bulk import operation)
-
-      params = {
+      input :exportUrl, title: 'Data Provider URL',
+                        description: %(Export Server to use for bulk import requests), default: default_url
+      
+      run do
+        params = {
         resourceType: 'Parameters',
         parameter: [
           {
             name: 'exportUrl',
-            valueUrl: default_url
+            valueUrl: exportUrl
           }
         ]
       }
-      run do
+      
         params[:parameter][0][:valueUrl] = default_url + "?_type=#{types}" if types.length.positive?
         fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
