@@ -5,7 +5,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   let(:group) { suite.groups[5] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
-  let (:url) { 'http://example.com/fhir' }
+  let(:url) { 'http://example.com/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
   let(:test_parameters) { FHIR::Parameters.new(total: 1) }
 
@@ -175,7 +175,7 @@ RSpec.describe DEQMTestKit::CareGaps do
       expect(result.result).to eq('fail')
     end
   end
-  
+
   describe '$care-gaps has invalid subject format test' do
     let(:test) { group.tests[4] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -287,7 +287,7 @@ RSpec.describe DEQMTestKit::CareGaps do
       "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
         "&practitioner=Practitioner/#{practitioner_id}&organization=Organization/#{org_id}&status=open-gap"
     end
- 
+
     it 'passes if request has valid parameters' do
       stub_request(
         :post,

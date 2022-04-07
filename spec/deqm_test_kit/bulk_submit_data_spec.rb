@@ -5,7 +5,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
   let(:group) { suite.groups[6] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
-  let (:url) { 'http://example.com/fhir' }
+  let(:url) { 'http://example.com/fhir' }
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
