@@ -46,7 +46,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements" /
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
         "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
@@ -79,7 +79,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements" /
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
         "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
@@ -112,7 +112,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements" /
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
         "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
@@ -146,7 +146,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements" /
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
         "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
@@ -187,7 +187,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements" /
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
         "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_not_library_response.to_json)

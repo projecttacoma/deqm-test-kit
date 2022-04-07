@@ -31,7 +31,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
 
     it 'passes for valid individual report' do
       test_measure_report = FHIR::MeasureReport.new(entry: [{ resource: { resourceType: 'MeasureReport',
-                                                                          measure: measure_id } }])
+                                                                          measure: measure_id } }], type: 'individual')
       stub_request(
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
@@ -47,6 +47,18 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         .to_return(status: 404, body: error_outcome.to_json)
       result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
                          period_end: period_end)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+
+    it 'fails if $evaluate-measure does not return MeasureReport' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
+      )
+        .to_return(status: 400, body: test_library.to_json)
+      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start, period_end: period_end)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -86,6 +98,18 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
+
+    it 'fails if $evaluate-measure does not return MeasureReport' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
+      )
+        .to_return(status: 400, body: test_library.to_json)
+      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
   end
 
   describe '$evaluate-measure successful population report test' do
@@ -119,12 +143,23 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
+
+    it 'fails if $evaluate-measure does not return MeasureReport' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
+      )
+        .to_return(status: 400, body: test_library.to_json)
+      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
   end
 
   describe '$evaluate-measure successful population report with Group subject test' do
     let(:test) { group.tests[3] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
-    let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:group_id) { 'EXM130-patients' }
