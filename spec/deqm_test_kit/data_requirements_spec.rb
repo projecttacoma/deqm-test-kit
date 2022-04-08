@@ -57,7 +57,6 @@ RSpec.describe DEQMTestKit::DataRequirements do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, url: url, measure_id: measure_id)
       expect(result.result).to eq('pass')
     end
@@ -90,7 +89,6 @@ RSpec.describe DEQMTestKit::DataRequirements do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, url: url, measure_id: measure_id)
       expect(result.result).to eq('pass')
     end
@@ -123,7 +121,6 @@ RSpec.describe DEQMTestKit::DataRequirements do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, url: url, measure_id: measure_id)
       expect(result.result).to eq('pass')
     end

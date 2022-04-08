@@ -32,7 +32,7 @@ module DEQMTestKit
       title 'Ensure FHIR server can accept bulk data import requests for given measure'
       id 'bulk-submit-data-01'
       description %(POST request to $submit-data returns 202 response,
-      GET request to bulk status endpoint returns 200 response')
+      GET request to bulk status endpoint returns 200 response)
 
       input :measure_id, measure_id_args
       input :exportUrl, title: 'Data Provider URL',

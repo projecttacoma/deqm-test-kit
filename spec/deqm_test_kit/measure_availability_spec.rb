@@ -29,7 +29,6 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, selected_measure_id: selected_measure_id, url: url)
 
       expect(result.result).to eq('pass')

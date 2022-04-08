@@ -43,7 +43,7 @@ module DEQMTestKit
           ]
         }
 
-        params[:parameter][0][:valueUrl] = default_url + "?_type=#{types}" if types.length.positive?
+        params[:parameter][0][:valueUrl] = exportUrl + "?_type=#{types}" if types.length.positive?
         fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         polling_url = location_header.value
