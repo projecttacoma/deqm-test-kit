@@ -4,7 +4,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[1] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
-  let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
+  let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
@@ -29,7 +29,6 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, selected_measure_id: selected_measure_id, url: url)
 
       expect(result.result).to eq('pass')

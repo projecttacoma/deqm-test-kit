@@ -19,15 +19,17 @@ module DEQMTestKit
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
+    INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
 
     test do
-      title 'Check $evaluate-measure proper calculation for individual report'
+      title 'Check $evaluate-measure proper calculation for individual report with required query parameters'
       id 'evaluate-measure-01'
-      description 'Server should properly return an individual measure report'
+      description %(Server should properly return an individual measure report when provided a
+        Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, measure_id_args
-      input :patient_id
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
@@ -42,12 +44,13 @@ module DEQMTestKit
 
     # NOTE: this test will fail for deqm-test-server
     test do
-      title 'Check $evaluate-measure proper calculation for subject-list report'
+      title 'Check $evaluate-measure proper calculation for subject-list report with required query parameters'
       id 'evaluate-measure-02'
-      description 'Server should properly return a subject-list measure report'
+      description %(Server should properly return subject-list measure report when provided a
+      Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, measure_id_args
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
@@ -61,12 +64,13 @@ module DEQMTestKit
     end
 
     test do
-      title 'Check $evaluate-measure proper calculation for population report'
+      title 'Check $evaluate-measure proper calculation for population report with required query parameters'
       id 'evaluate-measure-03'
-      description 'Server should properly return a population measure report'
+      description %(Server should properly return population measure report when provided a
+      Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, measure_id_args
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
@@ -79,13 +83,14 @@ module DEQMTestKit
       end
     end
     test do
-      title 'Check $evaluate-measure proper calculation for population report with group subject'
+      title 'Check $evaluate-measure proper calculation for population report with Group subject'
       id 'evaluate-measure-04'
-      description 'Server should properly return a population measure report'
+      description %(Server should properly return population measure report when provided a
+      Group ID and required query parameters \(period start, period end\).)
       input :measure_id, measure_id_args
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
-      input :group_id
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :group_id, title: 'Group ID'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
@@ -100,10 +105,10 @@ module DEQMTestKit
     test do
       title 'Check $evaluate-measure fails for invalid measure ID'
       id 'evaluate-measure-05'
-      description 'Request returns a 404 error when the given measure ID cannot be found'
-      input :patient_id
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      description 'Request returns a 404 error when the given measure ID cannot be found.'
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
@@ -121,8 +126,8 @@ module DEQMTestKit
       id 'evaluate-measure-06'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, measure_id_args
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
@@ -136,12 +141,14 @@ module DEQMTestKit
     end
 
     test do
-      title 'Check $evaluate-measure fails for missing required param'
+      title 'Check $evaluate-measure fails for missing required query parameter'
       id 'evaluate-measure-07'
-      description 'Request returns a 400 error for missing required param (periodStart)'
+      description %(Server should not perform calculation and return a 400 response code
+    when one of the required query parameters is omitted from the request. In this test,
+      the measurement period start is omitted from the request.)
       input :measure_id, measure_id_args
-      input :patient_id
-      input :period_end, default: '2019-12-31'
+      input :patient_id, title: 'Patient ID'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
@@ -155,13 +162,14 @@ module DEQMTestKit
     end
 
     test do
-      title 'Check $evaluate-measure fails for missing subject param (individual report type)'
+      title 'Check $evaluate-measure fails for missing subject query parameter (individual report type)'
       id 'evaluate-measure-08'
-      description 'Request returns 400 for missing subject param when individual report type is specified'
+      description %(Server should not perform calculation and return a 400 response code
+    when the individual report type is specified but no subject has been specified in the
+      query parameters.)
       input :measure_id, measure_id_args
-      input :patient_id
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}"
@@ -179,12 +187,13 @@ module DEQMTestKit
       id 'evaluate-measure-09'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, measure_id_args
-      input :patient_id
-      input :period_start, default: '2019-01-01'
-      input :period_end, default: '2019-12-31'
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&reportType=INVALID"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"\
+                 "&reportType=#{INVALID_REPORT_TYPE}"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
         assert_response_status(400)

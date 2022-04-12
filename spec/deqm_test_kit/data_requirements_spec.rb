@@ -4,8 +4,8 @@ RSpec.describe DEQMTestKit::DataRequirements do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[2] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
-  let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
-  url = 'http://example.com/fhir'
+  let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
+  let(:url) { 'http://example.com/fhir' }
   # ensure this url matches url in embedded_client in data_requirements.rb
   let(:embedded_client) do
     'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
@@ -28,6 +28,8 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
 
     it 'passes if the expected Library was received' do
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
@@ -44,17 +46,17 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
+        "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, url: url, measure_id: measure_id)
       expect(result.result).to eq('pass')
     end
@@ -76,17 +78,17 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
+        "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, url: url, measure_id: measure_id)
       expect(result.result).to eq('pass')
     end
@@ -108,17 +110,17 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
+        "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      # TODO: pass in measure information once it is a measure_availability group input (and in below runs)
       result = run(test, url: url, measure_id: measure_id)
       expect(result.result).to eq('pass')
     end
@@ -141,13 +143,14 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
+        "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 201, body: test_library_response.to_json)
 
@@ -175,13 +178,14 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_not_library_response.to_json)
 
       stub_request(
         :post,
-        "#{embedded_client}/Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{embedded_client}/Measure/#{measure_id}/$data-requirements"\
+        "?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_not_library_response.to_json)
 
@@ -197,6 +201,8 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
 
     it 'passes with correct OperationOutcome returned' do
       stub_request(
@@ -240,11 +246,13 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
 
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
       result = run(test, url: url, measure_id: measure_id)
@@ -254,7 +262,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     it 'fails when 400 is not returned' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
       result = run(test, url: url, measure_id: measure_id)
@@ -264,7 +272,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     it 'fails when returned resource type is not of type OperationOutcome' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 404, body: test_library_response.to_json)
       result = run(test, url: url, measure_id: measure_id)
@@ -274,7 +282,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     it 'fails when severity returned is not equal to error' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01"
+        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 404, body: incorrect_severity.to_json)
       result = run(test, url: url, measure_id: measure_id)

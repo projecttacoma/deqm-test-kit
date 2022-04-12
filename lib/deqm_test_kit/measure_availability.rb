@@ -25,7 +25,6 @@ module DEQMTestKit
       output :measure_id
       run do
         # Look for matching measure from cqf-ruler datastore by resource id
-        # TODO: actually pull measure from user input drop down (populated from embedded client)
         measure_to_test = selected_measure_id
         measure_identifier, measure_version = measure_to_test.split('|')
 

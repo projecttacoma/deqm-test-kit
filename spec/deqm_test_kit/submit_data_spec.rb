@@ -4,8 +4,8 @@ RSpec.describe DEQMTestKit::SubmitData do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
   let(:group) { suite.groups[3] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
-  let(:test_session) { repo_create(:test_session, test_suite_id: 'deqm_test_suite') }
-  url = 'http://example.com/fhir'
+  let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
+  let(:url) { 'http://example.com/fhir' }
   # ensure this url matches url in embedded_client in data_requirements.rb
   let(:embedded_client) do
     'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
