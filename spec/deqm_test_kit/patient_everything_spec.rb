@@ -4,7 +4,7 @@ require 'json'
 
 RSpec.describe DEQMTestKit::PatientEverything do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_test_suite') }
-  let(:group) { suite.groups[8] }
+  let(:group) { suite.groups[9] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
