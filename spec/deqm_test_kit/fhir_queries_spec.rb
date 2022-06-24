@@ -22,7 +22,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
   end
 
-  describe 'data requirements matches embedded results test' do
+  describe 'FHIR queries with successful $data-requirements request' do
     let(:test) { group.tests.first }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:condition_id) { 'test-condition' }

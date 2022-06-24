@@ -10,7 +10,7 @@ module DEQMTestKit
     include DataRequirementsUtils
     id 'fhir_queries'
     title 'FHIR Queries'
-    description 'Ensure fhir server can handle queries resulting from $data-requirements operation'
+    description 'Ensure FHIR server can handle queries resulting from $data-requirements operation'
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000',
                         options: measure_options }
@@ -33,7 +33,7 @@ module DEQMTestKit
 
       run do
         assert(measure_id,
-               'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
+               'No measure selected. Run Measure Availability prior to running the FHIR Queries test group.')
         fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
                        client: :data_requirements_server)
 
