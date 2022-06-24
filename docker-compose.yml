@@ -40,8 +40,6 @@ services:
       - ./data/redis:/data
     command: redis-server --appendonly yes
   worker:
-    stdin_open: true
-    tty: true
     build:
       context: ./
     volumes:
