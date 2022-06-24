@@ -4,6 +4,7 @@ require_relative 'deqm_test_kit/patient_everything'
 require_relative 'deqm_test_kit/measure_availability'
 require_relative 'deqm_test_kit/data_requirements'
 require_relative 'deqm_test_kit/submit_data'
+require_relative 'deqm_test_kit/fhir_queries'
 require_relative 'deqm_test_kit/bulk_submit_data'
 require_relative 'deqm_test_kit/bulk_import'
 require_relative 'deqm_test_kit/evaluate_measure'
@@ -47,6 +48,7 @@ module DEQMTestKit
     # using their id
     group from: :measure_availability
     group from: :data_requirements
+    group from: :fhir_queries
     group from: :submit_data
     group from: :evaluate_measure
     group from: :care_gaps
