@@ -14,6 +14,8 @@ module DEQMTestKit
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000',
                         options: measure_options }
+    use_fqp_extension_args = { type: 'radio', title: 'Use FHIR Query Pattern', optional: true, default: 'false',
+                               options: { list_options: [{ label: 'true', value: 'true' }, { label: 'false', value: 'false' }] } }
 
     fhir_client do
       url :url
@@ -26,6 +28,7 @@ module DEQMTestKit
       makes_request :fhir_queries
       input :data_requirements_server_url
       input :measure_id, measure_id_args
+      input :use_fqp_extension, use_fqp_extension_args
 
       fhir_client :data_requirements_server do
         url :data_requirements_server_url
@@ -41,7 +44,29 @@ module DEQMTestKit
         assert_resource_type(:library)
         assert_valid_json(response[:body])
         actual_dr = resource.dataRequirement
-        queries = get_data_requirements_queries(actual_dr)
+        queries = []
+        if use_fqp_extension == 'true'
+          actual_dr.map do |dr|
+            if dr.extension.nil? || dr.extension.length.zero?
+              assert(false,
+                     'Use FHIR query pattern selected and no FHIR Query Pattern Extension found on DataRequirements')
+
+            else
+              dr.extension.map do |e|
+                next unless e.url == 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern'
+
+                request_info = e.valueString.split('?')
+                # Remove slash
+                request_info[0].slice!(0)
+                params = {}
+                params = qs_to_hash(request_info[1]) if request_info.length > 1
+                queries.push({ endpoint: request_info[0], params: params })
+              end
+            end
+          end
+        else
+          queries = get_data_requirements_queries(actual_dr)
+        end
         # Store responses to run assertions on later to ensure all requests go through before failure
         responses = queries.map do |q|
           fhir_search(q[:endpoint], params: q[:params])
