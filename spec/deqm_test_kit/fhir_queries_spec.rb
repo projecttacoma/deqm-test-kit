@@ -10,12 +10,11 @@ RSpec.describe DEQMTestKit::FHIRQueries do
   let(:test_condition_response) { FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test-condition' } }]) }
 
   let(:test_library_response) do
-    # rubocop:disable Layout/LineLength
     FHIR::Library.new(dataRequirement: [{ type: 'Condition',
                                           extension: [{ url: 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern',
-                                                        valueString: '/Condition?code:in=testvs' }, { url: 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern',
-                                                                                                      valueString: '/Condition?code:in=testvs2' }] }])
-    # rubocop:enable Layout/LineLength
+                                                        valueString: '/Condition?code:in=testvs' },
+                                                      { url: 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern',
+                                                        valueString: '/Condition?code:in=testvs2' }] }])
   end
 
   let(:test_library_response_no_extension) do
@@ -90,7 +89,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       expect(result.result).to eq('fail')
       # rubocop:disable Layout/LineLength
 
-      expect(result.result_message).to eq('Use FHIR query pattern selected and no FHIR Query Pattern Extension found on DataRequirements')
+      expect(result.result_message).to eq('"Use FHIR query pattern" is true, but no FHIR Query Pattern Extension found on DataRequirements')
       # rubocop:enable Layout/LineLength
     end
     it 'fails if a single FHIR query returns 500 and use FHIR query extension set to false' do

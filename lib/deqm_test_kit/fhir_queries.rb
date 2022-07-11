@@ -14,11 +14,19 @@ module DEQMTestKit
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000',
                         options: measure_options }
-    # rubocop:disable Layout/LineLength
 
-    use_fqp_extension_args = { type: 'radio', title: 'Use FHIR Query Pattern', optional: true, default: 'false',
-                               options: { list_options: [{ label: 'true', value: 'true' }, { label: 'false', value: 'false' }] } }
-    # rubocop:enable Layout/LineLength
+    use_fqp_extension_args = {
+      type: 'radio',
+      title: 'Use FHIR Query Pattern',
+      optional: true,
+      default: 'false',
+      options: {
+        list_options: [
+          { label: 'true', value: 'true' },
+          { label: 'false', value: 'false' }
+        ]
+      }
+    }
 
     fhir_client do
       url :url
@@ -52,7 +60,7 @@ module DEQMTestKit
           actual_dr.map do |dr|
             if dr.extension.nil? || dr.extension.length.zero?
               assert(false,
-                     'Use FHIR query pattern selected and no FHIR Query Pattern Extension found on DataRequirements')
+                     '"Use FHIR query pattern" is true, but no FHIR Query Pattern Extension found on DataRequirements')
 
             else
               dr.extension.map do |e|
