@@ -1,8 +1,6 @@
 version: "3"
 services:
   inferno:
-    stdin_open: true
-    tty: true
     build:
       context: ./
     volumes:
@@ -11,10 +9,10 @@ services:
       - "4567:4567"
     depends_on:
       - validator_service
-  # cqf_ruler:
-  #   image: mitrehealthdocker/cqf-ruler-preloaded:0.6.0.no-vs
-  #   ports:
-  #     - "8080:8080"
+  cqf_ruler:
+    image: mitrehealthdocker/cqf-ruler-preloaded:0.6.0.no-vs
+    ports:
+      - "8080:8080"
   validator_service:
     image: infernocommunity/fhir-validator-service:latest
     # Update this path to match your directory structure
@@ -42,8 +40,6 @@ services:
       - ./data/redis:/data
     command: redis-server --appendonly yes
   worker:
-    stdin_open: true
-    tty: true
     build:
       context: ./
     volumes:
