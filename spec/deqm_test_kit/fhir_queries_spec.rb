@@ -10,17 +10,19 @@ RSpec.describe DEQMTestKit::FHIRQueries do
   let(:test_condition_response) { FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test-condition' } }]) }
 
   let(:test_library_response) do
+    # rubocop:disable Layout/LineLength
     FHIR::Library.new(dataRequirement: [{ type: 'Condition',
                                           extension: [{ url: 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern',
                                                         valueString: '/Condition?code:in=testvs' }, { url: 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern',
                                                                                                       valueString: '/Condition?code:in=testvs2' }] }])
+    # rubocop:enable Layout/LineLength
   end
 
   let(:test_library_response_no_extension) do
     FHIR::Library.new(dataRequirement: [{ type: 'Condition' }])
   end
 
-  let(:test_patient_response) do 
+  let(:test_patient_response) do
     FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test-patient' } }])
   end
 
@@ -41,7 +43,6 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     let(:period_end) { '2019-12-31' }
 
     it 'passes if the FHIR queries does not use FHIR query pattern, returns 200 and valid JSON' do
-
       stub_request(:get, "#{url}/Condition")
         .to_return(status: 200, body: test_condition_response.to_json)
 
@@ -87,7 +88,10 @@ RSpec.describe DEQMTestKit::FHIRQueries do
 
       result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true', data_requirements_server_url: url)
       expect(result.result).to eq('fail')
+      # rubocop:disable Layout/LineLength
+
       expect(result.result_message).to eq('Use FHIR query pattern selected and no FHIR Query Pattern Extension found on DataRequirements')
+      # rubocop:enable Layout/LineLength
     end
     it 'fails if a single FHIR query returns 500 and use FHIR query extension set to false' do
       stub_request(:get, "#{url}/Condition")
@@ -124,7 +128,10 @@ RSpec.describe DEQMTestKit::FHIRQueries do
 
       result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true', data_requirements_server_url: url)
       expect(result.result).to eq('fail')
+      # rubocop:disable Layout/LineLength
+
       expect(result.result_message).to eq('Expected response code 200, received: 500 for query: /Condition?code%3Ain=testvs2')
+      # rubocop:enable Layout/LineLength
     end
   end
 end

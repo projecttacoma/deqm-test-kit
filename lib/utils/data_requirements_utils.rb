@@ -52,6 +52,7 @@ module DEQMTestKit
       q
     end
 
+    # rubocop:disable Metrics/MethodLength
     def qs_to_hash(querystring)
       querystring.split('&').inject({}) do |result, q|
         k, v = q.split('=')
@@ -68,5 +69,6 @@ module DEQMTestKit
         end
       end
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end
