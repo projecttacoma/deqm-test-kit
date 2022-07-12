@@ -51,5 +51,24 @@ module DEQMTestKit
       end
       q
     end
+
+    # rubocop:disable Metrics/MethodLength
+    def qs_to_hash(querystring)
+      querystring.split('&').inject({}) do |result, q|
+        k, v = q.split('=')
+        if !v.nil?
+          if v == 'Patient/{{context.patientId}}'
+            result
+          else
+            result.merge({ k => v })
+          end
+        elsif !result.key?(k)
+          result.merge({ k => true })
+        else
+          result
+        end
+      end
+    end
+    # rubocop:enable Metrics/MethodLength
   end
 end
