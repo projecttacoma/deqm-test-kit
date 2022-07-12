@@ -12,8 +12,7 @@ for testing conformance to the operations and resources specified in the
   `lib/deqm_test_kit/igs` and update this path in `docker-compose.yml`.
   This will ensure that the validator has access to the resources needed to
   validate resources against your IGs.
-- Run `docker-compose build` in this repo.
-- Run `docker-compose pull` in this repo.
+- Run setup.sh in this repo to pull the needed docker images and set up the database.
 - Run `docker-compose up` in this repo.
 - Navigate to `http://localhost:4567`. Your test suite will be available.
 
