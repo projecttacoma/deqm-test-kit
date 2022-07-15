@@ -33,6 +33,7 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:bundle)
         assert_valid_json(response[:body])
+        assert_valid_resource(resource: resource.entry[0].resource, profile_url: 'http://hl7.org/fhir/StructureDefinition/Measure')
         assert resource.total.positive?,
                "Expected to find measure with identifier #{measure_identifier} and version #{measure_version}"
         output measure_id: resource.entry[0].resource.id
