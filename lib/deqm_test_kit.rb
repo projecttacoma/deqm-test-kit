@@ -12,6 +12,10 @@ require_relative 'deqm_test_kit/care_gaps'
 
 module DEQMTestKit
   class Suite < Inferno::TestSuite
+    validator do
+      url ENV.fetch('VALIDATOR_URL', 'http://validator_service:4567')
+    end
+
     id :deqm_test_suite
     title 'DEQM Measure Operations Test Suite'
     description 'A set of tests for DEQM\'s operations and resources'
