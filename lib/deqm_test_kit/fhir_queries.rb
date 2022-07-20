@@ -2,7 +2,6 @@
 
 require_relative '../utils/data_requirements_utils'
 require 'json'
-require 'pry'
 
 module DEQMTestKit
   # Perform fhir queries based on $data-requirements operation on test client
