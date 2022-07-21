@@ -78,8 +78,7 @@ module DEQMTestKit
         diff = expected_dr_strings - actual_dr_strings
 
         # still output queries even if different from expected.
-        # TODO: output queries only if pass once they align with cqf-ruler
-        queries = get_data_requirements_queries(actual_dr)
+        queries = get_data_requirements_queries(actual_dr, include_patient: true)
         output queries_json: queries.to_json
 
         # Ensure both data requirements results libraries are identical

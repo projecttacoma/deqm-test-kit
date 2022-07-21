@@ -27,7 +27,7 @@ module DEQMTestKit
       end
     end
 
-    def get_data_requirements_queries(data_requirements)
+    def get_data_requirements_queries(data_requirements, include_patient: false)
       # hashes with { endpoint => FHIR Type, params => { queries } }
       # TODO: keep provenance or decide that it shouldn't be a data requirement query
       queries = data_requirements
@@ -37,7 +37,7 @@ module DEQMTestKit
       end
 
       # TODO: We should be smartly querying for patients based on what the resources reference?
-      queries.unshift(endpoint: 'Patient', params: {})
+      queries.unshift(endpoint: 'Patient', params: {}) if include_patient == true
       queries
     end
 
@@ -53,12 +53,18 @@ module DEQMTestKit
     end
 
     # rubocop:disable Metrics/MethodLength
-    def qs_to_hash(querystring)
+    # rubocop:disable Metrics/PerceivedComplexity
+    def qs_to_hash(querystring, patient_id = nil)
       querystring.split('&').inject({}) do |result, q|
         k, v = q.split('=')
         if !v.nil?
           if v == 'Patient/{{context.patientId}}'
-            result
+            if patient_id.nil?
+              result
+            else
+              v.sub!('{{context.patientId}}', patient_id)
+              result.merge({ k => v })
+            end
           else
             result.merge({ k => v })
           end
@@ -69,6 +75,7 @@ module DEQMTestKit
         end
       end
     end
+    # rubocop:enable Metrics/PerceivedComplexity
     # rubocop:enable Metrics/MethodLength
   end
 end
