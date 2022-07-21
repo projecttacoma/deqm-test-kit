@@ -192,7 +192,7 @@ module DEQMTestKit
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"\
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
                  "&reportType=#{INVALID_REPORT_TYPE}"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 

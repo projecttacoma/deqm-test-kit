@@ -33,7 +33,7 @@ module DEQMTestKit
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Patient/#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
@@ -54,7 +54,7 @@ module DEQMTestKit
       input :group_id, title: 'Group ID'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Group/#{group_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
@@ -97,7 +97,7 @@ module DEQMTestKit
 
       run do
         # A request with invalid practitioner and organization ids
-        invalid_optional = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        invalid_optional = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                            "&subject=Patient/#{patient_id}&status=open-gap&organization=Organization/testOrganization"
         fhir_operation("/Measure/$care-gaps?#{invalid_optional}")
 
@@ -118,7 +118,7 @@ module DEQMTestKit
 
       run do
         # Parameters with an invalid patient id for subject
-        invalid_subject = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        invalid_subject = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                           "&status=open-gap&subject=#{INVALID_SUBJECT_ID}"
         fhir_operation("/Measure/$care-gaps?#{invalid_subject}")
 
@@ -157,7 +157,7 @@ module DEQMTestKit
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "measureId=#{INVALID_MEASURE_ID}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        params = "measureId=#{INVALID_MEASURE_ID}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Patient/#{patient_id}&status=open-gap"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
@@ -180,7 +180,7 @@ module DEQMTestKit
       input :org_id, title: 'Organization ID'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&status=open-gap&practitioner=Practitioner/#{practitioner_id}&organization=Organization/#{org_id}"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
@@ -200,7 +200,7 @@ module DEQMTestKit
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}"\
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Patient/#{patient_id}&status=open-gap&program=eligible-provider"
         fhir_operation("/Measure/$care-gaps?#{params}")
 
