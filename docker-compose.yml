@@ -57,8 +57,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       NODE_TLS_REJECT_UNAUTHORIZED: 0
-      IMPORT_WORKERS: 0
-      NDJSON_WORKERS: 0
+      IMPORT_WORKERS: 1
+      NDJSON_WORKERS: 1
       SCALED_EXEC_WORKERS: 0
     ports:
       - "3000:3000"
