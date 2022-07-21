@@ -6,10 +6,7 @@ RSpec.describe DEQMTestKit::SubmitData do
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
-  # ensure this url matches url in embedded_client in data_requirements.rb
-  let(:embedded_client) do
-    'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
-  end
+  let(:data_requirements_reference_server) { 'http://example.com/reference/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
   def run(runnable, inputs = {})
@@ -39,13 +36,7 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, "#{url}/Measure/#{measure_id}")
         .to_return(status: 200, body: test_measure.to_json)
 
-      # TODO: update, needs both get and post
-      stub_request(:get, "#{embedded_client}/$updateCodeSystems")
-        .to_return(status: 200)
-      stub_request(:post, "#{embedded_client}/$updateCodeSystems")
-        .to_return(status: 200)
-
-      stub_request(:get, "#{embedded_client}/Patient")
+      stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
@@ -57,7 +48,8 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
         .to_return(status: 200, body: test_bundle.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json)
+      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json,
+                         data_requirements_reference_server: data_requirements_reference_server)
       expect(result.result).to eq('pass')
     end
 
@@ -76,12 +68,12 @@ RSpec.describe DEQMTestKit::SubmitData do
         .to_return(status: 200, body: test_measure.to_json)
 
       # TODO: update, needs both get and post
-      stub_request(:get, "#{embedded_client}/$updateCodeSystems")
+      stub_request(:get, "#{data_requirements_reference_server}/$updateCodeSystems")
         .to_return(status: 200)
-      stub_request(:post, "#{embedded_client}/$updateCodeSystems")
+      stub_request(:post, "#{data_requirements_reference_server}/$updateCodeSystems")
         .to_return(status: 200)
 
-      stub_request(:get, "#{embedded_client}/Patient")
+      stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
@@ -93,7 +85,8 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
         .to_return(status: 200, body: test_bundle.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json)
+      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json,
+                         data_requirements_reference_server: data_requirements_reference_server)
       expect(result.result).to eq('fail')
     end
 
@@ -112,12 +105,12 @@ RSpec.describe DEQMTestKit::SubmitData do
         .to_return(status: 200, body: test_measure.to_json)
 
       # TODO: update, needs both get and post
-      stub_request(:get, "#{embedded_client}/$updateCodeSystems")
+      stub_request(:get, "#{data_requirements_reference_server}/$updateCodeSystems")
         .to_return(status: 200)
-      stub_request(:post, "#{embedded_client}/$updateCodeSystems")
+      stub_request(:post, "#{data_requirements_reference_server}/$updateCodeSystems")
         .to_return(status: 200)
 
-      stub_request(:get, "#{embedded_client}/Patient")
+      stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
@@ -129,7 +122,8 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
         .to_return(status: 200, body: test_bundle.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json)
+      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json,
+                         data_requirements_reference_server: data_requirements_reference_server)
       expect(result.result).to eq('fail')
     end
 
@@ -149,12 +143,12 @@ RSpec.describe DEQMTestKit::SubmitData do
         .to_return(status: 200, body: test_measure.to_json)
 
       # TODO: update, needs both get and post
-      stub_request(:get, "#{embedded_client}/$updateCodeSystems")
+      stub_request(:get, "#{data_requirements_reference_server}/$updateCodeSystems")
         .to_return(status: 200)
-      stub_request(:post, "#{embedded_client}/$updateCodeSystems")
+      stub_request(:post, "#{data_requirements_reference_server}/$updateCodeSystems")
         .to_return(status: 200)
 
-      stub_request(:get, "#{embedded_client}/Patient")
+      stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
       stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
@@ -166,7 +160,8 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
         .to_return(status: 200, body: test_bundle.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json)
+      result = run(test, url: url, measure_id: measure_id, queries_json: queries_json,
+                         data_requirements_reference_server: data_requirements_reference_server)
       expect(result.result).to eq('fail')
     end
   end

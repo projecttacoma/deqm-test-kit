@@ -16,10 +16,6 @@ module DEQMTestKit
       url :url
     end
 
-    fhir_client :embedded_client do
-      url 'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
-    end
-
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options }
 
@@ -34,10 +30,15 @@ module DEQMTestKit
     test do
       title 'Check data requirements against expected return'
       id 'data-requirements-01'
-      description 'Data requirements on the FHIR test server match the data requirements of our embedded client'
+      description 'Data requirements on the FHIR test server match the data requirements of reference server'
       makes_request :data_requirements
       output :queries_json
       input :measure_id, measure_id_args
+      input :data_requirements_reference_server
+
+      fhir_client :dr_reference_client do
+        url :data_requirements_reference_server
+      end
 
       run do
         # Get measure resource from client
@@ -59,16 +60,16 @@ module DEQMTestKit
 
         actual_dr_strings = get_dr_comparison_list actual_dr
 
-        # Search embedded cqf-ruler instance by identifier and version
-        fhir_search(:measure, client: :embedded_client,
+        # Search reference server by identifier and version
+        fhir_search(:measure, client: :dr_reference_client,
                               params: { name: measure_identifier, version: measure_version }, name: :measure_search)
-        embedded_client_id = resource.entry[0].resource.id
+        reference_measure_id = resource.entry[0].resource.id
 
-        # Run data requirements operation on embedded cqf-ruler instance
+        # Run data requirements operation on reference server
         fhir_operation(
-          "Measure/#{embedded_client_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+          "Measure/#{reference_measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
           body: PARAMS,
-          client: :embedded_client
+          client: :dr_reference_client
         )
         expected_dr = resource.dataRequirement
 
