@@ -53,7 +53,6 @@ module DEQMTestKit
     end
 
     # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/PerceivedComplexity
     def qs_to_hash(querystring, patient_id = nil)
       querystring.split('&').inject({}) do |result, q|
         k, v = q.split('=')
@@ -75,7 +74,6 @@ module DEQMTestKit
         end
       end
     end
-    # rubocop:enable Metrics/PerceivedComplexity
     # rubocop:enable Metrics/MethodLength
   end
 end
