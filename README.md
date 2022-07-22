@@ -13,7 +13,7 @@ run the first time database setup.
 
 ### Docker (recommended)
 
-`docker-compose.yml` is configured with many services that make using `deqm-test-kit` quick and easy. Running with Docker will
+`docker-compose.yml` is configured with many services that make using `deqm-test-kit` require minimal system-level configurations. Running with Docker will
 spin up the test kit as well as an instance of [deqm-test-server](https://github.com/projecttacoma/deqm-test-server/) for ease of testing it:
 
 ``` bash
