@@ -59,7 +59,7 @@ services:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
       IMPORT_WORKERS: 1
       NDJSON_WORKERS: 1
-      SCALED_EXEC_WORKERS: 0
+      EXEC_WORKERS: 0
     ports:
       - "3000:3000"
     command: npm start
