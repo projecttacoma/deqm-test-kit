@@ -5,3 +5,6 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - 'spec/**/*'
+
+Metrics/PerceivedComplexity:
+  Max: 10

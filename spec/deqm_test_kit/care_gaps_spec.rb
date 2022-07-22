@@ -26,7 +26,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_end) { '2019-12-31' }
 
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&subject=Patient/#{patient_id}&status=open-gap"
     end
 
@@ -67,7 +67,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_end) { '2019-12-31' }
 
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&subject=Group/#{group_id}&status=open-gap"
     end
 
@@ -144,7 +144,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&status=open-gap&organization=Organization/testOrganization&subject=Patient/#{patient_id}"
     end
     it 'passes if request returns 400 with OperationOutcome' do
@@ -183,7 +183,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&status=open-gap&subject=#{patient_id}"
     end
     it 'passes if request returns 400 with OperationOutcome' do
@@ -221,7 +221,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&subject=Patient/#{patient_id}&status=open-gap"
     end
     it 'passes if request has valid parameters and patient id without measure id' do
@@ -244,7 +244,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:test_parameters) { FHIR::Parameters.new(total: 1) }
     let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&subject=Patient/#{patient_id}&status=open-gap"
     end
     it 'passes if request returns 404 with OperationOutcome' do
@@ -284,7 +284,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) do
-      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&practitioner=Practitioner/#{practitioner_id}&organization=Organization/#{org_id}&status=open-gap"
     end
 
@@ -324,7 +324,7 @@ RSpec.describe DEQMTestKit::CareGaps do
     let(:period_end) { '2019-12-31' }
 
     let(:params) do
-      "program=eligible-provider&periodStart=#{period_start}&periodEnd=#{period_end}"\
+      "program=eligible-provider&periodStart=#{period_start}&periodEnd=#{period_end}" \
         "&subject=Patient/#{patient_id}&status=open-gap"
     end
     it 'passes if request has valid parameters' do
