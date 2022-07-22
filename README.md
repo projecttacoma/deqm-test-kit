@@ -37,7 +37,7 @@ bundle install
 2. Run the database setup locally to configure the database:
 
 ``` bash
-bundle exec rake inferno migrate
+bundle exec inferno migrate
 ```
 
 3. Run the test kit locally with `puma`:
