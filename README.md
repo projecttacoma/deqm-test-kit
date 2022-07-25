@@ -55,7 +55,7 @@ like a standard ruby gem (ruby libraries are called gems).
 
 - Your tests must be in `lib`
 - `lib` should contain only one file. All other files should be in a
-  subdirectory. The file in lib be what people use to import your gem after they
+  subdirectory. The file in lib is what people use to import your gem after they
   have installed it. For example, if your test kit contains a file
   `lib/my_test_suite.rb`, then after installing your test kit gem, I could
   include your test suite with `require 'my_test_suite'`.
