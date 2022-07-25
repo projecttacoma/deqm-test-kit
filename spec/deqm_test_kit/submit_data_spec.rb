@@ -67,12 +67,6 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, "#{url}/Measure/#{measure_id}")
         .to_return(status: 200, body: test_measure.to_json)
 
-      # TODO: update, needs both get and post
-      stub_request(:get, "#{data_requirements_reference_server}/$updateCodeSystems")
-        .to_return(status: 200)
-      stub_request(:post, "#{data_requirements_reference_server}/$updateCodeSystems")
-        .to_return(status: 200)
-
       stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
@@ -103,12 +97,6 @@ RSpec.describe DEQMTestKit::SubmitData do
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
         .to_return(status: 200, body: test_measure.to_json)
-
-      # TODO: update, needs both get and post
-      stub_request(:get, "#{data_requirements_reference_server}/$updateCodeSystems")
-        .to_return(status: 200)
-      stub_request(:post, "#{data_requirements_reference_server}/$updateCodeSystems")
-        .to_return(status: 200)
 
       stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
@@ -141,12 +129,6 @@ RSpec.describe DEQMTestKit::SubmitData do
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
         .to_return(status: 200, body: test_measure.to_json)
-
-      # TODO: update, needs both get and post
-      stub_request(:get, "#{data_requirements_reference_server}/$updateCodeSystems")
-        .to_return(status: 200)
-      stub_request(:post, "#{data_requirements_reference_server}/$updateCodeSystems")
-        .to_return(status: 200)
 
       stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
