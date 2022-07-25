@@ -348,7 +348,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) do
-      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"\
+      "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
         "&reportType=#{INVALID_REPORT_TYPE}"
     end
 

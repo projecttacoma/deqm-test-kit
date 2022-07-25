@@ -18,10 +18,6 @@ module DEQMTestKit
       headers custom_headers
     end
 
-    fhir_client :embedded_client do
-      url 'http://cqf_ruler:8080/cqf-ruler-r4/fhir'
-    end
-
     # rubocop:disable Metrics/BlockLength
     test do
       title 'Submit Data valid submission'
@@ -30,6 +26,11 @@ module DEQMTestKit
       makes_request :submit_data
       input :queries_json
       input :measure_id, measure_id_args
+      input :data_requirements_reference_server
+
+      fhir_client :dr_reference_client do
+        url :data_requirements_reference_server
+      end
 
       run do
         # get measure from client
@@ -51,15 +52,11 @@ module DEQMTestKit
             { endpoint: 'Observation', params: {} }
           ]
         end
-        # Call the $updateCodeSystems workaround on embedded cqf-ruler so code:in queries work
-        fhir_operation('$updateCodeSystems', client: :embedded_client)
-        reply = fhir_client(:embedded_client).send(:get, '$updateCodeSystems')
-        assert reply.response[:code] == 200
 
         # Get submission data
         resources = queries.map do |q|
           # TODO: run query through unlogged rest client
-          fhir_search(q['endpoint'], client: :embedded_client, params: q['params'])
+          fhir_search(q['endpoint'], client: :dr_reference_client, params: q['params'])
           code = response[:status]
 
           # Return all resources in the response bundle if queries are met
