@@ -6,6 +6,17 @@ module DEQMTestKit
   # tests for $evaluate-measure
   # rubocop:disable Metrics/ClassLength
   class EvaluateMeasure < Inferno::TestGroup
+    module MeasureEvaluationTest
+      def measure_evaluation_run_block(type, expected_status: 200)
+        run do
+          fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+          assert_response_status(expected_status)
+          assert_resource_type(:measure_report)
+          assert_valid_json(response[:body])
+          assert(resource.type == type)
+        end
+      end
+    end
     id 'evaluate_measure'
     title 'Evaluate Measure'
     description 'Ensure FHIR server can calculate a measure'
@@ -22,6 +33,7 @@ module DEQMTestKit
     INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
 
     test do
+      extend MeasureEvaluationTest
       title 'Check $evaluate-measure proper calculation for individual report with required query parameters'
       id 'evaluate-measure-01'
       description %(Server should properly return an individual measure report when provided a
@@ -33,12 +45,14 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        # fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
-        assert_response_status(200)
-        assert_resource_type(:measure_report)
-        assert_valid_json(response[:body])
-        assert(resource.type == 'individual')
+        # assert_response_status(200)
+        # assert_resource_type(:measure_report)
+        # assert_valid_json(response[:body])
+        # assert(resource.type == 'individual')
+        measure_evaluation_run_block('individual')
+
       end
     end
 
@@ -54,12 +68,14 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        # fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
-        assert_response_status(200)
-        assert_resource_type(:measure_report)
-        assert_valid_json(response[:body])
-        assert(resource.type == 'subject-list')
+        # assert_response_status(200)
+        # assert_resource_type(:measure_report)
+        # assert_valid_json(response[:body])
+        # assert(resource.type == 'subject-list')
+        measure_evaluation_run_block('subject-list')
+
       end
     end
 
@@ -76,10 +92,12 @@ module DEQMTestKit
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
-        assert_response_status(200)
-        assert_resource_type(:measure_report)
-        assert_valid_json(response[:body])
-        assert(resource.type == 'summary')
+        # assert_response_status(200)
+        # assert_resource_type(:measure_report)
+        # assert_valid_json(response[:body])
+        # assert(resource.type == 'summary')
+        measure_evaluation_run_block('summary')
+
       end
     end
     test do
@@ -94,12 +112,14 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        # fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
 
-        assert_response_status(200)
-        assert_resource_type(:measure_report)
-        assert_valid_json(response[:body])
-        assert(resource.type == 'summary')
+        # assert_response_status(200)
+        # assert_resource_type(:measure_report)
+        # assert_valid_json(response[:body])
+        # assert(resource.type == 'summary')
+        measure_evaluation_run_block('summary')
+
       end
     end
     test do
