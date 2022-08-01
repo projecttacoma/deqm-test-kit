@@ -6,15 +6,21 @@ module DEQMTestKit
   # tests for $evaluate-measure
   # rubocop:disable Metrics/ClassLength
   class EvaluateMeasure < Inferno::TestGroup
-    module MeasureEvaluationTest
-      def measure_evaluation_run_block(type, expected_status: 200)
-        run do
-          fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-          assert_response_status(expected_status)
-          assert_resource_type(:measure_report)
-          assert_valid_json(response[:body])
-          assert(resource.type == type)
-        end
+    module MeasureEvaluationHelpers
+      def measure_evaluation_assert_success(report_type, resource_type, params, expected_status: 200)
+        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        assert_response_status(expected_status)
+        assert_resource_type(resource_type)
+        assert_valid_json(response[:body])
+        assert(resource.type == report_type)
+      end
+
+      def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        assert_response_status(expected_status)
+        assert_valid_json(response[:body])
+        assert(resource.resourceType == 'OperationOutcome')
+        assert(resource.issue[0].severity == 'error')
       end
     end
     id 'evaluate_measure'
@@ -33,7 +39,7 @@ module DEQMTestKit
     INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
 
     test do
-      extend MeasureEvaluationTest
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure proper calculation for individual report with required query parameters'
       id 'evaluate-measure-01'
       description %(Server should properly return an individual measure report when provided a
@@ -45,19 +51,13 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        # fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        # assert_response_status(200)
-        # assert_resource_type(:measure_report)
-        # assert_valid_json(response[:body])
-        # assert(resource.type == 'individual')
-        measure_evaluation_run_block('individual')
-
+        measure_evaluation_assert_success('individual', :measure_report, params)
       end
     end
 
     # NOTE: this test will fail for deqm-test-server
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure proper calculation for subject-list report with required query parameters'
       id 'evaluate-measure-02'
       description %(Server should properly return subject-list measure report when provided a
@@ -68,18 +68,12 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
-        # fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        # assert_response_status(200)
-        # assert_resource_type(:measure_report)
-        # assert_valid_json(response[:body])
-        # assert(resource.type == 'subject-list')
-        measure_evaluation_run_block('subject-list')
-
+        measure_evaluation_assert_success('subject-list', :measure_report, params)
       end
     end
 
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure proper calculation for population report with required query parameters'
       id 'evaluate-measure-03'
       description %(Server should properly return population measure report when provided a
@@ -91,16 +85,11 @@ module DEQMTestKit
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        # assert_response_status(200)
-        # assert_resource_type(:measure_report)
-        # assert_valid_json(response[:body])
-        # assert(resource.type == 'summary')
-        measure_evaluation_run_block('summary')
-
+        measure_evaluation_assert_success('summary', :measure_report, params)
       end
     end
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure proper calculation for population report with Group subject'
       id 'evaluate-measure-04'
       description %(Server should properly return population measure report when provided a
@@ -112,17 +101,11 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
-        # fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        # assert_response_status(200)
-        # assert_resource_type(:measure_report)
-        # assert_valid_json(response[:body])
-        # assert(resource.type == 'summary')
-        measure_evaluation_run_block('summary')
-
+        measure_evaluation_assert_success('summary', :measure_report, params)
       end
     end
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure fails for invalid measure ID'
       id 'evaluate-measure-05'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
@@ -132,16 +115,12 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        fhir_operation("/Measure/#{INVALID_MEASURE_ID}/$evaluate-measure?#{params}")
-
-        assert_response_status(404)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        measure_evaluation_assert_failure(params, INVALID_MEASURE_ID, expected_status: 404)
       end
     end
 
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure fails for invalid patient ID'
       id 'evaluate-measure-06'
       description 'Request returns a 404 error when the given patient ID cannot be found'
@@ -151,16 +130,12 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        assert_response_status(404)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 404)
       end
     end
 
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure fails for missing required query parameter'
       id 'evaluate-measure-07'
       description %(Server should not perform calculation and return a 400 response code
@@ -172,16 +147,12 @@ module DEQMTestKit
 
       run do
         params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        assert_response_status(400)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        measure_evaluation_assert_failure(params, measure_id)
       end
     end
 
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure fails for missing subject query parameter (individual report type)'
       id 'evaluate-measure-08'
       description %(Server should not perform calculation and return a 400 response code
@@ -193,16 +164,12 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        assert_response_status(400)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        measure_evaluation_assert_failure(params, measure_id)
       end
     end
 
     test do
+      include MeasureEvaluationHelpers
       title 'Check $evaluate-measure fails for invalid reportType'
       id 'evaluate-measure-09'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
@@ -214,12 +181,7 @@ module DEQMTestKit
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
                  "&reportType=#{INVALID_REPORT_TYPE}"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-
-        assert_response_status(400)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        measure_evaluation_assert_failure(params, measure_id)
       end
     end
   end
