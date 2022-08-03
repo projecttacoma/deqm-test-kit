@@ -37,6 +37,9 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: test_measure_report.to_json)
+      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
+                         period_end: period_end)
+      expect(result.result).to eq('pass')
     end
 
     it 'fails if $evaluate-measure does not return 200' do

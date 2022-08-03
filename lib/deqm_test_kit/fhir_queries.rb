@@ -4,7 +4,6 @@ require 'json'
 
 module DEQMTestKit
   # Perform fhir queries based on $data-requirements operation on test client
-  # rubocop:disable Metrics/ClassLength
   class FHIRQueries < Inferno::TestGroup
     include DataRequirementsUtils
     module FHIRQueriesHelpers
@@ -147,5 +146,4 @@ module DEQMTestKit
     end
     # rubocop:enable Metrics/BlockLength
   end
-  # rubocop:enable Metrics/ClassLength
 end

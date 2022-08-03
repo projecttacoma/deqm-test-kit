@@ -88,12 +88,6 @@ module DEQMTestKit
 
       run do
         invalid_params = "measureId=#{measure_id}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&status=open-gap"
-        # fhir_operation("/Measure/$care-gaps?#{invalid_params}")
-
-        # assert_response_status(400)
-        # assert_valid_json(response[:body])
-        # assert(resource.resourceType == 'OperationOutcome')
-        # assert(resource.issue[0].severity == 'error')
         care_gaps_assert_failure(invalid_params)
       end
     end
