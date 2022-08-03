@@ -159,14 +159,6 @@ module DEQMTestKit
           }]
         }
         submit_data_assert_failure(params_hash)
-        # params = FHIR::Parameters.new params_hash
-
-        # fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
-
-        # assert_response_status(400)
-        # assert_valid_json(response[:body])
-        # assert(resource.resourceType == 'OperationOutcome')
-        # assert(resource.issue[0].severity == 'error')
       end
     end
 
@@ -197,15 +189,6 @@ module DEQMTestKit
                       }]
         }
         submit_data_assert_failure(params_hash)
-
-        # params = FHIR::Parameters.new params_hash
-
-        # fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
-
-        # assert_response_status(400)
-        # assert_valid_json(response[:body])
-        # assert(resource.resourceType == 'OperationOutcome')
-        # assert(resource.issue[0].severity == 'error')
       end
     end
     # rubocop:enable Metrics/BlockLength

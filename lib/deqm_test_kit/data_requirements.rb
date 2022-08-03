@@ -108,10 +108,6 @@ module DEQMTestKit
         # Run our data requirements operation on the test client server
         fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)
         assert_dr_failure
-        # assert_response_status(400)
-        # assert_valid_json(response[:body])
-        # assert(resource.resourceType == 'OperationOutcome')
-        # assert(resource.issue[0].severity == 'error')
       end
     end
 
@@ -128,10 +124,6 @@ module DEQMTestKit
           body: PARAMS
         )
         assert_dr_failure(expected_status: 404)
-        # assert_response_status(404)
-        # assert_valid_json(response[:body])
-        # assert(resource.resourceType == 'OperationOutcome')
-        # assert(resource.issue[0].severity == 'error')
       end
     end
     # rubocop:enable Metrics/BlockLength
