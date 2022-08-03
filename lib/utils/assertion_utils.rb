@@ -2,6 +2,7 @@
 
 module Inferno
   module DSL
+    # An extension on the existing assertions module to avoid repeptition of block assertions
     module Assertions
       def assert_success(resource_type, expected_status)
         assert_response_status(expected_status)

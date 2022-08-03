@@ -8,7 +8,7 @@ module DEQMTestKit
   class EvaluateMeasure < Inferno::TestGroup
     # module for shared code for $evaluate-measure assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(report_type, resource_type, params, expected_status: 200)
+      def measure_evaluation_assert_success(_report_type, resource_type, params, expected_status: 200)
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
         assert_success(resource_type, expected_status)
       end
