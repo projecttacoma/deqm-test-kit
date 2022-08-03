@@ -10,9 +10,7 @@ module DEQMTestKit
       def measure_availability_assert_success(measure_identifier, measure_version)
         # Search system for measure by identifier and version
         fhir_search(:measure, params: { name: measure_identifier, version: measure_version })
-        assert_response_status(200)
-        assert_resource_type(:bundle)
-        assert_valid_json(response[:body])
+        assert_success(:bundle, 200)
       end
     end
     id 'measure_availability'

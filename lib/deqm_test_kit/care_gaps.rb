@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require_relative '../utils/assertion_utils'
 
 module DEQMTestKit
   # tests for $care-gaps
@@ -8,21 +9,14 @@ module DEQMTestKit
   class CareGaps < Inferno::TestGroup
     # module for shared code for $care-gaps assertions and requests
     module CareGapsHelpers
-      def care_gaps_assert_success(params, response_status: 200)
+      def care_gaps_assert_success(params, expected_status: 200)
         fhir_operation("/Measure/$care-gaps?#{params}")
-
-        assert_response_status(response_status)
-        assert_resource_type(:parameters)
-        assert_valid_json(response[:body])
+        assert_success(:parameters, expected_status)
       end
 
-      def care_gaps_assert_failure(params, response_status: 400)
+      def care_gaps_assert_failure(params, expected_status: 400)
         fhir_operation("/Measure/$care-gaps?#{params}")
-
-        assert_response_status(response_status)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        assert_error(expected_status)
       end
     end
     id 'care_gaps'
@@ -158,7 +152,7 @@ module DEQMTestKit
       run do
         params = "measureId=#{INVALID_MEASURE_ID}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Patient/#{patient_id}&status=open-gap"
-        care_gaps_assert_failure(params, response_status: 404)
+        care_gaps_assert_failure(params, expected_status: 404)
       end
     end
     test do

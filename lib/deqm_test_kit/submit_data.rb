@@ -12,11 +12,7 @@ module DEQMTestKit
         params = FHIR::Parameters.new params_hash
 
         fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
-
-        assert_response_status(expected_status)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        assert_error(expected_status)
       end
 
       # rubocop:disable Metrics/MethodLength

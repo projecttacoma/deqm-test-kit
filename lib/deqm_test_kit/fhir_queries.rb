@@ -13,10 +13,7 @@ module DEQMTestKit
                'No measure selected. Run Measure Availability prior to running the FHIR Queries test group.')
         fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
                        client: :data_requirements_server)
-
-        assert_response_status(200)
-        assert_resource_type(:library)
-        assert_valid_json(response[:body])
+        assert_success(:library, 200)
         resource.dataRequirement
       end
 

@@ -10,10 +10,7 @@ module DEQMTestKit
     # module for shared code for $data-requirements assertions and requests
     module DataRequirementsHelpers
       def assert_dr_failure(expected_status: 400)
-        assert_response_status(expected_status)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        assert_error(expected_status)
       end
     end
     id 'data_requirements'

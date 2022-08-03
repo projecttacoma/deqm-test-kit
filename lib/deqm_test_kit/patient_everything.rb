@@ -10,9 +10,7 @@ module DEQMTestKit
       def patient_everything_assert_success(endpoint, body)
         fhir_operation('/', body: body)
         fhir_operation(endpoint)
-        assert_response_status(200)
-        assert_resource_type(:bundle)
-        assert_valid_json(response[:body])
+        assert_success(:bundle, 200)
       end
     end
     id 'patient_everything'

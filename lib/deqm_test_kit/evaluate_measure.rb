@@ -10,18 +10,12 @@ module DEQMTestKit
     module MeasureEvaluationHelpers
       def measure_evaluation_assert_success(report_type, resource_type, params, expected_status: 200)
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-        assert_response_status(expected_status)
-        assert_resource_type(resource_type)
-        assert_valid_json(response[:body])
-        assert(resource.type == report_type)
+        assert_success(resource_type, expected_status)
       end
 
       def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
         fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
-        assert_response_status(expected_status)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        assert_error(expected_status)
       end
     end
     id 'evaluate_measure'
