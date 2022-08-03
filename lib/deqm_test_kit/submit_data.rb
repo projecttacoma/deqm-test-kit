@@ -6,6 +6,7 @@ require 'json'
 module DEQMTestKit
   # Perform submit data operation on test client
   class SubmitData < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
+    # module for shared code for $submit-data assertions and requests
     module SubmitDataHelpers
       def submit_data_assert_failure(params_hash, expected_status: 400)
         params = FHIR::Parameters.new params_hash
@@ -18,6 +19,7 @@ module DEQMTestKit
         assert(resource.issue[0].severity == 'error')
       end
 
+      # rubocop:disable Metrics/MethodLength
       def create_measure_report(measure_url, period_start, period_end)
         mr = {
           'type' => 'data-collection',
@@ -32,6 +34,7 @@ module DEQMTestKit
         resource.identifier = [FHIR::Identifier.new({ value: SecureRandom.uuid })]
         resource
       end
+      # rubocop:enable Metrics/MethodLength
     end
     id 'submit_data'
     title 'Submit Data'

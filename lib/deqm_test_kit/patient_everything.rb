@@ -5,6 +5,7 @@ require 'json'
 module DEQMTestKit
   # Perform Patient/$everything operation on test client
   class PatientEverything < Inferno::TestGroup
+    # module for shared code for Patient/$everything assertions and requests
     module PatientEverythingHelpers
       def patient_everything_assert_success(endpoint, body)
         fhir_operation('/', body: body)

@@ -6,6 +6,7 @@ module DEQMTestKit
   # tests for $care-gaps
   # rubocop:disable Metrics/ClassLength
   class CareGaps < Inferno::TestGroup
+    # module for shared code for $care-gaps assertions and requests
     module CareGapsHelpers
       def care_gaps_assert_success(params, response_status: 200)
         fhir_operation("/Measure/$care-gaps?#{params}")

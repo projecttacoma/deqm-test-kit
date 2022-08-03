@@ -7,6 +7,7 @@ module DEQMTestKit
   # GET [base]/Measure/CMS146/$data-requirements?periodStart=2014&periodEnd=2014
   class DataRequirements < Inferno::TestGroup
     include DataRequirementsUtils
+    # module for shared code for $data-requirements assertions and requests
     module DataRequirementsHelpers
       def assert_dr_failure(expected_status: 400)
         assert_response_status(expected_status)

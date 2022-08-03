@@ -5,6 +5,7 @@ require 'json'
 module DEQMTestKit
   # MeasureAvailability test group ensures selected measures are available on the fhir server
   class MeasureAvailability < Inferno::TestGroup
+    # module for shared code for measure availability assertions and requests
     module MeasureAvailabilityHelpers
       def measure_availability_assert_success(measure_identifier, measure_version)
         # Search system for measure by identifier and version

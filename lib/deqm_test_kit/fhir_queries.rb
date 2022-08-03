@@ -6,6 +6,7 @@ module DEQMTestKit
   # Perform fhir queries based on $data-requirements operation on test client
   class FHIRQueries < Inferno::TestGroup
     include DataRequirementsUtils
+    # module for shared code for fhir queries assertions and requests
     module FHIRQueriesHelpers
       def dr_assertions(measure_id)
         assert(measure_id,
@@ -19,6 +20,8 @@ module DEQMTestKit
         resource.dataRequirement
       end
 
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/AbcSize
       def fhir_queries_assertions(queries)
         # Store responses to run assertions on later to ensure all requests go through before failure
         responses = queries.map do |q|
@@ -33,6 +36,8 @@ module DEQMTestKit
                             "Received invalid JSON body on query response for query: #{r[:query_string]}")
         end
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/MethodLength
     end
     id 'fhir_queries'
     title 'FHIR Queries'
