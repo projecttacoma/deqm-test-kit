@@ -7,6 +7,34 @@ module DEQMTestKit
   # rubocop:disable Metrics/ClassLength
   class FHIRQueries < Inferno::TestGroup
     include DataRequirementsUtils
+    module FHIRQueriesHelpers
+      def dr_assertions(measure_id)
+        assert(measure_id,
+               'No measure selected. Run Measure Availability prior to running the FHIR Queries test group.')
+        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+                       client: :data_requirements_server)
+
+        assert_response_status(200)
+        assert_resource_type(:library)
+        assert_valid_json(response[:body])
+        resource.dataRequirement
+      end
+
+      def fhir_queries_assertions(queries)
+        # Store responses to run assertions on later to ensure all requests go through before failure
+        responses = queries.map do |q|
+          fhir_search(q[:endpoint], params: q[:params])
+          { response: response,
+            query_string: "/#{q[:endpoint]}#{q[:params].size.positive? ? '?' : ''}#{URI.encode_www_form(q[:params])}" }
+        end
+        responses.each do |r|
+          assert(r[:response][:status] == 200,
+                 "Expected response code 200, received: #{r[:response][:status]} for query: #{r[:query_string]}")
+          assert_valid_json(r[:response][:body],
+                            "Received invalid JSON body on query response for query: #{r[:query_string]}")
+        end
+      end
+    end
     id 'fhir_queries'
     title 'FHIR Queries'
     description 'Ensure FHIR server can handle queries resulting from $data-requirements operation'
@@ -32,6 +60,7 @@ module DEQMTestKit
     end
     # rubocop:disable Metrics/BlockLength
     test do
+      include FHIRQueriesHelpers
       title 'Valid FHIR Queries for All Patients'
       id 'fhir-queries-01'
       description 'Queries resulting from a $data-requirements operation return 200 OK'
@@ -45,15 +74,7 @@ module DEQMTestKit
       end
 
       run do
-        assert(measure_id,
-               'No measure selected. Run Measure Availability prior to running the FHIR Queries test group.')
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
-                       client: :data_requirements_server)
-
-        assert_response_status(200)
-        assert_resource_type(:library)
-        assert_valid_json(response[:body])
-        actual_dr = resource.dataRequirement
+        actual_dr = dr_assertions(measure_id)
         queries = []
         if use_fqp_extension == 'true'
           actual_dr.map do |dr|
@@ -77,24 +98,13 @@ module DEQMTestKit
         else
           queries = get_data_requirements_queries(actual_dr, include_patient: true)
         end
-
-        # Store responses to run assertions on later to ensure all requests go through before failure
-        responses = queries.map do |q|
-          fhir_search(q[:endpoint], params: q[:params])
-          { response: response,
-            query_string: "/#{q[:endpoint]}#{q[:params].size.positive? ? '?' : ''}#{URI.encode_www_form(q[:params])}" }
-        end
-        responses.each do |r|
-          assert(r[:response][:status] == 200,
-                 "Expected response code 200, received: #{r[:response][:status]} for query: #{r[:query_string]}")
-          assert_valid_json(r[:response][:body],
-                            "Received invalid JSON body on query response for query: #{r[:query_string]}")
-        end
+        fhir_queries_assertions(queries)
       end
     end
     # rubocop:enable Metrics/BlockLength
     # rubocop:disable Metrics/BlockLength
     test do
+      include FHIRQueriesHelpers
       title 'Valid FHIR Queries Single Patient'
       id 'fhir-queries-02'
       description 'Queries resulting from a $data-requirements operation return 200 OK'
@@ -109,15 +119,7 @@ module DEQMTestKit
       end
 
       run do
-        assert(measure_id,
-               'No measure selected. Run Measure Availability prior to running the FHIR Queries test group.')
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
-                       client: :data_requirements_server)
-
-        assert_response_status(200)
-        assert_resource_type(:library)
-        assert_valid_json(response[:body])
-        actual_dr = resource.dataRequirement
+        actual_dr = dr_assertions(measure_id)
         queries = []
 
         actual_dr.each do |dr|
@@ -140,19 +142,7 @@ module DEQMTestKit
             end
           end
         end
-
-        # Store responses to run assertions on later to ensure all requests go through before failure
-        responses = queries.map do |q|
-          fhir_search(q[:endpoint], params: q[:params])
-          { response: response,
-            query_string: "/#{q[:endpoint]}#{q[:params].size.positive? ? '?' : ''}#{URI.encode_www_form(q[:params])}" }
-        end
-        responses.each do |r|
-          assert(r[:response][:status] == 200,
-                 "Expected response code 200, received: #{r[:response][:status]} for query: #{r[:query_string]}")
-          assert_valid_json(r[:response][:body],
-                            "Received invalid JSON body on query response for query: #{r[:query_string]}")
-        end
+        fhir_queries_assertions(queries)
       end
     end
     # rubocop:enable Metrics/BlockLength

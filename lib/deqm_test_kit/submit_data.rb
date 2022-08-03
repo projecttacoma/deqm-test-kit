@@ -47,7 +47,7 @@ module DEQMTestKit
 
     # rubocop:disable Metrics/BlockLength
     test do
-    include SubmitDataHelpers
+      include SubmitDataHelpers
       title 'Submit Data valid submission'
       id 'submit-data-01'
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'

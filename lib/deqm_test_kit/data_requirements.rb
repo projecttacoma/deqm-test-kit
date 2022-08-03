@@ -7,7 +7,14 @@ module DEQMTestKit
   # GET [base]/Measure/CMS146/$data-requirements?periodStart=2014&periodEnd=2014
   class DataRequirements < Inferno::TestGroup
     include DataRequirementsUtils
-
+    module DataRequirementsHelpers
+      def assert_dr_failure(expected_status: 400)
+        assert_response_status(expected_status)
+        assert_valid_json(response[:body])
+        assert(resource.resourceType == 'OperationOutcome')
+        assert(resource.issue[0].severity == 'error')
+      end
+    end
     id 'data_requirements'
     title 'Data Requirements'
     description 'Ensure FHIR server can respond to the $data-requirements request'
@@ -92,6 +99,7 @@ module DEQMTestKit
     end
 
     test do
+      include DataRequirementsHelpers
       title 'Check data requirements returns 400 for missing parameters'
       id 'data-requirements-02'
       description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
@@ -99,14 +107,16 @@ module DEQMTestKit
       run do
         # Run our data requirements operation on the test client server
         fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)
-        assert_response_status(400)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        assert_dr_failure
+        # assert_response_status(400)
+        # assert_valid_json(response[:body])
+        # assert(resource.resourceType == 'OperationOutcome')
+        # assert(resource.issue[0].severity == 'error')
       end
     end
 
     test do
+      include DataRequirementsHelpers
       title 'Check data requirements returns 404 for invalid measure id'
       id 'data-requirements-03'
       description 'Data requirements returns 404 when passed a measure id which is not in the system'
@@ -117,10 +127,11 @@ module DEQMTestKit
           "Measure/#{INVALID_ID}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
           body: PARAMS
         )
-        assert_response_status(404)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        assert_dr_failure(expected_status: 404)
+        # assert_response_status(404)
+        # assert_valid_json(response[:body])
+        # assert(resource.resourceType == 'OperationOutcome')
+        # assert(resource.issue[0].severity == 'error')
       end
     end
     # rubocop:enable Metrics/BlockLength
