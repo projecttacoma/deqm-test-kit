@@ -5,6 +5,14 @@ require 'json'
 module DEQMTestKit
   # Perform Patient/$everything operation on test client
   class PatientEverything < Inferno::TestGroup
+    # module for shared code for Patient/$everything assertions and requests
+    module PatientEverythingHelpers
+      def patient_everything_assert_success(endpoint, body)
+        fhir_operation('/', body: body)
+        fhir_operation(endpoint)
+        assert_success(:bundle, 200)
+      end
+    end
     id 'patient_everything'
     title 'Patient/$everything'
     description 'Ensure FHIR server can respond to the Patient/$everything request'
@@ -16,6 +24,7 @@ module DEQMTestKit
     TEST_PATIENT_ID = 'test-patient'
 
     test do
+      include PatientEverythingHelpers
       title 'Patient/<id>/$everything valid submission'
       id 'patient-everything-01'
       description 'Patient data is received for single patient on the server'
@@ -24,12 +33,9 @@ module DEQMTestKit
         single_patient_file = File.open('./lib/fixtures/singlePatientBundle.json')
         single_patient_bundle = JSON.parse(single_patient_file.read)
         # Upload single patient bundle to server
-        fhir_operation('/', body: single_patient_bundle)
+        patient_everything_assert_success("Patient/#{TEST_PATIENT_ID}/$everything", single_patient_bundle)
         # Run Patient/<id>/$everything operation on the test client server
-        fhir_operation("Patient/#{TEST_PATIENT_ID}/$everything")
-        assert_response_status(200)
-        assert_resource_type(:bundle)
-        assert_valid_json(response[:body])
+
         # Check all necessary resources are included in the response
         # Note Condition resource does not include patient ref, so subtract 1
         assert(single_patient_bundle['entry'].length - 1 == resource.total,
@@ -42,6 +48,7 @@ module DEQMTestKit
     end
 
     test do
+      include PatientEverythingHelpers
       title 'Patient/$everything valid submission'
       id 'patient-everything-02'
       description 'Patient data is received for all patients on the server'
@@ -50,12 +57,7 @@ module DEQMTestKit
         multiple_patient_file = File.open('./lib/fixtures/multiplePatientBundle.json')
         multiple_patient_bundle = JSON.parse(multiple_patient_file.read)
         # Upload multiple patient bundle to server
-        fhir_operation('/', body: multiple_patient_bundle)
-        # Run Patient/$everything operation on the test client server
-        fhir_operation('Patient/$everything')
-        assert_response_status(200)
-        assert_resource_type(:bundle)
-        assert_valid_json(response[:body])
+        patient_everything_assert_success('Patient/$everything', multiple_patient_bundle)
         # Check all necessary resources are included in the response
         # Note all resources should be included because they all reference a patient
         # Use >=, as other data may be retrieved from server in addition to what we expect

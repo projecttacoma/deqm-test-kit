@@ -6,6 +6,32 @@ require 'json'
 module DEQMTestKit
   # Perform submit data operation on test client
   class SubmitData < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
+    # module for shared code for $submit-data assertions and requests
+    module SubmitDataHelpers
+      def submit_data_assert_failure(params_hash, expected_status: 400)
+        params = FHIR::Parameters.new params_hash
+
+        fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
+        assert_error(expected_status)
+      end
+
+      # rubocop:disable Metrics/MethodLength
+      def create_measure_report(measure_url, period_start, period_end)
+        mr = {
+          'type' => 'data-collection',
+          'measure' => measure_url,
+          'period' => {
+            'start' => period_start,
+            'end' => period_end
+          },
+          'status' => 'complete'
+        }
+        resource = FHIR::MeasureReport.new(mr)
+        resource.identifier = [FHIR::Identifier.new({ value: SecureRandom.uuid })]
+        resource
+      end
+      # rubocop:enable Metrics/MethodLength
+    end
     id 'submit_data'
     title 'Submit Data'
     description 'Ensure fhir server can receive data via the $submit-data operation'
@@ -20,6 +46,7 @@ module DEQMTestKit
 
     # rubocop:disable Metrics/BlockLength
     test do
+      include SubmitDataHelpers
       title 'Submit Data valid submission'
       id 'submit-data-01'
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'
@@ -115,6 +142,7 @@ module DEQMTestKit
     end
 
     test do
+      include SubmitDataHelpers
       title 'Fails if a measureReport is not submitted'
       id 'submit-data-02'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
@@ -129,18 +157,12 @@ module DEQMTestKit
             resource: test_measure
           }]
         }
-        params = FHIR::Parameters.new params_hash
-
-        fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
-
-        assert_response_status(400)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        submit_data_assert_failure(params_hash)
       end
     end
 
     test do
+      include SubmitDataHelpers
       title 'Fails if multiple measureReports are submitted'
       id 'submit-data-03'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
@@ -165,32 +187,9 @@ module DEQMTestKit
                         resource: measure_report
                       }]
         }
-        params = FHIR::Parameters.new params_hash
-
-        fhir_operation("Measure/#{measure_id}/$submit-data", body: params)
-
-        assert_response_status(400)
-        assert_valid_json(response[:body])
-        assert(resource.resourceType == 'OperationOutcome')
-        assert(resource.issue[0].severity == 'error')
+        submit_data_assert_failure(params_hash)
       end
     end
     # rubocop:enable Metrics/BlockLength
-    # rubocop:disable Metrics/MethodLength
-    def create_measure_report(measure_url, period_start, period_end)
-      mr = {
-        'type' => 'data-collection',
-        'measure' => measure_url,
-        'period' => {
-          'start' => period_start,
-          'end' => period_end
-        },
-        'status' => 'complete'
-      }
-      resource = FHIR::MeasureReport.new(mr)
-      resource.identifier = [FHIR::Identifier.new({ value: SecureRandom.uuid })]
-      resource
-    end
-    # rubocop:enable Metrics/MethodLength
   end
 end
