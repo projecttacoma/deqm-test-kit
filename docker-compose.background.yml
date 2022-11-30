@@ -4,7 +4,7 @@ services:
     image: infernocommunity/fhir-validator-service
     # Update this path to match your directory structure
     volumes:
-      - ./lib/inferno_template/igs:/home/igs
+      - ./lib/deqm_test_kit/igs:/home/igs
   fhir_validator_app:
     image: infernocommunity/fhir-validator-app
     depends_on:
@@ -28,3 +28,32 @@ services:
     volumes:
       - ./data/redis:/data
     command: redis-server --appendonly yes
+  deqm_test_server:
+    depends_on:
+      - mongo
+      - redis
+    image: mitrehealthdocker/deqm-test-server:latest
+    environment:
+      SERVER_HOST: deqm_test_server
+      SERVER_PORT: 3000
+      DB_HOST: mongo
+      DB_PORT: 27017
+      DB_NAME: deqm-test-server-dev
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      IMPORT_WORKERS: 1
+      NDJSON_WORKERS: 1
+      EXEC_WORKERS: 0
+    ports:
+      - "3000:3000"
+    command: npm start
+  mongo:
+    image: mongo:4.4.4
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
