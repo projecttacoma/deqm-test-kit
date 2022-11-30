@@ -166,10 +166,10 @@ GEM
       sidekiq (~> 6.5.6)
       sqlite3 (~> 1.4)
       thor (~> 1.2.1)
-    json (2.6.2)
     io-console (0.5.11)
-    irb (1.4.2)
+    irb (1.5.1)
       reline (>= 0.3.0)
+    json (2.6.2)
     jwt (2.5.0)
     method_source (1.0.0)
     mime-types (3.4.1)
@@ -294,8 +294,8 @@ PLATFORMS
 
 DEPENDENCIES
   database_cleaner-sequel (~> 1.8)
-  deqm_test_kit!
   debug
+  deqm_test_kit!
   factory_bot (~> 6.1)
   rspec (~> 3.10)
   rubocop (~> 1.18)
