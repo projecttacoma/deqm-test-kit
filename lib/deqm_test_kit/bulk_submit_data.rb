@@ -34,7 +34,7 @@ module DEQMTestKit
       description %(POST request to $submit-data returns 202 response,
       GET request to bulk status endpoint returns 200 response)
 
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :exportUrl, title: 'Data Provider URL',
                         description: %(Export Server to use for bulk import requests), default: default_url
       run do

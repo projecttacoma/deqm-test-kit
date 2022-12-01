@@ -22,7 +22,7 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureAvailabilityRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'EXM130|7.3.000', options: measure_options }
+    measure_id_args = {type: 'radio', optional: false, default: 'EXM130|7.3.000', options: measure_options}
 
     test do
       include MeasureAvailabilityHelpers
@@ -30,7 +30,7 @@ module DEQMTestKit
       id 'measure-availability-01'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
-      input :selected_measure_id, measure_id_args
+      input :selected_measure_id, **measure_id_args
       output :measure_id
       run do
         # Look for matching measure from cqf-ruler datastore by resource id

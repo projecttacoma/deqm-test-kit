@@ -38,7 +38,7 @@ module DEQMTestKit
       description 'Data requirements on the FHIR test server match the data requirements of reference server'
       makes_request :data_requirements
       output :queries_json
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :data_requirements_reference_server
 
       fhir_client :dr_reference_client do
@@ -101,7 +101,7 @@ module DEQMTestKit
       title 'Check data requirements returns 400 for missing parameters'
       id 'data-requirements-02'
       description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       run do
         # Run our data requirements operation on the test client server
         fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)

@@ -67,8 +67,8 @@ module DEQMTestKit
       description 'Queries resulting from a $data-requirements operation return 200 OK'
       makes_request :fhir_queries
       input :data_requirements_server_url
-      input :measure_id, measure_id_args
-      input :use_fqp_extension, use_fqp_extension_args
+      input :measure_id, **measure_id_args
+      input :use_fqp_extension, **use_fqp_extension_args
 
       fhir_client :data_requirements_server do
         url :data_requirements_server_url
@@ -111,7 +111,7 @@ module DEQMTestKit
       description 'Queries resulting from a $data-requirements operation return 200 OK'
       makes_request :fhir_queries
       input :data_requirements_server_url
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id
       optional
 
