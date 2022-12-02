@@ -111,7 +111,7 @@ module DEQMTestKit
       title 'Check $care-gaps returns a BadRequest error for invalid subject format'
       id 'care-gaps-05'
       description %(Server should not perform calculation and return a 400 response code
-    when both the subject query parameter is not of the form Patient/\<id\> or Group/\<id\>.)
+    when both the subject query parameter is not of the form Patient/<id> or Group/<id>.)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'

@@ -23,7 +23,7 @@ module DEQMTestKit
         # Store responses to run assertions on later to ensure all requests go through before failure
         responses = queries.map do |q|
           fhir_search(q[:endpoint], params: q[:params])
-          { response: response,
+          { response:,
             query_string: "/#{q[:endpoint]}#{q[:params].size.positive? ? '?' : ''}#{URI.encode_www_form(q[:params])}" }
         end
         responses.each do |r|
@@ -92,12 +92,12 @@ module DEQMTestKit
                 request_info[0].slice!(0)
                 params = {}
                 params = qs_to_hash(request_info[1]) if request_info.length > 1
-                queries.push({ endpoint: request_info[0], params: params })
+                queries.push({ endpoint: request_info[0], params: })
               end
             end
           end
         else
-          queries = get_data_requirements_queries(actual_dr, include_patient: true)
+          queries = get_data_requirements_queries(actual_dr, true)
         end
         fhir_queries_assertions(queries)
       end
@@ -139,7 +139,7 @@ module DEQMTestKit
               request_info[0].slice!(0)
               params = {}
               params = qs_to_hash(request_info[1], patient_id) if request_info.length > 1
-              queries.push({ endpoint: request_info[0], params: params })
+              queries.push({ endpoint: request_info[0], params: })
             end
           end
         end

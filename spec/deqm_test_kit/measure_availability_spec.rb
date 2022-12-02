@@ -12,9 +12,9 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
+      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
     end
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
+    Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe 'measure search test' do
@@ -29,7 +29,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, selected_measure_id: selected_measure_id, url: url)
+      result = run(test, selected_measure_id:, url:)
 
       expect(result.result).to eq('pass')
     end
@@ -39,7 +39,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 201, body: resource.to_json)
 
-      result = run(test, selected_measure_id: selected_measure_id, url: url)
+      result = run(test, selected_measure_id:, url:)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
@@ -50,7 +50,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, selected_measure_id: selected_measure_id, url: url)
+      result = run(test, selected_measure_id:, url:)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/measure/)

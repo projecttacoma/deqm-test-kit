@@ -8,7 +8,7 @@ module DEQMTestKit
     id 'bulk_import'
     title 'Non-Measure-Specific Bulk Import'
     description %(
-        This test inspects the response to POST \[base\]/$import and GET \[bulk status endpoint\]
+        This test inspects the response to POST [base]/$import and GET [bulk status endpoint]
         to ensure that the FHIR server can accept bulk data import requests in the
         non-measure-specific case
       )

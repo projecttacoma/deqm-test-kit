@@ -31,9 +31,9 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
+      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
     end
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
+    Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe 'FHIR queries with successful $data-requirements request (all patients)' do
@@ -56,7 +56,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, data_requirements_server_url: url)
+      result = run(test, url:, measure_id:, data_requirements_server_url: url)
       expect(result.result).to eq('pass')
     end
 
@@ -78,7 +78,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true', data_requirements_server_url: url)
+      result = run(test, url:, measure_id:, use_fqp_extension: 'true', data_requirements_server_url: url)
       expect(result.result).to eq('pass')
     end
 
@@ -89,7 +89,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response_no_extension.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true', data_requirements_server_url: url)
+      result = run(test, url:, measure_id:, use_fqp_extension: 'true', data_requirements_server_url: url)
       expect(result.result).to eq('fail')
       # rubocop:disable Layout/LineLength
 
@@ -110,7 +110,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, data_requirements_server_url: url)
+      result = run(test, url:, measure_id:, data_requirements_server_url: url)
       expect(result.result).to eq('fail')
       expect(result.result_message).to eq('Expected response code 200, received: 500 for query: /Patient')
     end
@@ -131,7 +131,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true', data_requirements_server_url: url)
+      result = run(test, url:, measure_id:, use_fqp_extension: 'true', data_requirements_server_url: url)
       expect(result.result).to eq('fail')
       # rubocop:disable Layout/LineLength
 
@@ -161,8 +161,8 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true',
-                         data_requirements_server_url: url, patient_id: patient_id)
+      result = run(test, url:, measure_id:, use_fqp_extension: 'true',
+                         data_requirements_server_url: url, patient_id:)
       expect(result.result).to eq('pass')
     end
 
@@ -179,8 +179,8 @@ RSpec.describe DEQMTestKit::FHIRQueries do
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, use_fqp_extension: 'true',
-                         data_requirements_server_url: url, patient_id: patient_id)
+      result = run(test, url:, measure_id:, use_fqp_extension: 'true',
+                         data_requirements_server_url: url, patient_id:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to eq('Expected response code 200, received: 500 for query: ' \
                                           "/Condition?code%3Ain=testvs2&subject=Patient%2F#{patient_id}")

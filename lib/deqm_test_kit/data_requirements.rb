@@ -83,7 +83,7 @@ module DEQMTestKit
         diff = expected_dr_strings - actual_dr_strings
 
         # still output queries even if different from expected.
-        queries = get_data_requirements_queries(actual_dr, include_patient: true)
+        queries = get_data_requirements_queries(actual_dr, true)
         output queries_json: queries.to_json
 
         # Ensure both data requirements results libraries are identical

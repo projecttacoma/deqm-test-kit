@@ -8,7 +8,7 @@ module DEQMTestKit
     # module for shared code for Patient/$everything assertions and requests
     module PatientEverythingHelpers
       def patient_everything_assert_success(endpoint, body)
-        fhir_operation('/', body: body)
+        fhir_operation('/', body:)
         fhir_operation(endpoint)
         assert_success(:bundle, 200)
       end

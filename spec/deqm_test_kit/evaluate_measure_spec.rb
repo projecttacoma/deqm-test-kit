@@ -16,9 +16,9 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
+      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
     end
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
+    Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe '$evaluate-measure successful individual report test' do
@@ -37,8 +37,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: test_measure_report.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -48,8 +48,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -61,8 +61,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: test_library.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -87,7 +87,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
       )
         .to_return(status: 200, body: test_measure_report.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -97,8 +97,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -110,7 +110,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: test_library.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -132,7 +132,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
       )
         .to_return(status: 200, body: test_measure_report.to_json)
 
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -142,8 +142,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -155,7 +155,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: test_library.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -179,8 +179,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: test_measure_report.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end,
-                         group_id: group_id)
+      result = run(test, url:, measure_id:, period_start:, period_end:,
+                         group_id:)
       expect(result.result).to eq('pass')
     end
 
@@ -192,8 +192,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: test_measure_report.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end,
-                         group_id: group_id)
+      result = run(test, url:, measure_id:, period_start:, period_end:,
+                         group_id:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -205,8 +205,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: test_library.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end,
-                         group_id: group_id)
+      result = run(test, url:, measure_id:, period_start:, period_end:,
+                         group_id:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -222,8 +222,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: test_measure_report.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end,
-                         group_id: group_id)
+      result = run(test, url:, measure_id:, period_start:, period_end:,
+                         group_id:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -241,7 +241,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{INVALID_MEASURE_ID}/$evaluate-measure?#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url, patient_id: patient_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -251,7 +251,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{INVALID_MEASURE_ID}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, patient_id: patient_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/404/)
     end
@@ -270,7 +270,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -280,7 +280,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/404/)
     end
@@ -299,7 +299,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -309,7 +309,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/400/)
     end
@@ -328,7 +328,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -338,7 +338,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/400/)
     end
@@ -361,8 +361,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
 
@@ -372,8 +372,8 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
         "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/400/)
     end

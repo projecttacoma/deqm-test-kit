@@ -14,9 +14,9 @@ RSpec.describe DEQMTestKit::PatientEverything do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
+      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
     end
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
+    Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe 'Patient/<id>/$everything successful test' do
@@ -46,7 +46,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
       stub_request(:post, "#{url}/Patient/test-patient/$everything").to_return(
         status: 200, body: single_patient_response, headers: {}
       )
-      result = run(test, url: url)
+      result = run(test, url:)
       expect(result.result).to eq('pass')
     end
 
@@ -56,7 +56,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
       )
       stub_request(:post, "#{url}/Patient/test-patient/$everything").to_return(status: 404,
                                                                                body: error_outcome.to_json)
-      result = run(test, url: url)
+      result = run(test, url:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -88,7 +88,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
       )
       stub_request(:post, "#{url}/Patient/$everything").to_return(status: 200, body: multiple_patient_response,
                                                                   headers: {})
-      result = run(test, url: url)
+      result = run(test, url:)
       expect(result.result).to eq('pass')
     end
 
@@ -97,7 +97,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
         status: 200, body: '', headers: {}
       )
       stub_request(:post, "#{url}/Patient/$everything").to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url)
+      result = run(test, url:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -109,7 +109,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(:post, "#{url}/Patient/INVALID/$everything")
         .to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url)
+      result = run(test, url:)
       expect(result.result).to eq('pass')
     end
 
@@ -119,7 +119,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
         "#{url}/Patient/INVALID/$everything"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url)
+      result = run(test, url:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/404/)
     end

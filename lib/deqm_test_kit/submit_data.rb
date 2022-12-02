@@ -131,7 +131,7 @@ module DEQMTestKit
           assert !identifier.nil?, "Identifier #{identifier} was nil"
 
           # Search for resource by identifier
-          fhir_search(r.resourceType, params: { identifier: identifier })
+          fhir_search(r.resourceType, params: { identifier: })
           assert_response_status(200)
           assert_resource_type(:bundle)
           assert_valid_json(response[:body])

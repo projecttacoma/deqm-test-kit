@@ -11,9 +11,9 @@ RSpec.describe DEQMTestKit::BulkImport do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
+      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
     end
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
+    Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe 'The server is able to accept bulk data import requests' do
@@ -31,7 +31,7 @@ RSpec.describe DEQMTestKit::BulkImport do
 
       stub_request(:get, polling_url)
         .to_return(status: 200, body: resource.to_json)
-      result = run(test, url: url, types: 'Patient', exportUrl: export_url)
+      result = run(test, url:, types: 'Patient', exportUrl: export_url)
       # check that we get a 202 off a bulk data request
       expect(result.result).to eq('pass')
     end
