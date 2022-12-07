@@ -2,7 +2,6 @@ version: '3'
 services:
   validator_service:
     image: infernocommunity/fhir-validator-service
-    # Update this path to match your directory structure
     volumes:
       - ./lib/deqm_test_kit/igs:/home/igs
   fhir_validator_app:

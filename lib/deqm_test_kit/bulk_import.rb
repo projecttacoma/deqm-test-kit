@@ -7,11 +7,9 @@ module DEQMTestKit
     include BulkImportUtils
     id 'bulk_import'
     title 'Non-Measure-Specific Bulk Import'
-    description %(
-        This test inspects the response to POST [base]/$import and GET [bulk status endpoint]
+    description "This test inspects the response to POST [base]/$import and GET [bulk status endpoint]
         to ensure that the FHIR server can accept bulk data import requests in the
-        non-measure-specific case
-      )
+        non-measure-specific case"
 
     default_url = 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
 
@@ -43,7 +41,7 @@ module DEQMTestKit
           ]
         }
 
-        params[:parameter][0][:valueUrl] = exportUrl + "?_type=#{types}" if types.length.positive?
+        params[:parameter][0][:valueUrl] = exportUrl + "?_type=#{types}" if !types.nil? && types.length.positive?
         fhir_operation('$import', body: params, name: :bulk_import)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         polling_url = location_header.value

@@ -39,28 +39,13 @@ services:
     depends_on:
       - mongo
       - redis
-    image: mitrehealthdocker/deqm-test-server:latest
-    environment:
-      SERVER_HOST: deqm_test_server
-      SERVER_PORT: 3000
-      DB_HOST: mongo
-      DB_PORT: 27017
-      DB_NAME: deqm-test-server-dev
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
-      IMPORT_WORKERS: 1
-      NDJSON_WORKERS: 1
-      EXEC_WORKERS: 0
-    ports:
-      - "3000:3000"
-    command: npm start
+    extends:
+      file: docker-compose.background.yml
+      service: deqm_test_server
   mongo:
-    image: mongo:4.4.4
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+    extends:
+      file: docker-compose.background.yml
+      service: mongo
 
 volumes:
   mongo_data:
