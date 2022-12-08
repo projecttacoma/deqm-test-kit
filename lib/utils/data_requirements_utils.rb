@@ -27,7 +27,7 @@ module DEQMTestKit
       end
     end
 
-    def get_data_requirements_queries(data_requirements, include_patient: false)
+    def get_data_requirements_queries(data_requirements, include_patient)
       # hashes with { endpoint => FHIR Type, params => { queries } }
       # TODO: keep provenance or decide that it shouldn't be a data requirement query
       queries = data_requirements

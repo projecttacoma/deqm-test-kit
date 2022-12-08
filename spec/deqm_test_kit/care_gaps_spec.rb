@@ -13,9 +13,9 @@ RSpec.describe DEQMTestKit::CareGaps do
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name: name, value: value, type: 'text')
+      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
     end
-    Inferno::TestRunner.new(test_session: test_session, test_run: test_run).run(runnable)
+    Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe '$care-gaps successful test with required query parameters (Patient)' do
@@ -35,8 +35,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if $care-gaps does not return 200' do
@@ -44,8 +44,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if $care-gaps does not return a Parameters object' do
@@ -53,8 +53,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -76,8 +76,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, group_id: group_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, group_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if $care-gaps does not return 200' do
@@ -85,8 +85,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, group_id: group_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, group_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if $care-gaps does not return Parameters object' do
@@ -94,8 +94,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, group_id: group_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, group_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -113,8 +113,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if request returns 200' do
@@ -122,8 +122,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if request returns a Parameters object' do
@@ -131,8 +131,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -152,8 +152,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if request returns 200' do
@@ -161,8 +161,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if request returns a Parameters object' do
@@ -170,8 +170,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 404, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -191,8 +191,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if request returns 200' do
@@ -200,8 +200,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if request returns a parameters object' do
@@ -209,8 +209,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 404, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -229,8 +229,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: test_parameters.to_json)
-      result = run(test, url: url, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
   end
@@ -252,8 +252,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 404, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if request returns 200' do
@@ -261,8 +261,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if request returns a parameters object' do
@@ -270,8 +270,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 404, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -293,8 +293,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, practitioner_id: practitioner_id, org_id: org_id,
-                         period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, practitioner_id:, org_id:,
+                         period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if $care-gaps does not return 200' do
@@ -302,8 +302,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: test_parameters.to_json)
-      result = run(test, url: url, measure_id: measure_id, practitioner_id: practitioner_id, org_id: org_id,
-                         period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, practitioner_id:, org_id:,
+                         period_start:, period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if $care-gaps does not return Parameters object' do
@@ -311,8 +311,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, measure_id: measure_id, practitioner_id: practitioner_id, org_id: org_id,
-                         period_start: period_start, period_end: period_end)
+      result = run(test, url:, measure_id:, practitioner_id:, org_id:,
+                         period_start:, period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -332,8 +332,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: test_parameters.to_json)
-      result = run(test, url: url, program: 'eligible-provider', patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, program: 'eligible-provider', patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('pass')
     end
     it 'fails if $care-gaps does not return 200' do
@@ -341,8 +341,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 400, body: test_parameters.to_json)
-      result = run(test, url: url, program: 'eligible-provider', patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, program: 'eligible-provider', patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
     it 'fails if $care-gaps does not return Parameters object' do
@@ -350,8 +350,8 @@ RSpec.describe DEQMTestKit::CareGaps do
         :post,
         "#{url}/Measure/$care-gaps?#{params}"
       ).to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url: url, program: 'eligible-provider', patient_id: patient_id, period_start: period_start,
-                         period_end: period_end)
+      result = run(test, url:, program: 'eligible-provider', patient_id:, period_start:,
+                         period_end:)
       expect(result.result).to eq('fail')
     end
   end

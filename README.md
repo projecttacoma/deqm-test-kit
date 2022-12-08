@@ -26,7 +26,7 @@ Navigate to http://localhost:4567 to run the tests in the Inferno web page
 ### Local Usage
 
 The test kit can also be run locally without Docker. This is useful particularly for debugging purposes.
-Make sure you have Ruby `>=2.7.0` installed.
+Make sure you have Ruby `>=3.1.2` installed.
 
 1. Install required dependencies:
 

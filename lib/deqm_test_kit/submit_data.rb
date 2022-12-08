@@ -52,7 +52,7 @@ module DEQMTestKit
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'
       makes_request :submit_data
       input :queries_json
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :data_requirements_reference_server
 
       fhir_client :dr_reference_client do
@@ -131,7 +131,7 @@ module DEQMTestKit
           assert !identifier.nil?, "Identifier #{identifier} was nil"
 
           # Search for resource by identifier
-          fhir_search(r.resourceType, params: { identifier: identifier })
+          fhir_search(r.resourceType, params: { identifier: })
           assert_response_status(200)
           assert_resource_type(:bundle)
           assert_valid_json(response[:body])
@@ -146,7 +146,7 @@ module DEQMTestKit
       title 'Fails if a measureReport is not submitted'
       id 'submit-data-02'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       run do
         test_measure = FHIR::Measure.new(id: measure_id)
 
@@ -166,7 +166,7 @@ module DEQMTestKit
       title 'Fails if multiple measureReports are submitted'
       id 'submit-data-03'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       run do
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the Submit Data test group.')

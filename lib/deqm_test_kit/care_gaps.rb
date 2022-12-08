@@ -41,7 +41,7 @@ module DEQMTestKit
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided
       and subject is a Patient resource.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
@@ -59,7 +59,7 @@ module DEQMTestKit
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided
       and subject is a Group resource.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
       input :group_id, title: 'Group ID'
@@ -77,7 +77,7 @@ module DEQMTestKit
       description %(Server should not perform calculation and return a 400 response code
     when one of the required query parameters is omitted from the request. In this test,
       the measurement period start is omitted from the request.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -94,7 +94,7 @@ module DEQMTestKit
     when both the subject and organization query parameters are provided in the request.
       As stated in the $care-gaps FHIR spec, these query parameters are mutually
       exclusive.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
@@ -110,9 +110,9 @@ module DEQMTestKit
       include CareGapsHelpers
       title 'Check $care-gaps returns a BadRequest error for invalid subject format'
       id 'care-gaps-05'
-      description %(Server should not perform calculation and return a 400 response code
-    when both the subject query parameter is not of the form Patient/\<id\> or Group/\<id\>.)
-      input :measure_id, measure_id_args
+      description "Server should not perform calculation and return a 400 response code
+    when both the subject query parameter is not of the form Patient/<id> or Group/<id>."
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -162,7 +162,7 @@ module DEQMTestKit
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided and
       an organization and practitioner are provided rather than a Patient/Group subject.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
       input :practitioner_id, title: 'Practitioner ID'

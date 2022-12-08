@@ -39,7 +39,7 @@ module DEQMTestKit
       id 'evaluate-measure-01'
       description %(Server should properly return an individual measure report when provided a
         Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
@@ -57,7 +57,7 @@ module DEQMTestKit
       id 'evaluate-measure-02'
       description %(Server should properly return subject-list measure report when provided a
       Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -73,7 +73,7 @@ module DEQMTestKit
       id 'evaluate-measure-03'
       description %(Server should properly return population measure report when provided a
       Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -89,7 +89,7 @@ module DEQMTestKit
       id 'evaluate-measure-04'
       description %(Server should properly return population measure report when provided a
       Group ID and required query parameters \(period start, period end\).)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
       input :group_id, title: 'Group ID'
@@ -119,7 +119,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure fails for invalid patient ID'
       id 'evaluate-measure-06'
       description 'Request returns a 404 error when the given patient ID cannot be found'
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -136,7 +136,7 @@ module DEQMTestKit
       description %(Server should not perform calculation and return a 400 response code
     when one of the required query parameters is omitted from the request. In this test,
       the measurement period start is omitted from the request.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -153,7 +153,7 @@ module DEQMTestKit
       description %(Server should not perform calculation and return a 400 response code
     when the individual report type is specified but no subject has been specified in the
       query parameters.)
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
@@ -168,7 +168,7 @@ module DEQMTestKit
       title 'Check $evaluate-measure fails for invalid reportType'
       id 'evaluate-measure-09'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
-      input :measure_id, measure_id_args
+      input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
