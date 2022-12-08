@@ -13,7 +13,7 @@ module DEQMTestKit
       This test inspects the response to POST [base]/$submit-data and GET [bulk status endpoint]
       to ensure that the FHIR server can accept bulk data import requests when a measure
       is specified
-    )
+    "
 
     default_url = 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export'
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
