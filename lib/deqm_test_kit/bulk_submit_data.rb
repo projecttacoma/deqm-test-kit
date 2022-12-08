@@ -9,7 +9,7 @@ module DEQMTestKit
     include BulkImportUtils
     id 'bulk_submit_data'
     title 'Bulk Submit Data'
-    description %(
+    description "
       This test inspects the response to POST [base]/$submit-data and GET [bulk status endpoint]
       to ensure that the FHIR server can accept bulk data import requests when a measure
       is specified
