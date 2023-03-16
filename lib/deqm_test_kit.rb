@@ -11,6 +11,7 @@ require_relative 'deqm_test_kit/evaluate_measure'
 require_relative 'deqm_test_kit/care_gaps'
 
 module DEQMTestKit
+  # Overall test suite
   class Suite < Inferno::TestSuite
     id :deqm_test_suite
     title 'DEQM Measure Operations Test Suite'
