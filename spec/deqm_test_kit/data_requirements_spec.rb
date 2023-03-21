@@ -204,7 +204,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
                          data_requirements_reference_server:)
 
       expect(result.result).to eq('fail')
-      expect(result.result_message).to match('Bad resource type received: expected Library, but received Bundle')
+      expect(result.result_message).to match('Unexpected resource type: expected Library, but received Bundle')
     end
   end
 

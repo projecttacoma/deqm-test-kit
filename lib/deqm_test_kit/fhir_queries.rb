@@ -79,7 +79,7 @@ module DEQMTestKit
         queries = []
         if use_fqp_extension == 'true'
           actual_dr.map do |dr|
-            if dr.extension.nil? || dr.extension.length.zero?
+            if dr.extension.nil? || dr.extension.empty?
               assert(false,
                      '"Use FHIR query pattern" is true, but no FHIR Query Pattern Extension found on DataRequirements')
 
@@ -124,7 +124,7 @@ module DEQMTestKit
         queries = []
 
         actual_dr.each do |dr|
-          if dr.extension.nil? || dr.extension.length.zero?
+          if dr.extension.nil? || dr.extension.empty?
             assert(false,
                    'Single patient test currently only works with
             servers that support the cqfm-fhirQueryPattern extension,
