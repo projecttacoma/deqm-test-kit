@@ -27,7 +27,8 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options }
+    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
+                        options: measure_options }
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'

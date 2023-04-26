@@ -20,13 +20,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
-  describe 'data requirements matches reference results test' do
+  describe '$data-requirements matches reference results test' do
     let(:test) { group.tests.first }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
-    let(:period_start) { '2019-01-01' }
-    let(:period_end) { '2019-12-31' }
 
     it 'passes if the expected Library was received' do
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
@@ -44,14 +42,13 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements" \
-        "?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
@@ -79,14 +76,13 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements" \
-        "?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
@@ -114,14 +110,13 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements" \
-        "?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
@@ -150,14 +145,13 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements" \
-        "?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_library_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 201, body: test_library_response.to_json)
 
@@ -188,14 +182,13 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_not_library_response.to_json)
 
       stub_request(
         :post,
-        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements" \
-        "?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{data_requirements_reference_server}/Measure/#{measure_id}/$data-requirements"
       )
         .to_return(status: 200, body: test_not_library_response.to_json)
 
@@ -208,7 +201,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     end
   end
 
-  describe '$data-requirements with missing parameters' do
+  describe '$data-requirements with period start and period end' do
     let(:test) { group.tests[1] }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
@@ -216,43 +209,37 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
-    it 'passes with correct OperationOutcome returned' do
+    it 'passes with 200 returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
-        .to_return(status: 400, body: error_outcome.to_json)
+        .to_return(status: 200, body: test_library_response.to_json)
       result = run(test, url:, measure_id:)
+      puts result
       expect(result.result).to eq('pass')
     end
-    it 'fails with incorrect status code returned' do
+    it 'fails if 200 not received' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements"
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+      )
+        .to_return(status: 201, body: test_library_response.to_json)
+      result = run(test, url:, measure_id:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+    it 'fails when resource returned is not of type Library' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
       result = run(test, url:, measure_id:)
       expect(result.result).to eq('fail')
     end
-    it 'fails when resource returned is not of type OperationOutcome' do
-      stub_request(
-        :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements"
-      )
-        .to_return(status: 400, body: test_library_response.to_json)
-      result = run(test, url:, measure_id:)
-      expect(result.result).to eq('fail')
-    end
-    it 'fails when severity of OperationOutcome returned is not of type error' do
-      stub_request(
-        :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements"
-      )
-        .to_return(status: 400, body: incorrect_severity.to_json)
-      result = run(test, url:, measure_id:)
-      expect(result.result).to eq('fail')
-    end
   end
+
   describe '$data-requirements with invalid id' do
     let(:test) { group.tests[2] }
     let(:measure_name) { 'EXM130' }

@@ -22,7 +22,8 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options }
+    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
+                        options: measure_options }
 
     PARAMS = {
       resourceType: 'Parameters',
@@ -55,7 +56,7 @@ module DEQMTestKit
         measure_version = resource.version
 
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+        fhir_operation("Measure/#{measure_id}/$data-requirements",
                        body: PARAMS, name: :data_requirements)
         assert_response_status(200)
         assert_resource_type(:library)
@@ -72,7 +73,7 @@ module DEQMTestKit
 
         # Run data requirements operation on reference server
         fhir_operation(
-          "Measure/#{reference_measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+          "Measure/#{reference_measure_id}/$data-requirements",
           body: PARAMS,
           client: :dr_reference_client
         )
@@ -97,15 +98,19 @@ module DEQMTestKit
     end
 
     test do
+      optional
       include DataRequirementsHelpers
-      title 'Check data requirements returns 400 for missing parameters'
+      title 'Data requirements supports optional parameters periodStart and periodEnd'
       id 'data-requirements-02'
-      description 'Data requirements returns 400 when periodStart and periodEnd parameters are omitted'
+      description 'Data requirements returns 200 when periodStart and periodEnd parameters are included'
       input :measure_id, **measure_id_args
       run do
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements", body: PARAMS)
-        assert_dr_failure
+        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+                       body: PARAMS)
+        assert_response_status(200)
+        assert_resource_type(:library)
+        assert_valid_json(response[:body])
       end
     end
 
