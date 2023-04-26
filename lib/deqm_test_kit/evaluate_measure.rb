@@ -149,17 +149,17 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure fails for missing subject query parameter (individual report type)'
+      title 'Check $evaluate-measure fails for missing subject query parameter (subject report type)'
       id 'evaluate-measure-08'
       description %(Server should not perform calculation and return a 400 response code
-    when the individual report type is specified but no subject has been specified in the
+    when the subject report type is specified but no subject has been specified in the
       query parameters.)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}"
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject"
         measure_evaluation_assert_failure(params, measure_id)
       end
     end

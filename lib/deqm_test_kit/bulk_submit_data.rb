@@ -59,7 +59,7 @@ module DEQMTestKit
           ]
         }.freeze
 
-        fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
+        fhir_operation("Measure/#{measure_id}/$bulk-submit-data", body: params, name: :submit_data)
         location_header = response[:headers].find { |h| h.name == 'content-location' }
         polling_url = location_header.value
         wait_time = 1
