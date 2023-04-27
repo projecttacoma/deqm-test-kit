@@ -30,7 +30,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
       stub_request(:get, "#{url}/Measure/#{measure_id}")
         .to_return(status: 200, body: test_measure.to_json)
 
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/Measure/#{measure_id}/$bulk-submit-data")
         .to_return(status: 200, body: resource.to_json, headers: { 'content-location': polling_url })
 
       stub_request(:get, polling_url)
