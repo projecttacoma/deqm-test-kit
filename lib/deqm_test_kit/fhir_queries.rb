@@ -41,7 +41,7 @@ module DEQMTestKit
     description 'Ensure FHIR server can handle queries resulting from $data-requirements operation'
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options }
+                        options: measure_options, title: 'Measure Title' }
 
     use_fqp_extension_args = {
       type: 'radio',

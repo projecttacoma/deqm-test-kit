@@ -10,7 +10,7 @@ module DEQMTestKit
     id 'bulk_submit_data'
     title 'Bulk Submit Data'
     description "
-      This test inspects the response to POST [base]/$submit-data and GET [bulk status endpoint]
+      This test inspects the response to POST [base]/$bulk-submit-data and GET [bulk status endpoint]
       to ensure that the FHIR server can accept bulk data import requests when a measure
       is specified
     "
@@ -19,7 +19,7 @@ module DEQMTestKit
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_mappings = JSON.parse(File.read('./lib/fixtures/measureCanonicalUrlMapping.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options, title: 'Measure ID' }
+                        options: measure_options, title: 'Measure Title' }
 
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance"}', prefer: 'respond-async' }
 
@@ -31,7 +31,7 @@ module DEQMTestKit
     test do
       title 'Ensure FHIR server can accept bulk data import requests for given measure'
       id 'bulk-submit-data-01'
-      description %(POST request to $submit-data returns 202 response,
+      description %(POST request to $bulk-submit-data returns 202 response,
       GET request to bulk status endpoint returns 200 response)
 
       input :measure_id, **measure_id_args

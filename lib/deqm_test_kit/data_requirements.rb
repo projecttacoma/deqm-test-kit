@@ -23,7 +23,7 @@ module DEQMTestKit
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options }
+                        options: measure_options, title: 'Measure Title' }
 
     PARAMS = {
       resourceType: 'Parameters',
@@ -104,9 +104,11 @@ module DEQMTestKit
       id 'data-requirements-02'
       description 'Data requirements returns 200 when periodStart and periodEnd parameters are included'
       input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2019-01-01', optional: true
+      input :period_end, title: 'Measurement period end', default: '2019-12-31', optional: true
       run do
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}",
                        body: PARAMS)
         assert_response_status(200)
         assert_resource_type(:library)
@@ -123,7 +125,7 @@ module DEQMTestKit
       run do
         # Run our data requirements operation on the test client server
         fhir_operation(
-          "Measure/#{INVALID_ID}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
+          "Measure/#{INVALID_ID}/$data-requirements",
           body: PARAMS
         )
         assert_dr_failure(expected_status: 404)

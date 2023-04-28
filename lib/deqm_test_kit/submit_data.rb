@@ -38,7 +38,7 @@ module DEQMTestKit
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance", "agent": ["test-agent"]}' }
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options }
+                        options: measure_options, title: 'Measure Title' }
 
     fhir_client do
       url :url

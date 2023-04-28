@@ -1,6 +1,10 @@
 {
   "list_options": [
     {
+      "label": "Colorectal Cancer ScreeningFHIR",
+      "value": "ColorectalCancerScreeningsFHIR|0.0.003"
+    },
+    {
       "label": "Discharged on Antithrombotic Therapy FHIR",
       "value": "DischargedonAntithromboticTherapyFHIR|2.0.012"
     },
@@ -15,10 +19,6 @@
     {
       "label": "Breast Cancer ScreeningFHIR",
       "value": "BreastCancerScreeningsFHIR|0.0.002"
-    },
-    {
-      "label": "Colorectal Cancer ScreeningFHIR",
-      "value": "ColorectalCancerScreeningsFHIR|0.0.003"
     }
   ]
 }

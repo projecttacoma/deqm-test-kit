@@ -215,7 +215,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
         "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: test_library_response.to_json)
-      result = run(test, url:, measure_id:)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       puts result
       expect(result.result).to eq('pass')
     end
@@ -225,7 +225,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
         "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 201, body: test_library_response.to_json)
-      result = run(test, url:, measure_id:)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
     end
@@ -235,7 +235,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
         "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
-      result = run(test, url:, measure_id:)
+      result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
     end
   end
@@ -245,13 +245,11 @@ RSpec.describe DEQMTestKit::DataRequirements do
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
-    let(:period_start) { '2019-01-01' }
-    let(:period_end) { '2019-12-31' }
 
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/INVALID_ID/$data-requirements"
       )
         .to_return(status: 404, body: error_outcome.to_json)
       result = run(test, url:, measure_id:)
@@ -261,7 +259,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     it 'fails when 400 is not returned' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/INVALID_ID/$data-requirements"
       )
         .to_return(status: 200, body: error_outcome.to_json)
       result = run(test, url:, measure_id:)
@@ -271,7 +269,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     it 'fails when returned resource type is not of type OperationOutcome' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/INVALID_ID/$data-requirements"
       )
         .to_return(status: 404, body: test_library_response.to_json)
       result = run(test, url:, measure_id:)
@@ -281,7 +279,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
     it 'fails when severity returned is not equal to error' do
       stub_request(
         :post,
-        "#{url}/Measure/INVALID_ID/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
+        "#{url}/Measure/INVALID_ID/$data-requirements"
       )
         .to_return(status: 404, body: incorrect_severity.to_json)
       result = run(test, url:, measure_id:)

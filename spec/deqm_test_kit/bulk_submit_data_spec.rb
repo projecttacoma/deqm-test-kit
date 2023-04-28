@@ -21,7 +21,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
-    it 'passes on successful $bulkImport' do
+    it 'passes on successful $bulk-submit-data' do
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 

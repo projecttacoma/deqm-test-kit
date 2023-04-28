@@ -1,7 +1,7 @@
 {
+  "ColorectalCancerScreeningsFHIR": "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR",
   "DischargedonAntithromboticTherapyFHIR": "http://ecqi.healthit.gov/ecqms/Measure/DischargedonAntithromboticTherapyFHIR",
   "FHIR347": "http://ecqi.healthit.gov/ecqms/Measure/FHIR347",
   "CervicalCancerScreeningFHIR": "http://ecqi.healthit.gov/ecqms/Measure/CervicalCancerScreeningFHIR",
-  "BreastCancerScreeningsFHIR": "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningsFHIR",
-  "ColorectalCancerScreeningsFHIR": "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR"
+  "BreastCancerScreeningsFHIR": "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningsFHIR"
 }
