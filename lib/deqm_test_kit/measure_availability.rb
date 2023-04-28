@@ -22,7 +22,8 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureAvailabilityRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR|0.0.003', options: measure_options }
+    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR|0.0.003',
+                        options: measure_options }
 
     test do
       include MeasureAvailabilityHelpers
