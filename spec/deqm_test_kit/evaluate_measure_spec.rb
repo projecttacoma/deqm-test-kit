@@ -325,7 +325,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}&reportType=subject"
       )
         .to_return(status: 400, body: error_outcome.to_json)
       result = run(test, url:, measure_id:, period_start:, period_end:)
@@ -335,7 +335,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     it 'fails if server does not return 400 for missing subject param' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate-measure?#{params}&reportType=subject"
       )
         .to_return(status: 200, body: error_outcome.to_json)
       result = run(test, url:, measure_id:, period_start:, period_end:)

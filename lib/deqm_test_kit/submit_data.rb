@@ -37,7 +37,8 @@ module DEQMTestKit
     description 'Ensure fhir server can receive data via the $submit-data operation'
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance", "agent": ["test-agent"]}' }
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'measure-EXM130-7.3.000', options: measure_options }
+    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
+                        options: measure_options, title: 'Measure Title' }
 
     fhir_client do
       url :url

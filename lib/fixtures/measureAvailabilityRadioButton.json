@@ -1,24 +1,24 @@
 {
   "list_options": [
     {
-      "label": "EXM104",
-      "value": "EXM104|8.2.000"
+      "label": "Colorectal Cancer ScreeningFHIR",
+      "value": "ColorectalCancerScreeningsFHIR|0.0.003"
     },
     {
-      "label": "EXM105",
-      "value": "EXM105|8.2.000"
+      "label": "Discharged on Antithrombotic Therapy FHIR",
+      "value": "DischargedonAntithromboticTherapyFHIR|2.0.012"
     },
     {
-      "label": "EXM124",
-      "value": "EXM124|9.0.000"
+      "label": "Statin Therapy for the Prevention and Treatment of Cardiovascular Disease FHIR",
+      "value": "FHIR347|0.1.021"
     },
     {
-      "label": "EXM125",
-      "value": "EXM125|7.3.000"
+      "label": "Cervical Cancer ScreeningFHIR",
+      "value": "CervicalCancerScreeningFHIR|0.0.005"
     },
     {
-      "label": "EXM130",
-      "value": "EXM130|7.3.000"
+      "label": "Breast Cancer ScreeningFHIR",
+      "value": "BreastCancerScreeningsFHIR|0.0.002"
     }
   ]
 }

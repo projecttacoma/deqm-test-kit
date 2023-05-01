@@ -1,7 +1,7 @@
 {
-  "measure-EXM104-8.2.000": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM104",
-  "measure-EXM105-8.2.000": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM105",
-  "measure-EXM124-9.0.000": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM124",
-  "measure-EXM125-7.3.000": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM125",
-  "measure-EXM130-7.3.000": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM130"
+  "ColorectalCancerScreeningsFHIR": "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR",
+  "DischargedonAntithromboticTherapyFHIR": "http://ecqi.healthit.gov/ecqms/Measure/DischargedonAntithromboticTherapyFHIR",
+  "FHIR347": "http://ecqi.healthit.gov/ecqms/Measure/FHIR347",
+  "CervicalCancerScreeningFHIR": "http://ecqi.healthit.gov/ecqms/Measure/CervicalCancerScreeningFHIR",
+  "BreastCancerScreeningsFHIR": "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningsFHIR"
 }
