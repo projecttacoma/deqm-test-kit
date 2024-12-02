@@ -6,6 +6,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
+  let(:exportUrl) { 'https://bulk-data.smarthealthit.org/eyJlcnIiOiIiLCJwYWdlIjoxMDAwMCwiZHVyIjoxMCwidGx0IjoxNSwibSI6MSwic3R1IjozLCJkZWwiOjB9/fhir/$export' }
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
@@ -38,7 +39,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
 
       stub_request(:get, polling_url)
         .to_return(status: 200, body: resource.to_json)
-      result = run(test, url:, measure_id:)
+      result = run(test, url:, measure_id:, exportUrl:)
       # check that we get a 202 off a bulk data request
       expect(result.result).to eq('pass')
     end
