@@ -8,7 +8,8 @@ services:
     ports:
       - "4567:4567"
     depends_on:
-      - validator_service
+      - hl7_validator_service
+      # - validator_service
   worker:
     build:
       context: ./
@@ -17,14 +18,18 @@ services:
     command: bundle exec sidekiq -r ./worker.rb
     depends_on:
       - redis
-  validator_service:
+  # validator_service:
+  #   extends:
+  #     file: docker-compose.background.yml
+  #     service: validator_service
+  # fhir_validator_app:
+  #   extends:
+  #     file: docker-compose.background.yml
+  #     service: fhir_validator_app
+  hl7_validator_service:
     extends:
       file: docker-compose.background.yml
-      service: validator_service
-  fhir_validator_app:
-    extends:
-      file: docker-compose.background.yml
-      service: fhir_validator_app
+      service: hl7_validator_service
   nginx:
     extends:
       file: docker-compose.background.yml

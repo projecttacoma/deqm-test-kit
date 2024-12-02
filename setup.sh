@@ -1,3 +1,3 @@
 #!/bin/sh
-docker-compose pull
-docker-compose run inferno bundle exec inferno migrate
+docker compose pull
+docker compose run inferno bundle exec inferno migrate

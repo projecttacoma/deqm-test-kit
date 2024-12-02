@@ -1,7 +1,7 @@
 # DEQM Test Kit
 
 This repository is an [Inferno](https://github.com/inferno-community/inferno-core) test kit
-for testing conformance to the operations and resources specified in the 
+for testing conformance to the operations and resources specified in the
 [Data Exchange for Quality Measures (DEQM) Implementation Guide](http://hl7.org/fhir/us/davinci-deqm/).
 
 ## First Time Setup
@@ -16,9 +16,9 @@ run the first time database setup.
 `docker-compose.yml` is configured with many services that make using `deqm-test-kit` require minimal system-level configurations. Running with Docker will
 spin up the test kit as well as an instance of [deqm-test-server](https://github.com/projecttacoma/deqm-test-server/) for ease of testing it:
 
-``` bash
-docker-compose pull
-docker-compose up --build # --build is required to get any source code changes from the lib/ directory
+```bash
+docker compose pull
+docker compose up --build # --build is required to get any source code changes from the lib/ directory
 ```
 
 Navigate to http://localhost:4567 to run the tests in the Inferno web page
@@ -30,19 +30,19 @@ Make sure you have Ruby `>=3.1.2` installed.
 
 1. Install required dependencies:
 
-``` bash
+```bash
 bundle install
 ```
 
 2. Run the database setup locally to configure the database:
 
-``` bash
+```bash
 bundle exec inferno migrate
 ```
 
 3. Run the test kit locally with `puma`:
 
-``` bash
+```bash
 ASYNC_JOBS=false bundle exec puma
 ```
 
@@ -66,4 +66,3 @@ like a standard ruby gem (ruby libraries are called gems).
   you will first need to [make an account on
   rubygems](https://guides.rubygems.org/publishing/#publishing-to-rubygemsorg)
   and then run `gem build *.gemspec` and `gem push *.gem`.
-
