@@ -3,18 +3,18 @@
 require 'json'
 
 module DEQMTestKit
-  # tests for $evaluate-measure
+  # tests for $evaluate
   # rubocop:disable Metrics/ClassLength
   class EvaluateMeasure < Inferno::TestGroup
-    # module for shared code for $evaluate-measure assertions and requests
+    # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
       def measure_evaluation_assert_success(_report_type, resource_type, params, expected_status: 200)
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
         assert_success(resource_type, expected_status)
       end
 
       def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
         assert_error(expected_status)
       end
     end
@@ -36,8 +36,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure proper calculation for individual report with required query parameters'
-      id 'evaluate-measure-01'
+      title 'Check $evaluate proper calculation for individual report with required query parameters'
+      id 'evaluate-01'
       description %(Server should properly return an individual measure report when provided a
         Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
@@ -54,8 +54,8 @@ module DEQMTestKit
     # NOTE: this test will fail for deqm-test-server
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure proper calculation for subject-list report with required query parameters'
-      id 'evaluate-measure-02'
+      title 'Check $evaluate proper calculation for subject-list report with required query parameters'
+      id 'evaluate-02'
       description %(Server should properly return subject-list measure report when provided a
       Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
@@ -70,8 +70,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure proper calculation for population report with required query parameters'
-      id 'evaluate-measure-03'
+      title 'Check $evaluate proper calculation for population report with required query parameters'
+      id 'evaluate-03'
       description %(Server should properly return population measure report when provided a
       Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
@@ -80,14 +80,14 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
-        fhir_operation("/Measure/#{measure_id}/$evaluate-measure?#{params}")
+        fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
         measure_evaluation_assert_success('summary', :measure_report, params)
       end
     end
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure proper calculation for population report with Group subject'
-      id 'evaluate-measure-04'
+      title 'Check $evaluate proper calculation for population report with Group subject'
+      id 'evaluate-04'
       description %(Server should properly return population measure report when provided a
       Group ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
@@ -102,8 +102,8 @@ module DEQMTestKit
     end
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure fails for invalid measure ID'
-      id 'evaluate-measure-05'
+      title 'Check $evaluate fails for invalid measure ID'
+      id 'evaluate-05'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
@@ -117,8 +117,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure fails for invalid patient ID'
-      id 'evaluate-measure-06'
+      title 'Check $evaluate fails for invalid patient ID'
+      id 'evaluate-06'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
@@ -132,8 +132,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure fails for missing required query parameter'
-      id 'evaluate-measure-07'
+      title 'Check $evaluate fails for missing required query parameter'
+      id 'evaluate-07'
       description %(Server should not perform calculation and return a 400 response code
     when one of the required query parameters is omitted from the request. In this test,
       the measurement period start is omitted from the request.)
@@ -149,8 +149,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure fails for missing subject query parameter (subject report type)'
-      id 'evaluate-measure-08'
+      title 'Check $evaluate fails for missing subject query parameter (subject report type)'
+      id 'evaluate-08'
       description %(Server should not perform calculation and return a 400 response code
     when the subject report type is specified but no subject has been specified in the
       query parameters.)
@@ -166,8 +166,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check $evaluate-measure fails for invalid reportType'
-      id 'evaluate-measure-09'
+      title 'Check $evaluate fails for invalid reportType'
+      id 'evaluate-09'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
