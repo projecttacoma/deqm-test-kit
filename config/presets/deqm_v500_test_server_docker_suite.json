@@ -1,0 +1,63 @@
+{
+  "title": "DEQM Test Server Docker",
+  "id": "deqm_v500_test_server_docker",
+  "test_suite_id": "deqm_v500",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "host.docker.internal:3000/4_0_1"
+    },
+    {
+      "name": "measure_id",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "ColorectalCancerScreeningsFHIR&version=0.0.003"
+    },
+    {
+      "name": "data_requirements_reference_server",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "host.docker.internal:3000/4_0_1"
+    },
+    {
+      "name": "data_requirements_server_url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "host.docker.internal:3000/4_0_1"
+    },
+    {
+      "name": "patient_id",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "numer-EXM130"
+    },
+    {
+      "name": "group_id",
+      "description": "",
+      "title": "Group ID",
+      "type": "text",
+      "value": "EXM130-patients"
+    },
+    {
+      "name": "practitioner_id",
+      "description": "",
+      "title": "Practitioner ID",
+      "type": "text",
+      "value": "test-practitioner"
+    },
+    {
+      "name": "org_id",
+      "description": "",
+      "title": "Organization ID",
+      "type": "text",
+      "value": "test-organization"
+    }
+  ]
+}
