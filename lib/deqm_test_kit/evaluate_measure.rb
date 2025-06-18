@@ -280,21 +280,6 @@ module DEQMTestKit
         validate_parameters_contains_measurereport_bundles(parameters)
       end
     end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check operation returns when reportType=population is specified but no Group subject is provided'
-    #   id 'evaluate-14'
-    #   description %(Server should return 400 when no subject is specified in the input.)
-    #   input :measure_id, **measure_id_args
-    #   input :period_start, title: 'Measurement period start', default: '2019-01-01'
-    #   input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-    #   run do
-    #     params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
-    #     measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-    #   end
-    # end
   end
   # rubocop:enable Metrics/ClassLength
 end
