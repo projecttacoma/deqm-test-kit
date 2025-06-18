@@ -248,7 +248,6 @@ module DEQMTestKit
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
-      s
       run do
         params = "periodStart=#{INVALID_START_DATE}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
         measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
