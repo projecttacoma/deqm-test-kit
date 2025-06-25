@@ -46,7 +46,7 @@ module DEQMTestKit
       group from: :data_requirements
       group from: :fhir_queries
       group from: :submit_data
-      group from: :evaluate_measure,
+      group from: :evaluate,
             title: '$evaluate Operation',
             config: {
               options: { endpoint_name: 'evaluate' }

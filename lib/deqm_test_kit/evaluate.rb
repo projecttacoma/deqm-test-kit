@@ -3,7 +3,7 @@
 require 'json'
 
 module DEQMTestKit
-  # tests for $evaluate and $evaluate-measure
+  # tests for $evaluate
   # rubocop:disable Metrics/ClassLength
   class EvaluateMeasure < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
@@ -16,6 +16,36 @@ module DEQMTestKit
       def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
         fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
         assert_error(expected_status)
+      end
+
+      def validate_parameters_contains_measurereport_bundles(parameters)
+        assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
+        assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
+
+        parameters.parameter.each do |param|
+          assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
+          validate_bundle_contains_measure_report(param.resource)
+        end
+      end
+
+      def validate_bundle_contains_measure_report(bundle)
+        assert bundle.entry.is_a?(Array), 'Expected Bundle.entry to be an array'
+        assert bundle.entry.any?, 'Expected at least one entry in Bundle'
+
+        measure_reports = bundle.entry.map(&:resource).select { |res| res.is_a?(FHIR::MeasureReport) }
+        assert measure_reports.any?, 'Expected at least one MeasureReport in Bundle'
+
+        measure_reports.each { |report| validate_measure_report_fields(report) }
+      end
+
+      def validate_measure_report_fields(report) # rubocop:disable Metrics/AbcSize
+        assert report.status == 'complete', 'Expected MeasureReport.status to be "complete"'
+        assert report.measure.present?, 'MeasureReport.measure is missing'
+        assert report.period.present?, 'MeasureReport.period is missing'
+        assert report.period.start.present?, 'MeasureReport.period.start is missing'
+        assert report.period.end.present?, 'MeasureReport.period.end is missing'
+        assert %w[individual summary subject-list].include?(report.type),
+               "Unexpected MeasureReport.type: #{report.type}"
       end
     end
     id :evaluate_measure
@@ -32,6 +62,7 @@ module DEQMTestKit
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
     INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
+    INVALID_START_DATE = 'INVALID_START_DATE'
 
     test do
       include MeasureEvaluationHelpers
@@ -177,6 +208,75 @@ module DEQMTestKit
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
                  "&reportType=#{INVALID_REPORT_TYPE}"
         measure_evaluation_assert_failure(params, measure_id)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for invalid parameter structure in input'
+      id 'evaluate-10'
+      description %(Server should return 400 when the request contains malformed parameters, such as missing '=' or
+      invalid query format.)
+      input :measure_id, **measure_id_args
+
+      run do
+        params = 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123'
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for missing periodEnd parameter in input'
+      id 'evaluate-11'
+      description %(Server should return 400 when input is missing periodEnd parameter.)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+
+      run do
+        params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for invalid date format in periodStart parameter'
+      id 'evaluate-12'
+      description %(Server should return 400 when an input contains an invalid date format.)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      run do
+        params = "periodStart=#{INVALID_START_DATE}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation output matches parameter specifications'
+      id 'evaluate-13'
+      description %(Server returns a Parameters resource with one or more Bundles, each containing at least one
+        DEQM MeasureReport (Individual, Summary, or Subject List), and subsequent entries in the bundle are
+        data-of-interest. The response must always be wrapped in a Parameters resource, even if
+        only one Bundle is returned.)
+
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        result = fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_measurereport_bundles(parameters)
       end
     end
   end
