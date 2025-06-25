@@ -3,14 +3,21 @@
 require 'json'
 
 module DEQMTestKit
-  # tests for $evaluate
+  # tests for $evaluate (DEQM v5.0.0)
   # rubocop:disable Metrics/ClassLength
-  class EvaluateMeasure < Inferno::TestGroup
+  class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(_report_type, resource_type, params, expected_status: 200)
+      def measure_evaluation_assert_success(params, expected_status: 200)
         fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
-        assert_success(resource_type, expected_status)
+        assert_response_status(expected_status)
+
+        # For v5.0.0 $evaluate, we expect a Parameters resource
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        # Validate the Parameters resource structure
+        validate_parameters_contains_measurereport_bundles(resource)
       end
 
       def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
@@ -48,8 +55,9 @@ module DEQMTestKit
                "Unexpected MeasureReport.type: #{report.type}"
       end
     end
-    id :evaluate_measure
-    description 'Ensure FHIR server can calculate a measure'
+
+    id :evaluate
+    description 'Ensure FHIR server can calculate a measure using $evaluate operation (DEQM v5.0.0)'
 
     fhir_client do
       url :url
@@ -68,8 +76,8 @@ module DEQMTestKit
       include MeasureEvaluationHelpers
       title 'Check proper calculation for individual report with required query parameters'
       id 'evaluate-01'
-      description %(Server should properly return an individual measure report when provided a
-        Patient ID and required query parameters \(period start, period end\).)
+      description %(Server should properly return a Parameters resource containing Bundles with individual
+        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
@@ -77,24 +85,23 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_success('individual', :measure_report, params)
+        measure_evaluation_assert_success(params)
       end
     end
 
-    # NOTE: this test will fail for deqm-test-server
     test do
       include MeasureEvaluationHelpers
       title 'Check proper calculation for subject-list report with required query parameters'
       id 'evaluate-02'
-      description %(Server should properly return subject-list measure report when provided a
-      Patient ID and required query parameters \(period start, period end\).)
+      description %(Server should properly return a Parameters resource containing Bundles with subject-list
+        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
-        measure_evaluation_assert_success('subject-list', :measure_report, params)
+        measure_evaluation_assert_success(params)
       end
     end
 
@@ -102,24 +109,24 @@ module DEQMTestKit
       include MeasureEvaluationHelpers
       title 'Check proper calculation for population report with required query parameters'
       id 'evaluate-03'
-      description %(Server should properly return population measure report when provided a
-      Patient ID and required query parameters \(period start, period end\).)
+      description %(Server should properly return a Parameters resource containing Bundles with population
+        measure reports when provided required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
-        measure_evaluation_assert_success('summary', :measure_report, params)
+        measure_evaluation_assert_success(params)
       end
     end
+
     test do
       include MeasureEvaluationHelpers
       title 'Check proper calculation for population report with Group subject'
       id 'evaluate-04'
-      description %(Server should properly return population measure report when provided a
-      Group ID and required query parameters \(period start, period end\).)
+      description %(Server should properly return a Parameters resource containing Bundles with population
+        measure reports when provided a Group ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
@@ -127,9 +134,10 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
-        measure_evaluation_assert_success('summary', :measure_report, params)
+        measure_evaluation_assert_success(params)
       end
     end
+
     test do
       include MeasureEvaluationHelpers
       title 'Check operation fails for invalid measure ID'
