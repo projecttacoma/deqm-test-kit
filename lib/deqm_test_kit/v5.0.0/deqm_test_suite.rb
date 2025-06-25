@@ -7,7 +7,7 @@ require_relative '../submit_data'
 require_relative '../fhir_queries'
 require_relative '../bulk_submit_data'
 require_relative '../bulk_import'
-require_relative '../evaluate_measure'
+require_relative '../evaluate'
 
 module DEQMTestKit
   # Test suite for DEQM Version 5.0.0
