@@ -16,23 +16,12 @@ RSpec.describe DEQMTestKit::Evaluate do
   # Helper method to create a valid Parameters response
   def create_parameters_response(measure_report_type)
     measure_report = FHIR::MeasureReport.new(
-      status: 'complete',
-      type: measure_report_type,
+      status: 'complete', type: measure_report_type,
       measure: 'measure-EXM130-7.3.000',
-      period: {
-        start: '2019-01-01',
-        end: '2019-12-31'
-      }
+      period: { start: '2019-01-01', end: '2019-12-31' }
     )
-
-    bundle = FHIR::Bundle.new(
-      type: 'collection',
-      entry: [{ resource: measure_report }]
-    )
-
-    FHIR::Parameters.new(
-      parameter: [{ resource: bundle }]
-    )
+    bundle = FHIR::Bundle.new(type: 'collection', entry: [{ resource: measure_report }])
+    FHIR::Parameters.new(parameter: [{ resource: bundle }])
   end
 
   def run(runnable, inputs = {})
@@ -401,6 +390,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     end
   end
 
+  # Additional tests for new functionality
   describe '$evaluate fails for invalid parameter structure' do
     let(:test) { group.tests[9] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
