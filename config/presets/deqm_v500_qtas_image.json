@@ -1,0 +1,63 @@
+{
+  "title": "QTAS Image",
+  "id": "deqm_v500_qtas_image",
+  "test_suite_id": "deqm_v500",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "http://localhost:8080/fhir"
+    },
+    {
+      "name": "measure_id",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "ColorectalCancerScreeningsFHIR"
+    },
+    {
+      "name": "data_requirements_reference_server",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "http://localhost:8080/fhir"
+    },
+    {
+      "name": "data_requirements_server_url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "http://localhost:8080/fhir"
+    },
+    {
+      "name": "patient_id",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "numer-EXM130"
+    },
+    {
+      "name": "group_id",
+      "description": "",
+      "title": "Group ID",
+      "type": "text",
+      "value": "EXM130-patients"
+    },
+    {
+      "name": "practitioner_id",
+      "description": "",
+      "title": "Practitioner ID",
+      "type": "text",
+      "value": "test-practitioner"
+    },
+    {
+      "name": "org_id",
+      "description": "",
+      "title": "Organization ID",
+      "type": "text",
+      "value": "test-organization"
+    }
+  ]
+}
