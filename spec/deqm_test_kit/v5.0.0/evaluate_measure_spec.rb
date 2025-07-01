@@ -33,16 +33,15 @@ RSpec.describe DEQMTestKit::Evaluate do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
-  # Test 01: Check operation output matches parameter specifications (moved from test 12)
   describe '$evaluate output matches parameter specifications' do
-    let(:test) { group.tests[0] }
+    let(:test) { group.tests.first }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
 
-    it 'passes for valid parameter specification response' do
+    it 'passes with correct Operation-Outcome returned' do
       parameters_response = create_parameters_response('individual')
 
       stub_request(
@@ -56,7 +55,6 @@ RSpec.describe DEQMTestKit::Evaluate do
     end
   end
 
-  # Test 02: Check proper calculation for individual report with required query parameters
   describe '$evaluate successful individual report test' do
     let(:test) { group.tests[1] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -78,9 +76,35 @@ RSpec.describe DEQMTestKit::Evaluate do
                          period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if $evaluate does not return 200' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 404, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+
+    it 'fails if $evaluate does not return Parameters resource' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: test_library.to_json)
+
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/Parameters/)
+    end
   end
 
-  # Test 03: Check proper calculation for subject-list report with required query parameters
   describe '$evaluate successful subject-list report test' do
     let(:test) { group.tests[2] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -100,9 +124,34 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if $evaluate does not return 200' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 400, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, period_start:,
+                         period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+
+    it 'fails if $evaluate does not return Parameters resource' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: test_library.to_json)
+
+      result = run(test, url:, measure_id:, period_start:, period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/Parameters/)
+    end
   end
 
-  # Test 04: Check proper calculation for population report with required query parameters
   describe '$evaluate successful population report test' do
     let(:test) { group.tests[3] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -122,9 +171,34 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if $evaluate does not return 200' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 404, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, period_start:,
+                         period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+
+    it 'fails if $evaluate does not return Parameters resource' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: test_library.to_json)
+
+      result = run(test, url:, measure_id:, period_start:, period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/Parameters/)
+    end
   end
 
-  # Test 05: Check proper calculation for population report with Group subject
   describe '$evaluate successful population report with Group subject test' do
     let(:test) { group.tests[4] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -148,9 +222,35 @@ RSpec.describe DEQMTestKit::Evaluate do
                          group_id:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if $evaluate does not return 200' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 400, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, period_start:, period_end:,
+                         group_id:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+
+    it 'fails if $evaluate does not return Parameters resource' do
+      test_library = FHIR::Library.new
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: test_library.to_json)
+
+      result = run(test, url:, measure_id:, period_start:, period_end:,
+                         group_id:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/Parameters/)
+    end
   end
 
-  # Test 06: Check operation fails for invalid measure ID
   describe '$evaluate fails for invalid measure id' do
     let(:test) { group.tests[5] }
     let(:patient_id) { 'numer-EXM130' }
@@ -168,9 +268,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if server does not return 404 for invalid measure id' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{INVALID_MEASURE_ID}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url:, patient_id:, period_start:, period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/404/)
+    end
   end
 
-  # Test 07: Check operation fails for invalid patient ID
   describe '$evaluate fails for invalid patient id' do
     let(:test) { group.tests[6] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -188,9 +299,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if server does not return 404 for invalid patient id' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, period_start:, period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/404/)
+    end
   end
 
-  # Test 08: Check operation fails for missing required query parameter
   describe '$evaluate fails for missing required params' do
     let(:test) { group.tests[7] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -208,9 +330,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, measure_id:, patient_id:, period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if server does not return 400 for missing param' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, patient_id:, period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/400/)
+    end
   end
 
-  # Test 09: Check operation fails for missing subject query parameter (subject report type)
   describe '$evaluate fails for missing subject param for individual report type' do
     let(:test) { group.tests[8] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -228,9 +361,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if server does not return 400 for missing subject param' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, period_start:, period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/400/)
+    end
   end
 
-  # Test 10: Check operation fails for invalid reportType
   describe '$evaluate fails for invalid reportType' do
     let(:test) { group.tests[9] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -253,9 +397,22 @@ RSpec.describe DEQMTestKit::Evaluate do
                          period_end:)
       expect(result.result).to eq('pass')
     end
+
+    it 'fails if server does not return 400 for invalid reportType' do
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, patient_id:, period_start:,
+                         period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/400/)
+    end
   end
 
-  # Test 11: Check operation fails for invalid parameter structure in input
+  # Additional tests for new functionality
   describe '$evaluate fails for invalid parameter structure' do
     let(:test) { group.tests[10] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -273,7 +430,6 @@ RSpec.describe DEQMTestKit::Evaluate do
     end
   end
 
-  # Test 12: Check operation fails for missing periodEnd parameter in input
   describe '$evaluate fails for missing periodEnd parameter' do
     let(:test) { group.tests[11] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
