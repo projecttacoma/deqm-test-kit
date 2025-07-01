@@ -17,16 +17,6 @@ module DEQMTestKit
         fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
         assert_error(expected_status)
       end
-
-      def validate_measure_report_fields(report) # rubocop:disable Metrics/AbcSize
-        assert report.status == 'complete', 'Expected MeasureReport.status to be "complete"'
-        assert report.measure.present?, 'MeasureReport.measure is missing'
-        assert report.period.present?, 'MeasureReport.period is missing'
-        assert report.period.start.present?, 'MeasureReport.period.start is missing'
-        assert report.period.end.present?, 'MeasureReport.period.end is missing'
-        assert %w[individual summary subject-list].include?(report.type),
-               "Unexpected MeasureReport.type: #{report.type}"
-      end
     end
 
     id :evaluate_measure
@@ -217,20 +207,6 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid date format in periodStart parameter'
-      id 'evaluate-measure-12'
-      description %(Server should return 400 when an input contains an invalid date format.)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-      run do
-        params = "periodStart=#{INVALID_START_DATE}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
         measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
       end
     end

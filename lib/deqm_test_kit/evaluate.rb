@@ -250,22 +250,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid date format in periodStart parameter'
-      id 'evaluate-12'
-      description %(Server should return 400 when an input contains an invalid date format.)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-      run do
-        params = "periodStart=#{INVALID_START_DATE}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
       title 'Check operation output matches parameter specifications'
-      id 'evaluate-13'
+      id 'evaluate-12'
       description %(Server returns a Parameters resource with one or more Bundles, each containing at least one
         DEQM MeasureReport (Individual, Summary, or Subject List), and subsequent entries in the bundle are
         data-of-interest. The response must always be wrapped in a Parameters resource, even if

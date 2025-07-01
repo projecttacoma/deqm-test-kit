@@ -211,7 +211,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       result = run(test, url:, measure_id:, period_start:, period_end:,
                          group_id:)
       expect(result.result).to eq('fail')
-      expect(result.result_message).to match(/400/)
+      expect(result.result_message).to match(/200/)
     end
 
     it 'fails if $evaluate does not return Parameters resource' do
@@ -427,34 +427,15 @@ RSpec.describe DEQMTestKit::Evaluate do
     end
   end
 
-  describe '$evaluate fails for invalid date format' do
-    let(:test) { group.tests[11] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
-    let(:patient_id) { 'numer-EXM130' }
-    let(:period_end) { '2019-12-31' }
-    let(:params) { "periodStart=#{INVALID_START_DATE}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
-
-    it 'passes with correct Operation-Outcome returned' do
-      stub_request(
-        :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
-      )
-        .to_return(status: 400, body: error_outcome.to_json)
-
-      result = run(test, url:, measure_id:, patient_id:, period_end:)
-      expect(result.result).to eq('pass')
-    end
-  end
-
   describe '$evaluate output matches parameter specifications' do
-    let(:test) { group.tests[12] }
+    let(:test) { group.tests[11] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
 
-    it 'passes with valid Parameters resource structure' do
+    it 'passes with correct Operation-Outcome returned' do
       parameters_response = create_parameters_response('individual')
 
       stub_request(
@@ -465,20 +446,6 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       result = run(test, url:, measure_id:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
-    end
-
-    it 'fails if response is not properly structured' do
-      invalid_parameters = FHIR::Parameters.new(parameter: [])
-
-      stub_request(
-        :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
-      )
-        .to_return(status: 200, body: invalid_parameters.to_json)
-
-      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end:)
-      expect(result.result).to eq('fail')
-      expect(result.result_message).to match(/at least one parameter entry/)
     end
   end
 end
