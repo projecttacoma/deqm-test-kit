@@ -74,184 +74,8 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check proper calculation for individual report with required query parameters'
-      id 'evaluate-01'
-      description %(Server should properly return a Parameters resource containing Bundles with individual
-        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_success(params)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check proper calculation for subject-list report with required query parameters'
-      id 'evaluate-02'
-      description %(Server should properly return a Parameters resource containing Bundles with subject-list
-        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
-        measure_evaluation_assert_success(params)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check proper calculation for population report with required query parameters'
-      id 'evaluate-03'
-      description %(Server should properly return a Parameters resource containing Bundles with population
-        measure reports when provided required query parameters \(period start, period end\).)
-      input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
-        measure_evaluation_assert_success(params)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check proper calculation for population report with Group subject'
-      id 'evaluate-04'
-      description %(Server should properly return a Parameters resource containing Bundles with population
-        measure reports when provided a Group ID and required query parameters \(period start, period end\).)
-      input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-      input :group_id, title: 'Group ID'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
-        measure_evaluation_assert_success(params)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid measure ID'
-      id 'evaluate-05'
-      description 'Request returns a 404 error when the given measure ID cannot be found.'
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_failure(params, INVALID_MEASURE_ID, expected_status: 404)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid patient ID'
-      id 'evaluate-06'
-      description 'Request returns a 404 error when the given patient ID cannot be found'
-      input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
-        measure_evaluation_assert_failure(params, measure_id, expected_status: 404)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for missing required query parameter'
-      id 'evaluate-07'
-      description %(Server should not perform calculation and return a 400 response code
-    when one of the required query parameters is omitted from the request. In this test,
-      the measurement period start is omitted from the request.)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_failure(params, measure_id)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for missing subject query parameter (subject report type)'
-      id 'evaluate-08'
-      description %(Server should not perform calculation and return a 400 response code
-    when the subject report type is specified but no subject has been specified in the
-      query parameters.)
-      input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject"
-        measure_evaluation_assert_failure(params, measure_id)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid reportType'
-      id 'evaluate-09'
-      description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
-                 "&reportType=#{INVALID_REPORT_TYPE}"
-        measure_evaluation_assert_failure(params, measure_id)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid parameter structure in input'
-      id 'evaluate-10'
-      description %(Server should return 400 when the request contains malformed parameters, such as missing '=' or
-      invalid query format.)
-      input :measure_id, **measure_id_args
-
-      run do
-        params = 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123'
-        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for missing periodEnd parameter in input'
-      id 'evaluate-11'
-      description %(Server should return 400 when input is missing periodEnd parameter.)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-
-      run do
-        params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
       title 'Check operation output matches parameter specifications'
-      id 'evaluate-12'
+      id 'evaluate-01'
       description %(Server returns a Parameters resource with one or more Bundles, each containing at least one
         DEQM MeasureReport (Individual, Summary, or Subject List), and subsequent entries in the bundle are
         data-of-interest. The response must always be wrapped in a Parameters resource, even if
@@ -271,6 +95,182 @@ module DEQMTestKit
 
         parameters = result.resource
         validate_parameters_contains_measurereport_bundles(parameters)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check proper calculation for individual report with required query parameters'
+      id 'evaluate-02'
+      description %(Server should properly return a Parameters resource containing Bundles with individual
+        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_success(params)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check proper calculation for subject-list report with required query parameters'
+      id 'evaluate-03'
+      description %(Server should properly return a Parameters resource containing Bundles with subject-list
+        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
+        measure_evaluation_assert_success(params)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check proper calculation for population report with required query parameters'
+      id 'evaluate-04'
+      description %(Server should properly return a Parameters resource containing Bundles with population
+        measure reports when provided required query parameters \(period start, period end\).)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
+        measure_evaluation_assert_success(params)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check proper calculation for population report with Group subject'
+      id 'evaluate-05'
+      description %(Server should properly return a Parameters resource containing Bundles with population
+        measure reports when provided a Group ID and required query parameters \(period start, period end\).)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
+        measure_evaluation_assert_success(params)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for invalid measure ID'
+      id 'evaluate-06'
+      description 'Request returns a 404 error when the given measure ID cannot be found.'
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_failure(params, INVALID_MEASURE_ID, expected_status: 404)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for invalid patient ID'
+      id 'evaluate-07'
+      description 'Request returns a 404 error when the given patient ID cannot be found'
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 404)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for missing required query parameter'
+      id 'evaluate-08'
+      description %(Server should not perform calculation and return a 400 response code
+    when one of the required query parameters is omitted from the request. In this test,
+      the measurement period start is omitted from the request.)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_failure(params, measure_id)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for missing subject query parameter (subject report type)'
+      id 'evaluate-09'
+      description %(Server should not perform calculation and return a 400 response code
+    when the subject report type is specified but no subject has been specified in the
+      query parameters.)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject"
+        measure_evaluation_assert_failure(params, measure_id)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for invalid reportType'
+      id 'evaluate-10'
+      description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
+                 "&reportType=#{INVALID_REPORT_TYPE}"
+        measure_evaluation_assert_failure(params, measure_id)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for invalid parameter structure in input'
+      id 'evaluate-11'
+      description %(Server should return 400 when the request contains malformed parameters, such as missing '=' or
+      invalid query format.)
+      input :measure_id, **measure_id_args
+
+      run do
+        params = 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123'
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check operation fails for missing periodEnd parameter in input'
+      id 'evaluate-12'
+      description %(Server should return 400 when input is missing periodEnd parameter.)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+
+      run do
+        params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
       end
     end
   end
