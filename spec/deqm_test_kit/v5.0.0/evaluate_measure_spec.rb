@@ -41,7 +41,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
 
-    it 'passes with correct Operation-Outcome returned' do
+    it 'passes with correct parameter resource returned' do
       parameters_response = create_parameters_response('individual')
 
       stub_request(
