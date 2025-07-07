@@ -8,20 +8,33 @@ module DEQMTestKit
   class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(params, expected_status: 200)
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
+      def measure_evaluation_assert_success(params, measure_ids = nil, expected_status: 200)
+        full_params = build_measure_params(params, measure_ids)
+        fhir_operation("/Measure/$#{config.options[:endpoint_name]}?#{full_params}")
         assert_response_status(expected_status)
+        validate_parameters_resource
+      end
 
-        # For v5.0.0 $evaluate, we expect a Parameters resource
+      def build_measure_params(params, measure_ids)
+        ids = normalize_measure_ids(measure_ids)
+        measure_params = ids.map { |id| "measureId=#{id}" }.join('&')
+        measure_params + (params.empty? ? '' : "&#{params}")
+      end
+
+      def normalize_measure_ids(measure_ids)
+        ids = measure_ids || (measure_id.is_a?(Array) ? measure_id : [measure_id])
+        ids.is_a?(Array) ? ids : [ids]
+      end
+
+      def validate_parameters_resource
         assert resource.is_a?(FHIR::Parameters),
                "Expected resource to be a Parameters resource, but got #{resource&.class}"
-
-        # Validate the Parameters resource structure
         validate_parameters_contains_measurereport_bundles(resource)
       end
 
-      def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
+      def measure_evaluation_assert_failure(params, measure_ids = nil, expected_status: 400)
+        full_params = build_measure_params(params, measure_ids)
+        fhir_operation("/Measure/$#{config.options[:endpoint_name]}?#{full_params}")
         assert_error(expected_status)
       end
 
@@ -64,7 +77,7 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
+    measure_id_args = { type: 'checkbox', optional: false, default: ['ColorectalCancerScreeningsFHIR'],
                         options: measure_options, title: 'Measure Title' }
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
