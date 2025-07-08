@@ -22,8 +22,15 @@ module DEQMTestKit
       end
 
       def normalize_measure_ids(measure_ids)
-        ids = measure_ids || (measure_id.is_a?(Array) ? measure_id : [measure_id])
+        ids = measure_ids || parse_measure_id(measure_id)
         ids.is_a?(Array) ? ids : [ids]
+      end
+
+      def parse_measure_id(id_value)
+        return id_value if id_value.is_a?(Array)
+        return JSON.parse(id_value) if id_value.is_a?(String) && id_value.start_with?('[')
+
+        [id_value]
       end
 
       def validate_parameters_resource
@@ -102,7 +109,9 @@ module DEQMTestKit
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        result = fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
+        # Handle measure_id as array for multi input
+        single_measure_id = measure_id.is_a?(Array) ? measure_id.first : measure_id
+        result = fhir_operation("/Measure/#{single_measure_id}/$evaluate?#{params}")
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
@@ -285,6 +294,24 @@ module DEQMTestKit
       run do
         params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
         measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+      title 'Check proper calculation for multiple measures using Measure/$evaluate'
+      id 'evaluate-13'
+      description %(Server should properly return a Parameters resource containing Bundles with
+        measure reports when provided multiple measure IDs using the Measure/$evaluate endpoint
+        with multiple measureId parameters.)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+
+      run do
+        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_evaluation_assert_success(params, measure_id)
       end
     end
   end

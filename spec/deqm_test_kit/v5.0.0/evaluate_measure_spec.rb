@@ -24,18 +24,23 @@ RSpec.describe DEQMTestKit::Evaluate do
     FHIR::Parameters.new(parameter: [{ resource: bundle }])
   end
 
-  def run(runnable, inputs = {})
+  def run(runnable, inputs = {}) # rubocop:disable Metrics/AbcSize
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
     inputs.each do |name, value|
-      session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
+      # Handle measure_id as JSON array for checkbox inputs
+      if name == :measure_id && value.is_a?(Array)
+        session_data_repo.save(test_session_id: test_session.id, name:, value: value.to_json, type: 'text')
+      else
+        session_data_repo.save(test_session_id: test_session.id, name:, value:, type: 'text')
+      end
     end
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
   describe '$evaluate output matches parameter specifications' do
     let(:test) { group.tests.first }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -46,7 +51,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id.first}/$evaluate?#{params}"
       )
         .to_return(status: 200, body: parameters_response.to_json)
 
@@ -57,7 +62,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate successful individual report test' do
     let(:test) { group.tests[1] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -68,7 +73,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: parameters_response.to_json)
 
@@ -80,7 +85,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
 
@@ -94,7 +99,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: test_library.to_json)
 
@@ -107,7 +112,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate successful subject-list report test' do
     let(:test) { group.tests[2] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list" }
@@ -117,7 +122,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: parameters_response.to_json)
 
@@ -128,7 +133,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -142,7 +147,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: test_library.to_json)
 
@@ -154,7 +159,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate successful population report test' do
     let(:test) { group.tests[3] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population" }
@@ -164,7 +169,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: parameters_response.to_json)
 
@@ -175,7 +180,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
 
@@ -189,7 +194,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: test_library.to_json)
 
@@ -201,7 +206,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate successful population report with Group subject test' do
     let(:test) { group.tests[4] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:group_id) { 'EXM130-patients' }
@@ -214,7 +219,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: parameters_response.to_json)
 
@@ -226,7 +231,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -240,7 +245,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: test_library.to_json)
 
@@ -261,7 +266,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{INVALID_MEASURE_ID}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{INVALID_MEASURE_ID}&#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
 
@@ -272,7 +277,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if server does not return 404 for invalid measure id' do
       stub_request(
         :post,
-        "#{url}/Measure/#{INVALID_MEASURE_ID}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{INVALID_MEASURE_ID}&#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
 
@@ -284,7 +289,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate fails for invalid patient id' do
     let(:test) { group.tests[6] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}" }
@@ -292,7 +297,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 404, body: error_outcome.to_json)
 
@@ -303,7 +308,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if server does not return 404 for invalid patient id' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
 
@@ -315,7 +320,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate fails for missing required params' do
     let(:test) { group.tests[7] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
@@ -323,7 +328,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -334,7 +339,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if server does not return 400 for missing param' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
 
@@ -346,7 +351,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate fails for missing subject param for individual report type' do
     let(:test) { group.tests[8] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
     let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject" }
@@ -354,7 +359,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -365,7 +370,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if server does not return 400 for missing subject param' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
 
@@ -377,7 +382,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate fails for invalid reportType' do
     let(:test) { group.tests[9] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -389,7 +394,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -401,7 +406,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if server does not return 400 for invalid reportType' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 200, body: error_outcome.to_json)
 
@@ -415,13 +420,13 @@ RSpec.describe DEQMTestKit::Evaluate do
   # Additional tests for new functionality
   describe '$evaluate fails for invalid parameter structure' do
     let(:test) { group.tests[10] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:params) { 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123' }
 
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -432,7 +437,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   describe '$evaluate fails for missing periodEnd parameter' do
     let(:test) { group.tests[11] }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:measure_id) { ['measure-EXM130-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:params) { "periodStart=#{period_start}&subject=Patient/#{patient_id}" }
@@ -440,11 +445,47 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'passes with correct Operation-Outcome returned' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate?measureId=#{measure_id.first}&#{params}"
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
       result = run(test, url:, measure_id:, patient_id:, period_start:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe '$evaluate successful multi-measure report test' do
+    let(:test) { group.tests[12] }
+    let(:measure_id) { ['measure-EXM130-7.3.000', 'measure-EXM124-7.3.000'] }
+    let(:patient_id) { 'numer-EXM130' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
+
+    it 'passes for valid multi-measure report' do
+      measure_report_first = FHIR::MeasureReport.new(
+        status: 'complete', type: 'individual',
+        measure: 'measure-EXM130-7.3.000',
+        period: { start: '2019-01-01', end: '2019-12-31' }
+      )
+      measure_report_second = FHIR::MeasureReport.new(
+        status: 'complete', type: 'individual',
+        measure: 'measure-EXM124-7.3.000',
+        period: { start: '2019-01-01', end: '2019-12-31' }
+      )
+
+      bundle_first = FHIR::Bundle.new(type: 'collection', entry: [{ resource: measure_report_first }])
+      bundle_second = FHIR::Bundle.new(type: 'collection', entry: [{ resource: measure_report_second }])
+
+      parameters_response = FHIR::Parameters.new(parameter: [{ resource: bundle_first }, { resource: bundle_second }])
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate?measureId=#{measure_id[0]}&measureId=#{measure_id[1]}&#{params}"
+      )
+        .to_return(status: 200, body: parameters_response.to_json)
+
+      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
   end
