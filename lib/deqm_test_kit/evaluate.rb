@@ -8,7 +8,6 @@ module DEQMTestKit
   class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-
       def measure_evaluation_assert_success(params, measure_ids = nil, expected_status: 200)
         full_params = build_measure_params(params, measure_ids)
         fhir_operation("/Measure/$#{config.options[:endpoint_name]}?#{full_params}")
