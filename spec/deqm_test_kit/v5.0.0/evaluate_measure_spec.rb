@@ -55,8 +55,67 @@ RSpec.describe DEQMTestKit::Evaluate do
     end
   end
 
-  describe '$evaluate successful individual report test' do
+  describe '$evaluate output with multiple measures using Measure/$evaluate' do
     let(:test) { group.tests[1] }
+    let(:measure_id) { 'measure-EXM130-7.3.000' }
+    let(:additional_measures) { ['measure-EXM124-7.3.000'] }
+    let(:patient_id) { 'numer-EXM130' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:params) do
+      "measureId=#{measure_id}&measureId=#{additional_measures.first}&periodStart=#{period_start}" \
+        "&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+    end
+
+    it 'passes with correct Parameters resource containing multiple bundles' do
+      # Create a Parameters response with a single bundle containing multiple entries
+      measure_report_first = FHIR::MeasureReport.new(
+        status: 'complete', type: 'individual',
+        measure: measure_id,
+        period: { start: period_start, end: period_end }
+      )
+      measure_report_second = FHIR::MeasureReport.new(
+        status: 'complete', type: 'individual',
+        measure: additional_measures.first,
+        period: { start: period_start, end: period_end }
+      )
+      bundle = FHIR::Bundle.new(type: 'collection', entry: [
+                                  { resource: measure_report_first },
+                                  { resource: measure_report_second }
+                                ])
+      parameters_response = FHIR::Parameters.new(parameter: [
+                                                   { resource: bundle }
+                                                 ])
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate?#{params}"
+      )
+        .to_return(status: 200, body: parameters_response.to_json)
+
+      result = run(test, url:, measure_id:, additional_measures:, patient_id:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'fails if one of the multiple measures is invalid' do
+      invalid_measure_params = "measureId=#{measure_id}&measureId=#{INVALID_MEASURE_ID}&periodStart=#{period_start}" \
+                               "&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate?#{invalid_measure_params}"
+      )
+        .to_return(status: 404, body: error_outcome.to_json)
+
+      result = run(test, url:, measure_id:, additional_measures: [INVALID_MEASURE_ID], patient_id:, period_start:,
+                         period_end:)
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/200/)
+    end
+  end
+
+  describe '$evaluate successful individual report test' do
+    let(:test) { group.tests[2] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -106,7 +165,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate successful subject-list report test' do
-    let(:test) { group.tests[2] }
+    let(:test) { group.tests[3] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -153,7 +212,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate successful population report test' do
-    let(:test) { group.tests[3] }
+    let(:test) { group.tests[4] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -200,7 +259,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate successful population report with Group subject test' do
-    let(:test) { group.tests[4] }
+    let(:test) { group.tests[5] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -252,7 +311,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate fails for invalid measure id' do
-    let(:test) { group.tests[5] }
+    let(:test) { group.tests[6] }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -283,7 +342,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate fails for invalid patient id' do
-    let(:test) { group.tests[6] }
+    let(:test) { group.tests[7] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -314,7 +373,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate fails for missing required params' do
-    let(:test) { group.tests[7] }
+    let(:test) { group.tests[8] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_end) { '2019-12-31' }
@@ -345,7 +404,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate fails for missing subject param for individual report type' do
-    let(:test) { group.tests[8] }
+    let(:test) { group.tests[9] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -376,7 +435,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate fails for invalid reportType' do
-    let(:test) { group.tests[9] }
+    let(:test) { group.tests[10] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -414,7 +473,7 @@ RSpec.describe DEQMTestKit::Evaluate do
 
   # Additional tests for new functionality
   describe '$evaluate fails for invalid parameter structure' do
-    let(:test) { group.tests[10] }
+    let(:test) { group.tests[11] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:params) { 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123' }
 
@@ -431,7 +490,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate fails for missing periodEnd parameter' do
-    let(:test) { group.tests[11] }
+    let(:test) { group.tests[12] }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
