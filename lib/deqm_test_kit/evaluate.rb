@@ -67,7 +67,7 @@ module DEQMTestKit
     measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
                         options: measure_options, title: 'Measure Title' }
     additional_measures_args = { type: 'checkbox', optional: true,
-                                 options: measure_options, title: 'Additional Measure Ids' }
+                                 options: measure_options, title: 'Additional Measure Ids', default: [''] }
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
