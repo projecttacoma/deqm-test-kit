@@ -8,8 +8,22 @@ module DEQMTestKit
   class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(params, expected_status: 200)
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
+      def measure_evaluation_assert_success(_params, expected_status: 200)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: '2019-01-01'
+            },
+            {
+              name: 'periodEnd',
+              valueDate: '2019-12-31'
+            }
+          ]
+        }
+        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}",
+                       headers: { 'Content-Type': 'application/json+fhir' }, body:)
         assert_response_status(expected_status)
 
         # For v5.0.0 $evaluate, we expect a Parameters resource
@@ -89,8 +103,21 @@ module DEQMTestKit
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        result = fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: '2019-01-01'
+            },
+            {
+              name: 'periodEnd',
+              valueDate: '2019-12-31'
+            }
+          ]
+        }
+        result = fhir_operation("/Measure/#{measure_id}/$evaluate",
+                                headers: { 'Content-Type': 'application/json+fhir' }, body:)
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
@@ -117,10 +144,24 @@ module DEQMTestKit
         measure_ids = [measure_id]
         measure_ids += additional_measures if additional_measures&.any?
 
-        measure_params = measure_ids.map { |id| "measureId=#{id}" }.join('&')
-        params = "#{measure_params}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_params = measure_ids.map { |id| { name: 'measureId', valueString: id } }
 
-        fhir_operation("/Measure/$evaluate?#{params}")
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+
+              name: 'periodStart',
+              valueDate: '2019-01-01'
+            },
+            {
+              name: 'periodEnd',
+              valueDate: '2019-12-31'
+            }
+          ].concat(measure_params)
+        }
+        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+
         assert_response_status(200)
 
         assert resource.is_a?(FHIR::Parameters),

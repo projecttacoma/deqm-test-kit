@@ -9,7 +9,21 @@ module DEQMTestKit
     # module for shared code for $evaluate-measure assertions and requests
     module MeasureEvaluationHelpers
       def measure_evaluation_assert_success(_report_type, resource_type, params, expected_status: 200)
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: '2019-01-01'
+            },
+            {
+              name: 'periodEnd',
+              valueDate: '2019-12-31'
+            }
+          ]
+        }
+        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}",
+                       headers: { 'Content-Type': 'application/json+fhir' }, body:)
         assert_success(resource_type, expected_status)
       end
 

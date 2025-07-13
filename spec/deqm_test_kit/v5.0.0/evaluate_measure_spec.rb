@@ -39,16 +39,26 @@ RSpec.describe DEQMTestKit::Evaluate do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:params) { "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" }
 
     it 'passes with correct parameter resource returned' do
       parameters_response = create_parameters_response('individual')
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: parameters_response.to_json)
+        .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_id:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
@@ -62,10 +72,6 @@ RSpec.describe DEQMTestKit::Evaluate do
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
-    let(:params) do
-      "measureId=#{measure_id}&measureId=#{additional_measures.first}&periodStart=#{period_start}" \
-        "&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-    end
 
     it 'passes with correct Parameters resource containing multiple bundles' do
       # Create a Parameters response with a single bundle containing multiple entries
@@ -89,23 +95,42 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/$evaluate?#{params}"
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"measure-EXM124-7.3.000"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '257',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: parameters_response.to_json)
+        .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_id:, additional_measures:, patient_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
     end
 
     it 'fails if one of the multiple measures is invalid' do
-      invalid_measure_params = "measureId=#{measure_id}&measureId=#{INVALID_MEASURE_ID}&periodStart=#{period_start}" \
-                               "&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-
       stub_request(
         :post,
-        "#{url}/Measure/$evaluate?#{invalid_measure_params}"
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"INVALID_MEASURE_ID"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '253',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 404, body: error_outcome.to_json)
+        .to_return(status: 404, body: error_outcome.to_json, headers: {})
 
       result = run(test, url:, measure_id:, additional_measures: [INVALID_MEASURE_ID], patient_id:, period_start:,
                          period_end:)
@@ -127,9 +152,20 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: parameters_response.to_json)
+        .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_id:, patient_id:, period_start:,
                          period_end:)
@@ -139,9 +175,20 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 404, body: error_outcome.to_json)
+        .to_return(status: 404, body: error_outcome.to_json, headers: {})
 
       result = run(test, url:, measure_id:, patient_id:, period_start:,
                          period_end:)
@@ -153,9 +200,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate?"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: test_library.to_json)
+        .to_return(status: 200, body: test_library.to_json, headers: {})
 
       result = run(test, url:, measure_id:, patient_id:, period_start:,
                          period_end:)
@@ -176,9 +234,20 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: parameters_response.to_json)
+        .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('pass')
@@ -187,7 +256,18 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
@@ -201,9 +281,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: test_library.to_json)
+        .to_return(status: 200, body: test_library.to_json, headers: {})
 
       result = run(test, url:, measure_id:, period_start:, period_end:)
       expect(result.result).to eq('fail')
@@ -223,7 +314,18 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
         .to_return(status: 200, body: parameters_response.to_json)
 
@@ -234,9 +336,20 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 404, body: error_outcome.to_json)
+        .to_return(status: 404, body: error_outcome.to_json, headers: {})
 
       result = run(test, url:, measure_id:, period_start:,
                          period_end:)
@@ -248,7 +361,18 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
         .to_return(status: 200, body: test_library.to_json)
 
@@ -273,9 +397,20 @@ RSpec.describe DEQMTestKit::Evaluate do
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: parameters_response.to_json)
+        .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_id:, period_start:, period_end:,
                          group_id:)
@@ -285,9 +420,20 @@ RSpec.describe DEQMTestKit::Evaluate do
     it 'fails if $evaluate does not return 200' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 400, body: error_outcome.to_json)
+        .to_return(status: 400, body: error_outcome.to_json, headers: {})
 
       result = run(test, url:, measure_id:, period_start:, period_end:,
                          group_id:)
@@ -299,9 +445,20 @@ RSpec.describe DEQMTestKit::Evaluate do
       test_library = FHIR::Library.new
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$evaluate?#{params}"
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        headers: {
+          'Accept' => 'application/fhir+json',
+          'Accept-Charset' => 'utf-8',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Length' => '137',
+          'Content-Type' => 'application/json+fhir',
+          'Host' => 'example.com',
+          'User-Agent' => 'Ruby FHIR Client'
+        }
       )
-        .to_return(status: 200, body: test_library.to_json)
+        .to_return(status: 200, body: test_library.to_json, headers: {})
 
       result = run(test, url:, measure_id:, period_start:, period_end:,
                          group_id:)
