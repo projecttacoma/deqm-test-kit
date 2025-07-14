@@ -97,12 +97,12 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"measure-EXM124-7.3.000"}]}', # rubocop:disable Layout/LineLength
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"measure-EXM124-7.3.000"},{"name":"subject","valueString":"numer-EXM130"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Content-Length' => '257',
+          'Content-Length' => '305',
           'Content-Type' => 'application/json+fhir',
           'Host' => 'example.com',
           'User-Agent' => 'Ruby FHIR Client'
@@ -119,12 +119,12 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"INVALID_MEASURE_ID"}]}', # rubocop:disable Layout/LineLength
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"INVALID_MEASURE_ID"},{"name":"subject","valueString":"numer-EXM130"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Content-Length' => '253',
+          'Content-Length' => '301',
           'Content-Type' => 'application/json+fhir',
           'Host' => 'example.com',
           'User-Agent' => 'Ruby FHIR Client'
