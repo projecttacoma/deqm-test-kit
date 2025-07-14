@@ -19,6 +19,9 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers origin: url.to_s,
+              referrer: url.to_s,
+              'Content-Type': 'application/fhir+json'
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
@@ -44,6 +47,9 @@ module DEQMTestKit
 
       fhir_client :dr_reference_client do
         url :data_requirements_reference_server
+        headers origin: url.to_s,
+                referrer: url.to_s,
+                'Content-Type': 'application/fhir+json'
       end
 
       run do
@@ -52,8 +58,6 @@ module DEQMTestKit
         assert_response_status(200)
         assert_resource_type(:measure)
         assert_valid_json(response[:body])
-        measure_identifier = resource.name
-        measure_version = resource.version
 
         # Run our data requirements operation on the test client server
         fhir_operation("Measure/#{measure_id}/$data-requirements",
@@ -68,7 +72,7 @@ module DEQMTestKit
 
         # Search reference server by identifier and version
         fhir_search(:measure, client: :dr_reference_client,
-                              params: { name: measure_identifier, version: measure_version }, name: :measure_search)
+                              params: { name: measure_id }, name: :measure_search)
         reference_measure_id = resource.entry[0].resource.id
 
         # Run data requirements operation on reference server

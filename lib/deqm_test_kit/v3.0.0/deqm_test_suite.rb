@@ -22,6 +22,9 @@ module DEQMTestKit
 
       fhir_client do
         url :url
+        headers origin: url.to_s,
+                referrer: url.to_s,
+                'Content-Type': 'application/fhir+json'
       end
 
       group do

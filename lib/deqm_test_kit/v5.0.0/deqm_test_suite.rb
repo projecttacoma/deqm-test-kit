@@ -21,6 +21,9 @@ module DEQMTestKit
 
       fhir_client do
         url :url
+        headers origin: url.to_s,
+                referrer: url.to_s,
+                'Content-Type': 'application/fhir+json'
       end
 
       group do
@@ -45,14 +48,11 @@ module DEQMTestKit
       group from: :measure_availability
       group from: :data_requirements
       group from: :fhir_queries
-      group from: :submit_data
       group from: :evaluate,
             title: '$evaluate Operation',
             config: {
               options: { endpoint_name: 'evaluate' }
             }
-      group from: :bulk_submit_data
-      group from: :bulk_import
       group from: :patient_everything
     end
   end

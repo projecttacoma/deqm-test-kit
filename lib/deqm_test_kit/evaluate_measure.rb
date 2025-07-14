@@ -22,8 +22,7 @@ module DEQMTestKit
             }
           ]
         }
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}",
-                       headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}", body:)
         assert_success(resource_type, expected_status)
       end
 
@@ -38,6 +37,9 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers origin: url.to_s,
+              referrer: url.to_s,
+              'Content-Type': 'application/fhir+json'
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
