@@ -145,6 +145,7 @@ module DEQMTestKit
         measure_ids += additional_measures if additional_measures&.any?
 
         measure_params = measure_ids.map { |id| { name: 'measureId', valueString: id } }
+        patient_param = { name: 'subject', valueString: patient_id }
 
         body = {
           resourceType: 'Parameters',
@@ -158,7 +159,7 @@ module DEQMTestKit
               name: 'periodEnd',
               valueDate: '2019-12-31'
             }
-          ].concat(measure_params)
+          ].concat(measure_params).push(patient_param)
         }
         fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
 
