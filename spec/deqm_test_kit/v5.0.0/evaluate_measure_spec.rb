@@ -47,7 +47,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -97,7 +97,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"measure-EXM124-7.3.000"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"measure-EXM124-7.3.000"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -119,7 +119,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"INVALID_MEASURE_ID"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"measureId","valueString":"INVALID_MEASURE_ID"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -154,7 +154,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -177,7 +177,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -202,7 +202,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate?"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -236,7 +236,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -258,7 +258,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -283,7 +283,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -316,7 +316,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -338,7 +338,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -363,7 +363,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -399,7 +399,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -422,7 +422,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',
@@ -447,7 +447,7 @@ RSpec.describe DEQMTestKit::Evaluate do
         :post,
         "#{url}/Measure/#{measure_id}/$evaluate"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+        body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
         headers: {
           'Accept' => 'application/fhir+json',
           'Accept-Charset' => 'utf-8',

@@ -8,7 +8,7 @@ module DEQMTestKit
   class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(_params, expected_status: 200)
+      def measure_evaluation_assert_success(_params, expected_status: 200) # rubocop:disable Metrics/MethodLength
         body = {
           resourceType: 'Parameters',
           parameter: [
@@ -88,7 +88,7 @@ module DEQMTestKit
     INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
     INVALID_START_DATE = 'INVALID_START_DATE'
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Check operation output matches parameter specifications'
       id 'evaluate-01'
@@ -127,7 +127,7 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Check operation output with multiple measures using Measure/$evaluate'
       id 'evaluate-02'
