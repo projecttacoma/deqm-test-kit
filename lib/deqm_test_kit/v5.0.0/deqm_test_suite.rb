@@ -45,11 +45,7 @@ module DEQMTestKit
       group from: :measure_availability
       group from: :data_requirements
       group from: :fhir_queries
-      group from: :evaluate,
-            title: '$evaluate Operation',
-            config: {
-              options: { endpoint_name: 'evaluate' }
-            }
+      group from: :evaluate
       group from: :patient_everything
     end
   end
