@@ -3,10 +3,7 @@
 require_relative '../patient_everything'
 require_relative '../measure_availability'
 require_relative '../data_requirements'
-require_relative '../submit_data'
 require_relative '../fhir_queries'
-require_relative '../bulk_submit_data'
-require_relative '../bulk_import'
 require_relative '../evaluate'
 
 module DEQMTestKit
