@@ -2,7 +2,7 @@
   "list_options": [
     {
       "label": "CMS130 FHIR Colorectal Cancer Screening",
-      "value": "CMS130FHIRColorectalCancerScreening-bundle"
+      "value": "CMS130FHIRColorectalCancerScreening"
     },
     {
       "label": "CMS816 FHIR HHHypo",
@@ -22,11 +22,11 @@
     },
     {
       "label": "CMS124 FHIR Cervical Cancer Screening",
-      "value": "CMS124FHIRCervicalCancerScreening-bundle"
+      "value": "CMS124FHIRCervicalCancerScreening"
     },
     {
       "label": "CMS125 FHIR Breast Cancer Screening",
-      "value": "CMS125FHIRBreastCancerScreening-bundle"
+      "value": "CMS125FHIRBreastCancerScreening"
     },
     {
       "label": "CMS165 FHIR Controlliing High Blood Pressure",
@@ -46,7 +46,7 @@
     },
     {
       "label": "NHSN Glycemic Control Hypoglycemia Initial Population",
-      "value": "NHSNGlycemicControlHypoglycemiaInitialPopulation-bundle"
+      "value": "NHSNGlycemicControlHypoglycemiaInitialPopulation"
     }
   ]
 }
