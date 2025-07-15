@@ -50,7 +50,11 @@ module DEQMTestKit
       group from: :data_requirements
       group from: :fhir_queries
       group from: :submit_data
-      group from: :evaluate_measure
+      group from: :evaluate_measure,
+            title: '$evaluate-measure Operation',
+            config: {
+              options: { endpoint_name: 'evaluate-measure' }
+            }
       group from: :care_gaps
       group from: :bulk_submit_data
       group from: :bulk_import
