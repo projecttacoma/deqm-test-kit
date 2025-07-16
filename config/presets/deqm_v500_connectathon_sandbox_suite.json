@@ -15,7 +15,21 @@
       "description": "",
       "title": "",
       "type": "radio",
-      "value": "CMS130FHIRColorectalCancerScreening-bundle"
+      "value": "CMS130FHIRColorectalCancerScreening"
+    },
+    {
+      "name": "period_start",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "2026-01-01"
+    },
+    {
+      "name": "period_end",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "2026-12-31"
     },
     {
       "name": "data_requirements_reference_server",
