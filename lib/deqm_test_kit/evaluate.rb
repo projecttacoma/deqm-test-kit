@@ -22,38 +22,7 @@ module DEQMTestKit
             }
           ]
         }
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}",
-                       headers: { 'Content-Type': 'application/json+fhir' }, body:)
-        assert_response_status(expected_status)
-
-        # For v5.0.0 $evaluate, we expect a Parameters resource
-        assert resource.is_a?(FHIR::Parameters),
-               "Expected resource to be a Parameters resource, but got #{resource&.class}"
-
-        # Validate the Parameters resource structure
-        validate_parameters_contains_measurereport_bundles(resource)
-      end
-
-      def measure_evaluation_assert_success_with_params(_params, _measure_id, expected_status: 200) # rubocop:disable Metrics/MethodLength
-        body = {
-          resourceType: 'Parameters',
-          parameter: [
-            {
-              name: 'measureId',
-              valueString: measure_id
-            },
-            {
-              name: 'periodStart',
-              valueDate: '2026-01-01'
-            },
-            {
-              name: 'periodEnd',
-              valueDate: '2026-12-31'
-            }
-          ]
-        }
-        fhir_operation("/Measure/$#{config.options[:endpoint_name]}",
-                       headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}", body:)
         assert_response_status(expected_status)
 
         # For v5.0.0 $evaluate, we expect a Parameters resource
@@ -146,8 +115,7 @@ module DEQMTestKit
             }
           ]
         }
-        result = fhir_operation("/Measure/#{measure_id}/$evaluate",
-                                headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        result = fhir_operation("/Measure/#{measure_id}/$evaluate", body:)
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
@@ -186,8 +154,7 @@ module DEQMTestKit
             }
           ]
         }
-        result = fhir_operation('/Measure/$evaluate',
-                                headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        result = fhir_operation('/Measure/$evaluate', body:)
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
@@ -231,8 +198,7 @@ module DEQMTestKit
             }
           ]
         }
-        result = fhir_operation('/Measure/$evaluate',
-                                headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        result = fhir_operation('/Measure/$evaluate', body:)
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
@@ -272,7 +238,7 @@ module DEQMTestKit
             }
           ].concat(measure_params)
         }
-        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        fhir_operation('/Measure/$evaluate', body:)
 
         assert_response_status(200)
 
@@ -320,7 +286,7 @@ module DEQMTestKit
             }
           ].concat(measure_params).push(patient_param)
         }
-        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        fhir_operation('/Measure/$evaluate', body:)
 
         assert_response_status(200)
 
@@ -383,7 +349,7 @@ module DEQMTestKit
             }
           ]
         }
-        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        fhir_operation('/Measure/$evaluate', body:)
 
         assert_response_status(200)
 
@@ -435,7 +401,7 @@ module DEQMTestKit
             }
           ]
         }
-        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+        fhir_operation('/Measure/$evaluate', body:)
 
         assert_response_status(200)
 
@@ -618,23 +584,6 @@ module DEQMTestKit
         measure_evaluation_assert_failure(params, measure_id, expected_status: 404)
       end
     end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check operation fails for missing required query parameter'
-    #   id 'evaluate-12'
-    #   description %(Server should not perform calculation and return a 400 response code
-    # when one of the required query parameters is omitted from the request. In this test,
-    #   the measurement period start is omitted from the request.)
-    #   input :measure_id, **measure_id_args
-    #   input :patient_id, title: 'Patient ID'
-    #   input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-    #   run do
-    #     params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-    #     measure_evaluation_assert_failure(params, measure_id)
-    #   end
-    # end
 
     test do
       include MeasureEvaluationHelpers
