@@ -57,7 +57,7 @@
       "description": "",
       "title": "Group ID",
       "type": "text",
-      "value": "EXM130-patients"
+      "value": "CMS1017FHIRHHFI"
     },
     {
       "name": "practitioner_id",

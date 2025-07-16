@@ -336,6 +336,121 @@ module DEQMTestKit
       end
     end
 
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=subject and subjectGroup'
+      id 'evaluate-06'
+      description %(Measure/$evaluate with reportType=subject and subjectGroup.)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+      input :group_id, title: 'Group ID'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'subjectGroup',
+              resource: {
+                resourceType: 'Group',
+                id: 'test-group',
+                member: [
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              name: 'reportType',
+              valueString: 'subject'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each measure
+        expected_bundle_count = measure_ids.length
+        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
+               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=subject and subject Group reference'
+      id 'evaluate-07'
+      description %(Measure/$evaluate with reportType=subject and subject Group reference.)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'subject',
+              valueString: "Group/#{group_id}"
+            },
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'reportType',
+              valueString: 'subject'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', headers: { 'Content-Type': 'application/json+fhir' }, body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each measure
+        expected_bundle_count = measure_ids.length
+        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
+               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
+      end
+    end
+
     # test do
     #   include MeasureEvaluationHelpers
     #   title 'Check proper calculation for individual report with required query parameters'
@@ -405,7 +520,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid measure ID'
-      id 'evaluate-6'
+      id 'evaluate-8'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -441,7 +556,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate fails for invalid measure ID'
-      id 'evaluate-7'
+      id 'evaluate-9'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -456,7 +571,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid patient ID'
-      id 'evaluate-8'
+      id 'evaluate-10'
       description 'Request returns a 404 error when the given patient ID cannot be found.'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -492,7 +607,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid patient ID'
-      id 'evaluate-9'
+      id 'evaluate-11'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -524,7 +639,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate fails for missing subject query parameter (subject report type)'
-      id 'evaluate-10'
+      id 'evaluate-12'
       description %(Server should not perform calculation and return a 400 response code
       when the subject report type is specified but no subject has been specified in the
       query parameters.)
@@ -541,7 +656,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid reportType'
-      id 'evaluate-11'
+      id 'evaluate-13'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -558,7 +673,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid reportType'
-      id 'evaluate-12'
+      id 'evaluate-14'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -613,7 +728,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for missing periodEnd parameter in input'
-      id 'evaluate-13'
+      id 'evaluate-15'
       description %(Server should return 400 when input is missing periodEnd parameter.)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -628,7 +743,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter'
-      id 'evaluate-14'
+      id 'evaluate-16'
       description %(Server should return 400 when input is missing periodEnd parameter.)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
