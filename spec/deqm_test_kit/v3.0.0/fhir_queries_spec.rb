@@ -44,16 +44,26 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     let(:period_end) { '2019-12-31' }
 
     it 'passes if the FHIR queries does not use FHIR query pattern, returns 200 and valid JSON' do
-      stub_request(:get, "#{url}/Condition")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition").with(headers: { 'Accept' => 'application/fhir+json',
+                                                             'Content-Type' => 'application/fhir+json',
+                                                             'Origin' => 'http://example.com/fhir',
+                                                             'Referrer' => 'http://example.com/fhir' })
+                                            .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Patient")
-        .to_return(status: 200, body: test_patient_response.to_json)
+      stub_request(:get, "#{url}/Patient").with(headers: { 'Accept' => 'application/fhir+json',
+                                                           'Content-Type' => 'application/fhir+json',
+                                                           'Origin' => 'http://example.com/fhir',
+                                                           'Referrer' => 'http://example.com/fhir' })
+                                          .to_return(status: 200, body: test_patient_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+             headers: { 'Accept' => 'application/fhir+json',
+                        'Content-Type' => 'application/fhir+json',
+                        'Origin' => 'http://example.com/fhir',
+                        'Referrer' => 'http://example.com/fhir' })
         .to_return(status: 200, body: test_library_response.to_json)
 
       result = run(test, url:, measure_id:, data_requirements_server_url: url)
@@ -63,19 +73,32 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     it 'passes if the FHIR queries uses FHIR query pattern, returns 200 and valid JSON' do
       test_patient_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test-patient' } }])
 
-      stub_request(:get, "#{url}/Condition?code:in=testvs")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                            'Content-Type' => 'application/fhir+json',
+                                                                            'Origin' => 'http://example.com/fhir',
+                                                                            'Referrer' => 'http://example.com/fhir' })
+                                                           .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Condition?code:in=testvs2")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs2").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                             'Content-Type' => 'application/fhir+json',
+                                                                             'Origin' => 'http://example.com/fhir',
+                                                                             'Referrer' => 'http://example.com/fhir' })
+                                                            .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Patient")
-        .to_return(status: 200, body: test_patient_response.to_json)
+      stub_request(:get, "#{url}/Patient").with(headers: { 'Accept' => 'application/fhir+json',
+                                                           'Content-Type' => 'application/fhir+json',
+                                                           'Origin' => 'http://example.com/fhir',
+                                                           'Referrer' => 'http://example.com/fhir' })
+                                          .to_return(status: 200, body: test_patient_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+             headers: { 'Accept' => 'application/fhir+json',
+                        'Content-Type' => 'application/fhir+json',
+                        'Origin' => 'http://example.com/fhir',
+                        'Referrer' => 'http://example.com/fhir' })
         .to_return(status: 200, body: test_library_response.to_json)
 
       result = run(test, url:, measure_id:, use_fqp_extension: 'true', data_requirements_server_url: url)
@@ -85,8 +108,12 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     it 'fails if use FHIR query pattern is toggled, but no fqp extension present' do
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+             headers: { 'Accept' => 'application/fhir+json',
+                        'Content-Type' => 'application/fhir+json',
+                        'Origin' => 'http://example.com/fhir',
+                        'Referrer' => 'http://example.com/fhir' })
         .to_return(status: 200, body: test_library_response_no_extension.to_json)
 
       result = run(test, url:, measure_id:, use_fqp_extension: 'true', data_requirements_server_url: url)
@@ -98,16 +125,25 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     end
 
     it 'fails if a single FHIR query returns 500 and use FHIR query extension set to false' do
-      stub_request(:get, "#{url}/Condition")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition").with(headers: { 'Accept' => 'application/fhir+json',
+                                                             'Content-Type' => 'application/fhir+json',
+                                                             'Origin' => 'http://example.com/fhir',
+                                                             'Referrer' => 'http://example.com/fhir' })
+                                            .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Patient")
-        .to_return(status: 500, body: error_outcome.to_json)
+      stub_request(:get, "#{url}/Patient").with(headers: {               'Accept' => 'application/fhir+json',
+                                                                         'Content-Type' => 'application/fhir+json',
+                                                                         'Origin' => 'http://example.com/fhir',
+                                                                         'Referrer' => 'http://example.com/fhir' })
+                                          .to_return(status: 500, body: error_outcome.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', headers: { 'Accept' => 'application/fhir+json',
+                                                                                                                                                                           'Content-Type' => 'application/fhir+json',
+                                                                                                                                                                           'Origin' => 'http://example.com/fhir',
+                                                                                                                                                                           'Referrer' => 'http://example.com/fhir' })
         .to_return(status: 200, body: test_library_response.to_json)
 
       result = run(test, url:, measure_id:, data_requirements_server_url: url)
@@ -116,19 +152,32 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     end
 
     it 'fails if a single FHIR query returns 500 and use FHIR query extension set to true' do
-      stub_request(:get, "#{url}/Condition?code:in=testvs")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                            'Content-Type' => 'application/fhir+json',
+                                                                            'Origin' => 'http://example.com/fhir',
+                                                                            'Referrer' => 'http://example.com/fhir' })
+                                                           .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Condition?code:in=testvs2")
-        .to_return(status: 500, body: error_outcome.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs2").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                             'Content-Type' => 'application/fhir+json',
+                                                                             'Origin' => 'http://example.com/fhir',
+                                                                             'Referrer' => 'http://example.com/fhir' })
+                                                            .to_return(status: 500, body: error_outcome.to_json)
 
-      stub_request(:get, "#{url}/Patient")
-        .to_return(status: 200, body: test_patient_response.to_json)
+      stub_request(:get, "#{url}/Patient").with(headers: { 'Accept' => 'application/fhir+json',
+                                                           'Content-Type' => 'application/fhir+json',
+                                                           'Origin' => 'http://example.com/fhir',
+                                                           'Referrer' => 'http://example.com/fhir' })
+                                          .to_return(status: 200, body: test_patient_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+             headers: { 'Accept' => 'application/fhir+json',
+                        'Content-Type' => 'application/fhir+json',
+                        'Origin' => 'http://example.com/fhir',
+                        'Referrer' => 'http://example.com/fhir' })
         .to_return(status: 200, body: test_library_response.to_json)
 
       result = run(test, url:, measure_id:, use_fqp_extension: 'true', data_requirements_server_url: url)
@@ -149,16 +198,24 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     let(:patient_id) { 'test-patient' }
 
     it 'should pass with proper patient ID substitution' do
-      stub_request(:get, "#{url}/Condition?code:in=testvs&subject=Patient/#{patient_id}")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs&subject=Patient/#{patient_id}").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                                                          'Content-Type' => 'application/fhir+json',
+                                                                                                          'Origin' => 'http://example.com/fhir',
+                                                                                                          'Referrer' => 'http://example.com/fhir' })
+                                                                                         .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Condition?code:in=testvs2&subject=Patient/#{patient_id}")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs2&subject=Patient/#{patient_id}").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                                                           'Content-Type' => 'application/fhir+json',
+                                                                                                           'Origin' => 'http://example.com/fhir',
+                                                                                                           'Referrer' => 'http://example.com/fhir' })
+                                                                                          .to_return(status: 200, body: test_condition_response.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+             headers: { 'Accept' => 'application/fhir+json',
+                        'Content-Type' => 'application/fhir+json' })
         .to_return(status: 200, body: test_library_response.to_json)
 
       result = run(test, url:, measure_id:, use_fqp_extension: 'true',
@@ -167,16 +224,24 @@ RSpec.describe DEQMTestKit::FHIRQueries do
     end
 
     it 'should fail on invalid query response' do
-      stub_request(:get, "#{url}/Condition?code:in=testvs&subject=Patient/#{patient_id}")
-        .to_return(status: 200, body: test_condition_response.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs&subject=Patient/#{patient_id}").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                                                          'Content-Type' => 'application/fhir+json',
+                                                                                                          'Origin' => 'http://example.com/fhir',
+                                                                                                          'Referrer' => 'http://example.com/fhir' })
+                                                                                         .to_return(status: 200, body: test_condition_response.to_json)
 
-      stub_request(:get, "#{url}/Condition?code:in=testvs2&subject=Patient/#{patient_id}")
-        .to_return(status: 500, body: error_outcome.to_json)
+      stub_request(:get, "#{url}/Condition?code:in=testvs2&subject=Patient/#{patient_id}").with(headers: { 'Accept' => 'application/fhir+json',
+                                                                                                           'Content-Type' => 'application/fhir+json',
+                                                                                                           'Origin' => 'http://example.com/fhir',
+                                                                                                           'Referrer' => 'http://example.com/fhir' })
+                                                                                          .to_return(status: 500, body: error_outcome.to_json)
 
       stub_request(
         :post,
-        "#{url}/Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}"
-      )
+        "#{url}/Measure/#{measure_id}/$data-requirements"
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+             headers: { 'Accept' => 'application/fhir+json',
+                        'Content-Type' => 'application/fhir+json' })
         .to_return(status: 200, body: test_library_response.to_json)
 
       result = run(test, url:, measure_id:, use_fqp_extension: 'true',

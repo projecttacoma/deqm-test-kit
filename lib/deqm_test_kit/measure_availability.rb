@@ -7,9 +7,9 @@ module DEQMTestKit
   class MeasureAvailability < Inferno::TestGroup
     # module for shared code for measure availability assertions and requests
     module MeasureAvailabilityHelpers
-      def measure_availability_assert_success(measure_to_test)
-        fhir_operation("/Measure?name=#{measure_to_test}",
-                       headers: { origin: url, referrer: url, 'Content-Type': 'application/fhir+json' }, operation_method: :get) # rubocop:disable Layout/LineLength
+      def measure_availability_assert_success(measure_identifier)
+        # Search system for measure by identifier and version
+        fhir_search(:measure, params: { name: measure_identifier })
         assert_success(:bundle, 200)
       end
     end
@@ -19,6 +19,7 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers 'Content-Type': 'application/fhir+json'
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))

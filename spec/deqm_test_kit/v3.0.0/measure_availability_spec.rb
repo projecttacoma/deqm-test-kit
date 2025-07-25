@@ -19,14 +19,15 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
 
   describe 'measure search test' do
     let(:test) { group.tests.first }
-    let(:measure_name) { 'EXM130' }
-    let(:measure_version) { '7.3.000' }
     let(:selected_measure_id) { 'EXM130|7.3.000' }
 
     it 'passes if a Measure was received' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+      stub_request(:get, "#{url}/Measure?name=#{selected_measure_id}")
+        .with(headers: {
+                'Content-Type' => 'application/fhir+json'
+              })
         .to_return(status: 200, body: resource.to_json)
 
       result = run(test, selected_measure_id:, url:)
@@ -36,7 +37,10 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
 
     it 'fails if a 200 is not received' do
       resource = FHIR::Bundle.new(total: 1)
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+      stub_request(:get, "#{url}/Measure?name=#{selected_measure_id}")
+        .with(headers: {
+                'Content-Type' => 'application/fhir+json'
+              })
         .to_return(status: 201, body: resource.to_json)
 
       result = run(test, selected_measure_id:, url:)
@@ -47,7 +51,10 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
 
     it 'fails if a Measure is not received in the Bundle' do
       resource = FHIR::Bundle.new(total: 0)
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+      stub_request(:get, "#{url}/Measure?name=#{selected_measure_id}")
+        .with(headers: {
+                'Content-Type' => 'application/fhir+json'
+              })
         .to_return(status: 200, body: resource.to_json)
 
       result = run(test, selected_measure_id:, url:)

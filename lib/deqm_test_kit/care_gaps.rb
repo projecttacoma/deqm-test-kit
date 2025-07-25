@@ -10,12 +10,12 @@ module DEQMTestKit
     # module for shared code for $care-gaps assertions and requests
     module CareGapsHelpers
       def care_gaps_assert_success(params, expected_status: 200)
-        fhir_operation("/Measure/$care-gaps?#{params}", headers: { 'Content-Type': 'application/fhir+json' })
+        fhir_operation("/Measure/$care-gaps?#{params}")
         assert_success(:parameters, expected_status)
       end
 
       def care_gaps_assert_failure(params, expected_status: 400)
-        fhir_operation("/Measure/$care-gaps?#{params}", headers: { 'Content-Type': 'application/fhir+json' })
+        fhir_operation("/Measure/$care-gaps?#{params}")
         assert_error(expected_status)
       end
     end
@@ -25,6 +25,7 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers 'Content-Type': 'application/fhir+json'
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))

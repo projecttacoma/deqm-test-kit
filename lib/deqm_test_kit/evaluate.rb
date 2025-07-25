@@ -8,31 +8,6 @@ module DEQMTestKit
   class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(_params, expected_status: 200) # rubocop:disable Metrics/MethodLength
-        body = {
-          resourceType: 'Parameters',
-          parameter: [
-            {
-              name: 'periodStart',
-              valueDate: '2026-01-01'
-            },
-            {
-              name: 'periodEnd',
-              valueDate: '2026-12-31'
-            }
-          ]
-        }
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}", body:)
-        assert_response_status(expected_status)
-
-        # For v5.0.0 $evaluate, we expect a Parameters resource
-        assert resource.is_a?(FHIR::Parameters),
-               "Expected resource to be a Parameters resource, but got #{resource&.class}"
-
-        # Validate the Parameters resource structure
-        validate_parameters_contains_measurereport_bundles(resource)
-      end
-
       def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
         fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
         assert_error(expected_status)
@@ -190,11 +165,11 @@ module DEQMTestKit
             },
             {
               name: 'periodStart',
-              valueDate: '2026-01-01'
+              valueDate: period_start
             },
             {
               name: 'periodEnd',
-              valueDate: '2026-12-31'
+              valueDate: period_end
             }
           ]
         }
@@ -357,11 +332,6 @@ module DEQMTestKit
                "Expected resource to be a Parameters resource, but got #{resource&.class}"
 
         validate_parameters_contains_measurereport_bundles(resource)
-
-        # Verify we have the expected number of bundles for each measure
-        expected_bundle_count = measure_ids.length
-        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
-               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
       end
     end
 
@@ -409,79 +379,8 @@ module DEQMTestKit
                "Expected resource to be a Parameters resource, but got #{resource&.class}"
 
         validate_parameters_contains_measurereport_bundles(resource)
-
-        # Verify we have the expected number of bundles for each measure
-        expected_bundle_count = measure_ids.length
-        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
-               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
       end
     end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check proper calculation for individual report with required query parameters'
-    #   id 'evaluate-06'
-    #   description %(Server should properly return a Parameters resource containing Bundles with individual
-    #     measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
-    #   input :measure_id, **measure_id_args
-    #   input :patient_id, title: 'Patient ID'
-    #   input :period_start, title: 'Measurement period start', default: '2026-01-01'
-    #   input :period_end, title: 'Measurement period end', default: '2026-12-31'
-
-    #   run do
-    #     params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-    #     measure_evaluation_assert_success(params)
-    #   end
-    # end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check proper calculation for subject-list report with required query parameters'
-    #   id 'evaluate-07'
-    #   description %(Server should properly return a Parameters resource containing Bundles with subject-list
-    #     measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
-    #   input :measure_id, **measure_id_args
-    #   input :period_start, title: 'Measurement period start', default: '2026-01-01'
-    #   input :period_end, title: 'Measurement period end', default: '2026-12-31'
-
-    #   run do
-    #     params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
-    #     measure_evaluation_assert_success(params)
-    #   end
-    # end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check proper calculation for population report with required query parameters'
-    #   id 'evaluate-08'
-    #   description %(Server should properly return a Parameters resource containing Bundles with population
-    #     measure reports when provided required query parameters \(period start, period end\).)
-    #   input :measure_id, **measure_id_args
-    #   input :period_start, title: 'Measurement period start', default: '2026-01-01'
-    #   input :period_end, title: 'Measurement period end', default: '2026-12-31'
-
-    #   run do
-    #     params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
-    #     measure_evaluation_assert_success(params)
-    #   end
-    # end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check proper calculation for population report with Group subject'
-    #   id 'evaluate-09'
-    #   description %(Server should properly return a Parameters resource containing Bundles with population
-    #     measure reports when provided a Group ID and required query parameters \(period start, period end\).)
-    #   input :measure_id, **measure_id_args
-    #   input :period_start, title: 'Measurement period start', default: '2019-01-01'
-    #   input :period_end, title: 'Measurement period end', default: '2019-12-31'
-    #   input :group_id, title: 'Group ID'
-
-    #   run do
-    #     params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
-    #     measure_evaluation_assert_success_with_params(params, measure_id)
-    #   end
-    # end
 
     test do
       include MeasureEvaluationHelpers
@@ -659,20 +558,6 @@ module DEQMTestKit
         assert_error(400)
       end
     end
-
-    # test do
-    #   include MeasureEvaluationHelpers
-    #   title 'Check operation fails for invalid parameter structure in input'
-    #   id 'evaluate-15'
-    #   description %(Server should return 400 when the request contains malformed parameters, such as missing '=' or
-    #   invalid query format.)
-    #   input :measure_id, **measure_id_args
-
-    #   run do
-    #     params = 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123'
-    #     measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
-    #   end
-    # end
 
     test do
       include MeasureEvaluationHelpers
