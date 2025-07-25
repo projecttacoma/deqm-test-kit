@@ -102,7 +102,7 @@ module DEQMTestKit
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with measureId in Parameters resource request body without reportType (defaults to reportType=population)'
+      title 'Measure/$evaluate with measureId in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
       id 'evaluate-02'
       description %(Measure/$evaluate with measureId in Parameters resource request body and
       without reportType (defaults to reportType=population) returns 200 and FHIR Parameters resource.)
@@ -151,7 +151,7 @@ module DEQMTestKit
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
-      run do
+      run do # rubocop:disable Metrics/BlockLength
         body = {
           resourceType: 'Parameters',
           parameter: [
@@ -185,7 +185,7 @@ module DEQMTestKit
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with multiple measureIds in Parameters resource request body without reportType (defaults to reportType=population)'
+      title 'Measure/$evaluate with multiple measureIds in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
       id 'evaluate-04'
       description %(Measure/$evaluate without reportType (defaults to reportType=population) and subject and multiple
       measureIds in Parameters resource request body returns 200 and FHIR Parameters resource.)
@@ -288,7 +288,7 @@ module DEQMTestKit
       input :patient_id, title: 'Patient ID'
       input :group_id, title: 'Group ID'
 
-      run do
+      run do # rubocop:disable Metrics/BlockLength
         body = {
           resourceType: 'Parameters',
           parameter: [
@@ -345,7 +345,7 @@ module DEQMTestKit
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
       input :group_id, title: 'Group ID'
 
-      run do
+      run do # rubocop:disable Metrics/BlockLength
         body = {
           resourceType: 'Parameters',
           parameter: [
@@ -382,7 +382,7 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid measure ID'
       id 'evaluate-8'
@@ -433,7 +433,7 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid patient ID'
       id 'evaluate-10'
@@ -518,7 +518,7 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid reportType'
       id 'evaluate-14'
@@ -528,7 +528,7 @@ module DEQMTestKit
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
-      run do
+      run do # rubocop:disable Metrics/BlockLength
         body = {
           resourceType: 'Parameters',
           parameter: [
@@ -574,7 +574,7 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter'
       id 'evaluate-16'

@@ -332,7 +332,9 @@ RSpec.describe DEQMTestKit::Evaluate do
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
-      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"INVALID_MEASURE_ID"},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"INVALID_MEASURE_ID"' \
+                   '},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"' \
+                   '},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
              headers: {
                'Accept' => 'application/fhir+json',
                'Content-Type' => 'application/fhir+json',
@@ -349,7 +351,9 @@ RSpec.describe DEQMTestKit::Evaluate do
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
-      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"INVALID_MEASURE_ID"},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"INVALID_MEASURE_ID"' \
+                   '},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"' \
+                   '},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
              headers: {
                'Accept' => 'application/fhir+json',
                'Content-Type' => 'application/fhir+json',
@@ -405,7 +409,9 @@ RSpec.describe DEQMTestKit::Evaluate do
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
-      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"subject","valueString":"INVALID_PATIENT_ID"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.3' \
+                   '.000"},{"name":"subject","valueString":"INVALID_PATIENT_ID"},{"name":"periodStart","valueDate":"' \
+                   '2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
              headers: {
                'Accept' => 'application/fhir+json',
                'Content-Type' => 'application/fhir+json',
@@ -422,7 +428,9 @@ RSpec.describe DEQMTestKit::Evaluate do
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
-      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"subject","valueString":"INVALID_PATIENT_ID"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.3.0' \
+                   '00"},{"name":"subject","valueString":"INVALID_PATIENT_ID"},{"name":"periodStart","valueDate":' \
+                   '"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}',
              headers: {
                'Accept' => 'application/fhir+json',
                'Content-Type' => 'application/fhir+json',
@@ -563,7 +571,10 @@ RSpec.describe DEQMTestKit::Evaluate do
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
-      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"reportType","valueString":"INVALID_REPORT_TYPE"}]}',
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.' \
+                   '3.000"},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019' \
+                   '-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"},{"name":"reportType","valueString":"' \
+                   'INVALID_REPORT_TYPE"}]}',
              headers: {
                'Accept' => 'application/fhir+json',
                'Content-Type' => 'application/fhir+json',
@@ -606,7 +617,9 @@ RSpec.describe DEQMTestKit::Evaluate do
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
-      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7.3.000"},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"}]}',
+      ).with(body: '{"resourceType":"Parameters","parameter":[{"name":"measureId","valueString":"measure-EXM130-7' \
+                   '.3.000"},{"name":"subject","valueString":"numer-EXM130"},{"name":"periodStart","valueDate":"20' \
+                   '19-01-01"}]}',
              headers: {
                'Accept' => 'application/fhir+json',
                'Content-Type' => 'application/fhir+json',

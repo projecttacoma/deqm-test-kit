@@ -4,11 +4,11 @@ require 'json'
 
 module DEQMTestKit
   # Perform fhir queries based on $data-requirements operation on test client
-  class FHIRQueries < Inferno::TestGroup
+  class FHIRQueries < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     include DataRequirementsUtils
     # module for shared code for fhir queries assertions and requests
     module FHIRQueriesHelpers
-      def dr_assertions(measure_id)
+      def dr_assertions(measure_id) # rubocop:disable Metrics/MethodLength
         body = {
           resourceType: 'Parameters',
           parameter: [
@@ -31,7 +31,7 @@ module DEQMTestKit
       end
 
       # rubocop:disable Metrics/AbcSize
-      def fhir_queries_assertions(queries)
+      def fhir_queries_assertions(queries) # rubocop:disable Metrics/MethodLength
         # Store responses to run assertions on later to ensure all requests go through before failure
         responses = queries.map do |q|
           fhir_search(q[:endpoint], params: q[:params])

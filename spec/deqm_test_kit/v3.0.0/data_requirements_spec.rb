@@ -30,29 +30,32 @@ RSpec.describe DEQMTestKit::DataRequirements do
       test_measure_response = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: measure_id } }])
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}").with(headers: {
-                                                                'Content-Type' => 'application/fhir+json',
-                                                                'Accept' => 'application/fhir+json',
-                                                                'Origin' => 'http://example.com/fhir',
-                                                                'Referrer' => 'http://example.com/fhir'
-                                                              })
-                                                        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .with(headers: {
+                'Content-Type' => 'application/fhir+json',
+                'Accept' => 'application/fhir+json',
+                'Origin' => 'http://example.com/fhir',
+                'Referrer' => 'http://example.com/fhir'
+              })
+        .to_return(status: 200, body: test_measure.to_json)
 
-      stub_request(:get, "#{url}/Measure?name=#{measure_id}").with(headers: {
-                                                                     'Content-Type' => 'application/fhir+json',
-                                                                     'Accept' => 'application/fhir+json',
-                                                                     'Origin' => 'http://example.com/fhir',
-                                                                     'Referrer' => 'http://example.com/fhir'
-                                                                   })
-                                                             .to_return(status: 200, body: test_measure_response.to_json)
+      stub_request(:get, "#{url}/Measure?name=#{measure_id}")
+        .with(headers: {
+                'Content-Type' => 'application/fhir+json',
+                'Accept' => 'application/fhir+json',
+                'Origin' => 'http://example.com/fhir',
+                'Referrer' => 'http://example.com/fhir'
+              })
+        .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(:get,
-                   "#{data_requirements_reference_server}/Measure?name=#{measure_id}").with(headers: {
-                                                                                              'Accept' => 'application/fhir+json',
-                                                                                              'Content-Type' => 'application/fhir+json',
-                                                                                              'Origin' => 'http://example.com/reference/fhir',
-                                                                                              'Referrer' => 'http://example.com/reference/fhir'
-                                                                                            })
+                   "#{data_requirements_reference_server}/Measure?name=#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/reference/fhir',
+                'Referrer' => 'http://example.com/reference/fhir'
+              })
         .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(
@@ -89,29 +92,32 @@ RSpec.describe DEQMTestKit::DataRequirements do
       test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }], codeFilter: code_filters)
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}").with(headers: {
-                                                                'Accept' => 'application/fhir+json',
-                                                                'Content-Type' => 'application/fhir+json',
-                                                                'Origin' => 'http://example.com/fhir',
-                                                                'Referrer' => 'http://example.com/fhir'
-                                                              })
-                                                        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/fhir',
+                'Referrer' => 'http://example.com/fhir'
+              })
+        .to_return(status: 200, body: test_measure.to_json)
 
-      stub_request(:get, "#{url}/Measure?name=#{measure_id}").with(headers: {
-                                                                     'Accept' => 'application/fhir+json',
-                                                                     'Content-Type' => 'application/fhir+json',
-                                                                     'Origin' => 'http://example.com/fhir',
-                                                                     'Referrer' => 'http://example.com/fhir'
-                                                                   })
-                                                             .to_return(status: 200, body: test_measure_response.to_json)
+      stub_request(:get, "#{url}/Measure?name=#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/fhir',
+                'Referrer' => 'http://example.com/fhir'
+              })
+        .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(:get, "#{data_requirements_reference_server}/Measure" \
-                         "?name=#{measure_id}").with(headers: {
-                                                       'Accept' => 'application/fhir+json',
-                                                       'Content-Type' => 'application/fhir+json',
-                                                       'Origin' => 'http://example.com/reference/fhir',
-                                                       'Referrer' => 'http://example.com/reference/fhir'
-                                                     })
+                         "?name=#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/reference/fhir',
+                'Referrer' => 'http://example.com/reference/fhir'
+              })
         .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(
@@ -148,29 +154,32 @@ RSpec.describe DEQMTestKit::DataRequirements do
       test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition', codeFilter: code_filters }])
       test_measure = FHIR::Measure.new(id: measure_id, name: measure_name, version: measure_version)
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}").with(headers: {
-                                                                'Accept' => 'application/fhir+json',
-                                                                'Content-Type' => 'application/fhir+json',
-                                                                'Origin' => 'http://example.com/fhir',
-                                                                'Referrer' => 'http://example.com/fhir'
-                                                              })
-                                                        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/fhir',
+                'Referrer' => 'http://example.com/fhir'
+              })
+        .to_return(status: 200, body: test_measure.to_json)
 
-      stub_request(:get, "#{url}/Measure?name=#{measure_id}").with(headers: {
-                                                                     'Accept' => 'application/fhir+json',
-                                                                     'Content-Type' => 'application/fhir+json',
-                                                                     'Origin' => 'http://example.com/fhir',
-                                                                     'Referrer' => 'http://example.com/fhir'
-                                                                   })
-                                                             .to_return(status: 200, body: test_measure_response.to_json)
+      stub_request(:get, "#{url}/Measure?name=#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/fhir',
+                'Referrer' => 'http://example.com/fhir'
+              })
+        .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(:get, "#{data_requirements_reference_server}/Measure" \
-                         "?name=#{measure_id}").with(headers: {
-                                                       'Accept' => 'application/fhir+json',
-                                                       'Content-Type' => 'application/fhir+json',
-                                                       'Origin' => 'http://example.com/reference/fhir',
-                                                       'Referrer' => 'http://example.com/reference/fhir'
-                                                     })
+                         "?name=#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json',
+                'Content-Type' => 'application/fhir+json',
+                'Origin' => 'http://example.com/reference/fhir',
+                'Referrer' => 'http://example.com/reference/fhir'
+              })
         .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(
@@ -208,20 +217,23 @@ RSpec.describe DEQMTestKit::DataRequirements do
       test_library_response = FHIR::Library.new(dataRequirement: [{ type: 'Condition' }])
       test_measure = FHIR::Measure.new(id: measure_id)
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}").with(headers: {
-                                                                'Accept' => 'application/fhir+json'
-                                                              })
-                                                        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json'
+              })
+        .to_return(status: 200, body: test_measure.to_json)
 
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}").with(headers: {
-                                                                                                  'Accept' => 'application/fhir+json'
-                                                                                                })
-                                                                                          .to_return(status: 200, body: test_measure_response.to_json)
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json'
+              })
+        .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(:get, "#{data_requirements_reference_server}/Measure" \
-                         "?name=#{measure_name}&version=#{measure_version}").with(headers: {
-                                                                                    'Accept' => 'application/fhir+json'
-                                                                                  })
+                         "?name=#{measure_name}&version=#{measure_version}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json'
+              })
         .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(
@@ -255,20 +267,23 @@ RSpec.describe DEQMTestKit::DataRequirements do
       test_not_library_response = FHIR::Bundle.new
       test_measure = FHIR::Measure.new(id: measure_id)
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}").with(headers: {
-                                                                'Accept' => 'application/fhir+json'
-                                                              })
-                                                        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure/#{measure_id}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json'
+              })
+        .to_return(status: 200, body: test_measure.to_json)
 
-      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}").with(headers: {
-                                                                                                  'Accept' => 'application/fhir+json'
-                                                                                                })
-                                                                                          .to_return(status: 200, body: test_measure_response.to_json)
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json'
+              })
+        .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(:get, "#{data_requirements_reference_server}/Measure" \
-                         "?name=#{measure_name}&version=#{measure_version}").with(headers: {
-                                                                                    'Accept' => 'application/fhir+json'
-                                                                                  })
+                         "?name=#{measure_name}&version=#{measure_version}")
+        .with(headers: {
+                'Accept' => 'application/fhir+json'
+              })
         .to_return(status: 200, body: test_measure_response.to_json)
 
       stub_request(
