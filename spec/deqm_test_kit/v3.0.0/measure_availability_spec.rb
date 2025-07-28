@@ -20,11 +20,13 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
   describe 'measure search test' do
     let(:test) { group.tests.first }
     let(:selected_measure_id) { 'EXM130|7.3.000' }
+    let(:measure_name) { 'EXM130' }
+    let(:measure_version) { '7.3.000' }
 
     it 'passes if a Measure was received' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
 
-      stub_request(:get, "#{url}/Measure?name=#{selected_measure_id}")
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .with(headers: {
                 'Content-Type' => 'application/fhir+json'
               })
@@ -35,9 +37,23 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       expect(result.result).to eq('pass')
     end
 
+    it 'passes if a Measure was received that doesn\'t have a version in the id' do
+      resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])
+
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}")
+        .with(headers: {
+                'Content-Type' => 'application/fhir+json'
+              })
+        .to_return(status: 200, body: resource.to_json)
+
+      result = run(test, selected_measure_id: measure_name, url:)
+
+      expect(result.result).to eq('pass')
+    end
+
     it 'fails if a 200 is not received' do
       resource = FHIR::Bundle.new(total: 1)
-      stub_request(:get, "#{url}/Measure?name=#{selected_measure_id}")
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .with(headers: {
                 'Content-Type' => 'application/fhir+json'
               })
@@ -51,7 +67,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
 
     it 'fails if a Measure is not received in the Bundle' do
       resource = FHIR::Bundle.new(total: 0)
-      stub_request(:get, "#{url}/Measure?name=#{selected_measure_id}")
+      stub_request(:get, "#{url}/Measure?name=#{measure_name}&version=#{measure_version}")
         .with(headers: {
                 'Content-Type' => 'application/fhir+json'
               })

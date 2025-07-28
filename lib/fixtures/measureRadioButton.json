@@ -1,6 +1,26 @@
 {
   "list_options": [
     {
+      "label": "Colorectal Cancer ScreeningFHIR",
+      "value": "ColorectalCancerScreeningsFHIR"
+    },
+    {
+      "label": "Discharged on Antithrombotic Therapy FHIR",
+      "value": "DischargedonAntithromboticTherapyFHIR"
+    },
+    {
+      "label": "Statin Therapy for the Prevention and Treatment of Cardiovascular Disease FHIR",
+      "value": "FHIR347"
+    },
+    {
+      "label": "Cervical Cancer ScreeningFHIR",
+      "value": "CervicalCancerScreeningFHIR"
+    },
+    {
+      "label": "Breast Cancer ScreeningFHIR",
+      "value": "BreastCancerScreeningsFHIR"
+    },
+    {
       "label": "CMS130 FHIR Colorectal Cancer Screening",
       "value": "CMS130FHIRColorectalCancerScreening"
     },

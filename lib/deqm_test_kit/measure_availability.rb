@@ -7,9 +7,12 @@ module DEQMTestKit
   class MeasureAvailability < Inferno::TestGroup
     # module for shared code for measure availability assertions and requests
     module MeasureAvailabilityHelpers
-      def measure_availability_assert_success(measure_identifier)
-        # Search system for measure by identifier and version
-        fhir_search(:measure, params: { name: measure_identifier })
+      def measure_availability_assert_success(measure_identifier, measure_version = nil)
+        if measure_version.nil?
+          fhir_search(:measure, params: { name: measure_identifier })
+        else
+          fhir_search(:measure, params: { name: measure_identifier, version: measure_version })
+        end
         assert_success(:bundle, 200)
       end
     end
@@ -37,9 +40,12 @@ module DEQMTestKit
       input :selected_measure_id, **measure_id_args
       output :measure_id
       run do
-        # Look for matching measure from cqf-ruler datastore by resource id
-        measure_to_test = selected_measure_id
-        measure_availability_assert_success(measure_to_test)
+        if selected_measure_id.include?('|')
+          measure_to_test, measure_version = selected_measure_id.split('|')
+          measure_availability_assert_success(measure_to_test, measure_version)
+        else
+          measure_availability_assert_success(selected_measure_id)
+        end
         assert resource.total.positive?,
                "Expected to find measure with identifier #{measure_to_test}"
         output measure_id: resource.entry[0].resource.id
