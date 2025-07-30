@@ -8,18 +8,6 @@ module DEQMTestKit
   class Evaluate < Inferno::TestGroup
     # module for shared code for $evaluate assertions and requests
     module MeasureEvaluationHelpers
-      def measure_evaluation_assert_success(params, expected_status: 200)
-        fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
-        assert_response_status(expected_status)
-
-        # For v5.0.0 $evaluate, we expect a Parameters resource
-        assert resource.is_a?(FHIR::Parameters),
-               "Expected resource to be a Parameters resource, but got #{resource&.class}"
-
-        # Validate the Parameters resource structure
-        validate_parameters_contains_measurereport_bundles(resource)
-      end
-
       def measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
         fhir_operation("/Measure/#{measure_id}/$#{config.options[:endpoint_name]}?#{params}")
         assert_error(expected_status)
@@ -61,6 +49,9 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers origin: url.to_s,
+              referrer: url.to_s,
+              'Content-Type': 'application/fhir+json'
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
@@ -74,23 +65,32 @@ module DEQMTestKit
     INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
     INVALID_START_DATE = 'INVALID_START_DATE'
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Check operation output matches parameter specifications'
+      title 'Measure/[id]/$evaluate (default reportType=population)'
       id 'evaluate-01'
-      description %(Server returns a Parameters resource with one or more Bundles, each containing at least one
-        DEQM MeasureReport (Individual, Summary, or Subject List), and subsequent entries in the bundle are
-        data-of-interest. The response must always be wrapped in a Parameters resource, even if
-        only one Bundle is returned.)
+      description %(Measure/[id]/$evaluate without reportType (defaults to reportType=population)
+      returns 200 and FHIR Parameters resource.)
 
       input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        result = fhir_operation("/Measure/#{measure_id}/$evaluate?#{params}")
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        result = fhir_operation("/Measure/#{measure_id}/$evaluate", body:)
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
@@ -100,27 +100,121 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Check operation output with multiple measures using Measure/$evaluate'
+      title 'Measure/$evaluate with measureId in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
       id 'evaluate-02'
-      description %(Server should properly return a Parameters resource containing multiple Bundles,
-        each with measure reports for different measures when provided multiple measure IDs
-        using the Measure/$evaluate endpoint.)
+      description %(Measure/$evaluate with measureId in Parameters resource request body and
+      without reportType (defaults to reportType=population) returns 200 and FHIR Parameters resource.)
+
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        result = fhir_operation('/Measure/$evaluate', body:)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_measurereport_bundles(parameters)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=subject and measureId in Parameters resource request body'
+      id 'evaluate-03'
+      description %(Measure/$evaluate with reportType=subject and subject and measureId in Parameters resource request
+      body returns 200 and FHIR Parameters resource.)
+
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'subject',
+              valueString: patient_id
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        result = fhir_operation('/Measure/$evaluate', body:)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_measurereport_bundles(parameters)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with multiple measureIds in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
+      id 'evaluate-04'
+      description %(Measure/$evaluate without reportType (defaults to reportType=population) and subject and multiple
+      measureIds in Parameters resource request body returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args
       input :additional_measures, **additional_measures_args
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         measure_ids = [measure_id]
         measure_ids += additional_measures if additional_measures&.any?
 
-        measure_params = measure_ids.map { |id| "measureId=#{id}" }.join('&')
-        params = "#{measure_params}&periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
+        measure_params = measure_ids.map { |id| { name: 'measureId', valueString: id } }
 
-        fhir_operation("/Measure/$evaluate?#{params}")
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ].concat(measure_params)
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
         assert_response_status(200)
 
         assert resource.is_a?(FHIR::Parameters),
@@ -135,80 +229,203 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Check proper calculation for individual report with required query parameters'
-      id 'evaluate-03'
-      description %(Server should properly return a Parameters resource containing Bundles with individual
-        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_success(params)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check proper calculation for subject-list report with required query parameters'
-      id 'evaluate-04'
-      description %(Server should properly return a Parameters resource containing Bundles with subject-list
-        measure reports when provided a Patient ID and required query parameters \(period start, period end\).)
-      input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject-list"
-        measure_evaluation_assert_success(params)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check proper calculation for population report with required query parameters'
+      title 'Measure/$evaluate with reportType=subject and multiple measureIds in Parameters resource request body'
       id 'evaluate-05'
-      description %(Server should properly return a Parameters resource containing Bundles with population
-        measure reports when provided required query parameters \(period start, period end\).)
+      description %(Measure/$evaluate with reportType=subject and subject and multiple measureIds in Parameters
+      resource request body returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :additional_measures, **additional_measures_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population"
-        measure_evaluation_assert_success(params)
+        measure_ids = [measure_id]
+        measure_ids += additional_measures if additional_measures&.any?
+
+        measure_params = measure_ids.map { |id| { name: 'measureId', valueString: id } }
+        patient_param = { name: 'subject', valueString: patient_id }
+
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ].concat(measure_params).push(patient_param)
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each measure
+        expected_bundle_count = measure_ids.length
+        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
+               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Check proper calculation for population report with Group subject'
+      title 'Measure/$evaluate with reportType=subject and subjectGroup'
       id 'evaluate-06'
-      description %(Server should properly return a Parameters resource containing Bundles with population
-        measure reports when provided a Group ID and required query parameters \(period start, period end\).)
+      description %(Measure/$evaluate with reportType=subject and subjectGroup.)
       input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
       input :group_id, title: 'Group ID'
 
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'subjectGroup',
+              resource: {
+                resourceType: 'Group',
+                id: 'test-group',
+                member: [
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              name: 'reportType',
+              valueString: 'subject'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=subject and subject Group reference'
+      id 'evaluate-07'
+      description %(Measure/$evaluate with reportType=subject and subject Group reference.)
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'subject',
+              valueString: "Group/#{group_id}"
+            },
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'reportType',
+              valueString: 'subject'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate reportType=subject fails for invalid measure ID'
+      id 'evaluate-8'
+      description 'Request returns a 404 error when the given measure ID cannot be found.'
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
       run do
-        params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=population&subject=Group/#{group_id}"
-        measure_evaluation_assert_success(params)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: INVALID_MEASURE_ID
+            },
+            {
+              name: 'subject',
+              valueString: patient_id
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+        assert_error(404)
       end
     end
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid measure ID'
-      id 'evaluate-07'
+      title 'Measure/[id]/$evaluate fails for invalid measure ID'
+      id 'evaluate-9'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
@@ -216,14 +433,50 @@ module DEQMTestKit
       end
     end
 
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate reportType=subject fails for invalid patient ID'
+      id 'evaluate-10'
+      description 'Request returns a 404 error when the given patient ID cannot be found.'
+      input :measure_id, **measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'subject',
+              valueString: INVALID_PATIENT_ID
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+        assert_error(404)
+      end
+    end
+
     test do
       include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid patient ID'
-      id 'evaluate-08'
+      title 'Measure/[id]/$evaluate reportType=subject fails for invalid patient ID'
+      id 'evaluate-11'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
@@ -233,31 +486,14 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check operation fails for missing required query parameter'
-      id 'evaluate-09'
+      title 'Measure/[id]/$evaluate fails for missing subject query parameter (subject report type)'
+      id 'evaluate-12'
       description %(Server should not perform calculation and return a 400 response code
-    when one of the required query parameters is omitted from the request. In this test,
-      the measurement period start is omitted from the request.)
-      input :measure_id, **measure_id_args
-      input :patient_id, title: 'Patient ID'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
-
-      run do
-        params = "periodEnd=#{period_end}&subject=Patient/#{patient_id}"
-        measure_evaluation_assert_failure(params, measure_id)
-      end
-    end
-
-    test do
-      include MeasureEvaluationHelpers
-      title 'Check operation fails for missing subject query parameter (subject report type)'
-      id 'evaluate-10'
-      description %(Server should not perform calculation and return a 400 response code
-    when the subject report type is specified but no subject has been specified in the
+      when the subject report type is specified but no subject has been specified in the
       query parameters.)
       input :measure_id, **measure_id_args
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject"
@@ -267,13 +503,13 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid reportType'
-      id 'evaluate-11'
+      title 'Measure/[id]/$evaluate reportType=subject fails for invalid reportType'
+      id 'evaluate-13'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
-      input :period_end, title: 'Measurement period end', default: '2019-12-31'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
@@ -282,32 +518,91 @@ module DEQMTestKit
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Check operation fails for invalid parameter structure in input'
-      id 'evaluate-12'
-      description %(Server should return 400 when the request contains malformed parameters, such as missing '=' or
-      invalid query format.)
+      title 'Measure/$evaluate reportType=subject fails for invalid reportType'
+      id 'evaluate-14'
+      description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
-      run do
-        params = 'periodStart2019-01-01&periodEnd=2019-12-31&subjectPatient/123'
-        measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'subject',
+              valueString: patient_id
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            },
+            {
+              name: 'reportType',
+              valueString: INVALID_REPORT_TYPE
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+        assert_error(400)
       end
     end
 
     test do
       include MeasureEvaluationHelpers
-      title 'Check operation fails for missing periodEnd parameter in input'
-      id 'evaluate-13'
+      title 'Measure/[id]/$evaluate reportType=subject fails for missing periodEnd parameter in input'
+      id 'evaluate-15'
       description %(Server should return 400 when input is missing periodEnd parameter.)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
-      input :period_start, title: 'Measurement period start', default: '2019-01-01'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
 
       run do
         params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
         measure_evaluation_assert_failure(params, measure_id, expected_status: 400)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter'
+      id 'evaluate-16'
+      description %(Server should return 400 when input is missing periodEnd parameter.)
+      input :measure_id, **measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: measure_id
+            },
+            {
+              name: 'subject',
+              valueString: patient_id
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+        assert_error(400)
       end
     end
   end

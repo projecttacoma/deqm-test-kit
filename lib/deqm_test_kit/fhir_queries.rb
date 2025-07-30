@@ -4,22 +4,34 @@ require 'json'
 
 module DEQMTestKit
   # Perform fhir queries based on $data-requirements operation on test client
-  class FHIRQueries < Inferno::TestGroup
+  class FHIRQueries < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     include DataRequirementsUtils
     # module for shared code for fhir queries assertions and requests
     module FHIRQueriesHelpers
-      def dr_assertions(measure_id)
+      def dr_assertions(measure_id) # rubocop:disable Metrics/MethodLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: '2019-01-01'
+            },
+            {
+              name: 'periodEnd',
+              valueDate: '2019-12-31'
+            }
+          ]
+        }
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the FHIR Queries test group.')
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=2019-12-31&periodStart=2019-01-01",
-                       client: :data_requirements_server)
+        fhir_operation("Measure/#{measure_id}/$data-requirements", body:,
+                                                                   client: :data_requirements_server)
         assert_success(:library, 200)
         resource.dataRequirement
       end
 
-      # rubocop:disable Metrics/MethodLength
       # rubocop:disable Metrics/AbcSize
-      def fhir_queries_assertions(queries)
+      def fhir_queries_assertions(queries) # rubocop:disable Metrics/MethodLength
         # Store responses to run assertions on later to ensure all requests go through before failure
         responses = queries.map do |q|
           fhir_search(q[:endpoint], params: q[:params])
@@ -31,10 +43,13 @@ module DEQMTestKit
                  "Expected response code 200, received: #{r[:response][:status]} for query: #{r[:query_string]}")
           assert_valid_json(r[:response][:body],
                             "Received invalid JSON body on query response for query: #{r[:query_string]}")
+
+          # TODO: add some checking for searchset bundles with 0 returned resources
+          # assert(JSON.parse(r[:response][:body])['total'] != 0,
+          #        'Received 0 resources in the search set bundle')
         end
       end
       # rubocop:enable Metrics/AbcSize
-      # rubocop:enable Metrics/MethodLength
     end
     id 'fhir_queries'
     title 'FHIR Queries'
@@ -58,6 +73,9 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers origin: url.to_s,
+              referrer: url.to_s,
+              'Content-Type': 'application/fhir+json'
     end
     # rubocop:disable Metrics/BlockLength
     test do
@@ -72,6 +90,9 @@ module DEQMTestKit
 
       fhir_client :data_requirements_server do
         url :data_requirements_server_url
+        headers origin: url.to_s,
+                referrer: url.to_s,
+                'Content-Type': 'application/fhir+json'
       end
 
       run do
@@ -88,8 +109,12 @@ module DEQMTestKit
                 next unless e.url == 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern'
 
                 request_info = e.valueString.split('?')
-                # Remove slash
-                request_info[0].slice!(0)
+                # Remove slash if present
+                if request_info[0].include?('/')
+                  request_info[0].slice!(0)
+                else
+                  request_info[0]
+                end
                 params = {}
                 params = qs_to_hash(request_info[1]) if request_info.length > 1
                 queries.push({ endpoint: request_info[0], params: })
@@ -135,8 +160,12 @@ module DEQMTestKit
               next unless e.url == 'http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern'
 
               request_info = e.valueString.split('?')
-              # Remove slash
-              request_info[0].slice!(0)
+              # Remove slash if present
+              if request_info[0].include?('/')
+                request_info[0].slice!(0)
+              else
+                request_info[0]
+              end
               params = {}
               params = qs_to_hash(request_info[1], patient_id) if request_info.length > 1
               queries.push({ endpoint: request_info[0], params: })

@@ -1,0 +1,77 @@
+{
+  "title": "FLAME Demo DEQM Test Server",
+  "id": "deqm_v500_flame_demo_test_server",
+  "test_suite_id": "deqm_v500",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "https://flame-demo.c3ib.org/deqm-test-server/4_0_1"
+    },
+    {
+      "name": "selected_measure_id",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "CervicalCancerScreeningFHIR|0.0.005"
+    },
+    {
+      "name": "measure_id",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "CervicalCancerScreeningFHIR|0.0.005"
+    },
+    {
+      "name": "data_requirements_reference_server",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "https://flame-demo.c3ib.org/deqm-test-server/4_0_1"
+    },
+    {
+      "name": "data_requirements_server_url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "https://flame-demo.c3ib.org/deqm-test-server/4_0_1"
+    },
+    {
+      "name": "patient_id",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "942960c8-37da-492d-85c8-0271d7b655b2"
+    },
+    {
+      "name": "group_id",
+      "description": "",
+      "title": "Group ID",
+      "type": "text",
+      "value": "Cervical-patients"
+    },
+    {
+      "name": "practitioner_id",
+      "description": "",
+      "title": "Practitioner ID",
+      "type": "text",
+      "value": "1"
+    },
+    {
+      "name": "org_id",
+      "description": "",
+      "title": "Organization ID",
+      "type": "text",
+      "value": "1"
+    },
+    {
+      "name": "types",
+      "description": "string of comma-delimited FHIR resource types used to filter exported resources in bulk import operation",
+      "title": "FHIR resource types",
+      "type": "text",
+      "value": "Encounter"
+    }
+  ]
+}

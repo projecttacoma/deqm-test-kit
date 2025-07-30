@@ -19,6 +19,54 @@
     {
       "label": "Breast Cancer ScreeningFHIR",
       "value": "BreastCancerScreeningsFHIR|0.0.002"
+    },
+    {
+      "label": "Colorectal Cancer ScreeningFHIR",
+      "value": "ColorectalCancerScreeningsFHIR|0.0.003"
+    },
+    {
+      "label": "CMS130 FHIR Colorectal Cancer Screening",
+      "value": "CMS130FHIRColorectalCancerScreening"
+    },
+    {
+      "label": "CMS816 FHIR HHHypo",
+      "value": "CMS816FHIRHHHypo"
+    },
+    {
+      "label": "CMS506 FHIR Safe Use of Opioids",
+      "value": "CMS506FHIRSafeUseofOpioids"
+    },
+    {
+      "label": "CMS2 FHIR PCS Depression Screen And Follow Up",
+      "value": "CMS2FHIRPCSDepressionScreenAndFollowUp"
+    },
+    {
+      "label": "CMS122 FHIR Diabetes Assess Greater Than 9 Percent",
+      "value": "CMS122FHIRDiabetesAssessGreaterThan9Percent"
+    },
+    {
+      "label": "CMS124 FHIR Cervical Cancer Screening",
+      "value": "CMS124FHIRCervicalCancerScreening"
+    },
+    {
+      "label": "CMS125 FHIR Breast Cancer Screening",
+      "value": "CMS125FHIRBreastCancerScreening"
+    },
+    {
+      "label": "CMS165 FHIR Controlliing High Blood Pressure",
+      "value": "CMS165FHIRControllingHighBloodPressure"
+    },
+    {
+      "label": "CMS1017FHIRHHFI",
+      "value": "CMS1017FHIRHHFI"
+    },
+    {
+      "label": "CMS1218FHIRHHRF",
+      "value": "CMS1218FHIRHHRF"
+    },
+    {
+      "label": "NHSN Glycemic Control Hypoglycemia Initial Population",
+      "value": "NHSNGlycemicControlHypoglycemiaInitialPopulation"
     }
   ]
 }

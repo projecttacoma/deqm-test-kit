@@ -25,6 +25,7 @@ module DEQMTestKit
 
     fhir_client do
       url :url
+      headers 'Content-Type': 'application/fhir+json'
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
