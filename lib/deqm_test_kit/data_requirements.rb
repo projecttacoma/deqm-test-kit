@@ -38,7 +38,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       title 'Check data requirements against expected return'
-      id 'data-requirements-01'
+      id 'data-requirements-match-reference-server'
       description 'Data requirements on the FHIR test server match the data requirements of reference server'
       makes_request :data_requirements
       output :queries_json
@@ -105,7 +105,7 @@ module DEQMTestKit
       optional
       include DataRequirementsHelpers
       title 'Data requirements supports optional parameters periodStart and periodEnd'
-      id 'data-requirements-02'
+      id 'data-requirements-with-period-parameters'
       description 'Data requirements returns 200 when periodStart and periodEnd parameters are included'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01', optional: true
@@ -123,7 +123,7 @@ module DEQMTestKit
     test do
       include DataRequirementsHelpers
       title 'Check data requirements returns 404 for invalid measure id'
-      id 'data-requirements-03'
+      id 'data-requirements-invalid-measure-returns-404'
       description 'Data requirements returns 404 when passed a measure id which is not in the system'
 
       run do

@@ -21,8 +21,14 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
+  # Helper method to find the spec file by name
+  # `deqm_v300-{evaluate-measure-id}` <- current naming convention
+  def test_by_id(group, evaluate_measure_id)
+    group.tests.find { |t| t.id.end_with?(evaluate_measure_id) }
+  end
+
   describe '$evaluate-measure successful individual report test' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'evaluate-measure-individual-with-patient-subject') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -69,7 +75,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure successful subject-list report test' do
-    let(:test) { group.tests[1] }
+    let(:test) { test_by_id(group, 'evaluate-measure-subject-list-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -117,7 +123,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure successful population report test' do
-    let(:test) { group.tests[2] }
+    let(:test) { test_by_id(group, 'evaluate-measure-population-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -162,7 +168,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure successful population report with Group subject test' do
-    let(:test) { group.tests[3] }
+    let(:test) { test_by_id(group, 'evaluate-measure-population-with-group-subject') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -229,7 +235,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     end
   end
   describe '$evaluate-measure fails for invalid measure id' do
-    let(:test) { group.tests[4] }
+    let(:test) { test_by_id(group, 'evaluate-measure-invalid-measureid') }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -258,7 +264,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for invalid patient id' do
-    let(:test) { group.tests[5] }
+    let(:test) { test_by_id(group, 'evaluate-measure-invalid-patientid') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -287,7 +293,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for missing required params' do
-    let(:test) { group.tests[6] }
+    let(:test) { test_by_id(group, 'evaluate-measure-missing-period-start') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_end) { '2019-12-31' }
@@ -316,7 +322,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for missing subject param for individual report type' do
-    let(:test) { group.tests[7] }
+    let(:test) { test_by_id(group, 'evaluate-measure-missing-subject-param') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -345,7 +351,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure fails for invalid reportType' do
-    let(:test) { group.tests[8] }
+    let(:test) { test_by_id(group, 'evaluate-measure-invalid-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }

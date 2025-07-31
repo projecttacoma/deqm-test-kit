@@ -81,7 +81,7 @@ module DEQMTestKit
     test do
       include FHIRQueriesHelpers
       title 'Valid FHIR Queries for All Patients'
-      id 'fhir-queries-01'
+      id 'fhir-queries-all-patients-from-data-requirements'
       description 'Queries resulting from a $data-requirements operation return 200 OK'
       makes_request :fhir_queries
       input :data_requirements_server_url
@@ -132,7 +132,7 @@ module DEQMTestKit
     test do
       include FHIRQueriesHelpers
       title 'Valid FHIR Queries Single Patient'
-      id 'fhir-queries-02'
+      id 'fhir-queries-single-patient-from-data-requirements'
       description 'Queries resulting from a $data-requirements operation return 200 OK'
       makes_request :fhir_queries
       input :data_requirements_server_url

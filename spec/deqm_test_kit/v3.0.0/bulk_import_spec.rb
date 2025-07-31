@@ -16,8 +16,14 @@ RSpec.describe DEQMTestKit::BulkImport do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
+  # Helper method to find the spec file by name
+  # `deqm_v300-{bulk-import-id}` <- current naming convention
+  def test_by_id(group, bulk_import_id)
+    group.tests.find { |t| t.id.end_with?(bulk_import_id) }
+  end
+
   describe 'The server is able to accept bulk data import requests' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'bulk-import-accepts-import-requests') }
 
     it 'passes on successful $import' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])

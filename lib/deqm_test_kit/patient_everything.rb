@@ -29,7 +29,7 @@ module DEQMTestKit
     test do
       include PatientEverythingHelpers
       title 'Patient/<id>/$everything valid submission'
-      id 'patient-everything-01'
+      id 'patient-everything-single-patient'
       description 'Patient data is received for single patient on the server'
 
       run do
@@ -53,7 +53,7 @@ module DEQMTestKit
     test do
       include PatientEverythingHelpers
       title 'Patient/$everything valid submission'
-      id 'patient-everything-02'
+      id 'patient-everything-all-patients'
       description 'Patient data is received for all patients on the server'
 
       run do
@@ -75,7 +75,7 @@ module DEQMTestKit
 
     test do
       title 'Patient/<id>/$everything patient ID not found'
-      id 'patient-everything-03'
+      id 'patient-everything-invalid-patient-id'
       description 'Request returns a 404 error if requested patient ID is not found'
 
       run do

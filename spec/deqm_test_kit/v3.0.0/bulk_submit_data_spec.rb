@@ -17,8 +17,14 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
+  # Helper method to find the spec file by name
+  # `deqm_v300-{bulk-submit-data-id}` <- current naming convention
+  def test_by_id(group, bulk_submit_data_id)
+    group.tests.find { |t| t.id.end_with?(bulk_submit_data_id) }
+  end
+
   describe 'The server is able to perform bulk data tasks' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'bulk-submit-data-accepts-requests-for-measure') }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }

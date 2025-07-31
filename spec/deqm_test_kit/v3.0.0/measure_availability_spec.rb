@@ -17,8 +17,14 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
+  # Helper method to find the spec file by name
+  # `deqm_v300-{measure-availability-id}` <- current naming convention
+  def test_by_id(group, measure_availability_id)
+    group.tests.find { |t| t.id.end_with?(measure_availability_id) }
+  end
+
   describe 'measure search test' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'measure-availability-found') }
     let(:selected_measure_id) { 'EXM130|7.3.000' }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
@@ -79,4 +85,6 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       expect(result.result_message).to match(/measure/)
     end
   end
+
+  # TODO: Add test for 'measure-availability-not-found'
 end

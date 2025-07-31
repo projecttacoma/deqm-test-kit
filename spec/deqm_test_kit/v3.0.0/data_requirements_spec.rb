@@ -20,8 +20,14 @@ RSpec.describe DEQMTestKit::DataRequirements do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
+  # Helper method to find the spec file by name
+  # `deqm_v300-{data-requirements-id}` <- current naming convention
+  def test_by_id(group, data_requirements_id)
+    group.tests.find { |t| t.id.end_with?(data_requirements_id) }
+  end
+
   describe '$data-requirements matches reference results test' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'data-requirements-match-reference-server') }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -312,7 +318,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
   end
 
   describe '$data-requirements with period start and period end' do
-    let(:test) { group.tests[1] }
+    let(:test) { test_by_id(group, 'data-requirements-with-period-parameters') }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
@@ -357,7 +363,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
   end
 
   describe '$data-requirements with invalid id' do
-    let(:test) { group.tests[2] }
+    let(:test) { test_by_id(group, 'data-requirements-invalid-measure-returns-404') }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }

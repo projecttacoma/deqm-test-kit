@@ -18,8 +18,14 @@ RSpec.describe DEQMTestKit::CareGaps do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
+  # Helper method to find the spec file by name
+  # `deqm_v300-{care-gaps-id}` <- current naming convention
+  def test_by_id(group, care_gaps_id)
+    group.tests.find { |t| t.id.end_with?(care_gaps_id) }
+  end
+
   describe '$care-gaps successful test with required query parameters (Patient)' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'care-gaps-patient-subject-with-required-params') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -60,7 +66,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps successful test with Group subject' do
-    let(:test) { group.tests[1] }
+    let(:test) { test_by_id(group, 'care-gaps-group-subject-with-required-params') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:group_id) { 'EXM130-patients' }
     let(:period_start) { '2019-01-01' }
@@ -101,7 +107,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps missing required parameter test' do
-    let(:test) { group.tests[2] }
+    let(:test) { test_by_id(group, 'care-gaps-missing-required-parameter') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_end) { '2019-12-31' }
@@ -138,7 +144,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps has subject and organization test' do
-    let(:test) { group.tests[3] }
+    let(:test) { test_by_id(group, 'care-gaps-subject-and-organization-conflict') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -177,7 +183,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps has invalid subject format test' do
-    let(:test) { group.tests[4] }
+    let(:test) { test_by_id(group, 'care-gaps-invalid-subject-format') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'INVALID_SUBJECT_ID' }
     let(:period_start) { '2019-01-01' }
@@ -216,7 +222,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps successful test with no measure identifier' do
-    let(:test) { group.tests[5] }
+    let(:test) { test_by_id(group, 'care-gaps-no-measure-identifier-provided') }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -236,7 +242,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps has invalid measure id test' do
-    let(:test) { group.tests[6] }
+    let(:test) { test_by_id(group, 'care-gaps-invalid-measure-identifier') }
     let(:measure_id) { 'INVALID_MEASURE_ID' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -277,7 +283,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps successful test with practitioner and organization' do
-    let(:test) { group.tests[7] }
+    let(:test) { test_by_id(group, 'care-gaps-practitioner-and-organization-params') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:practitioner_id) { '1' }
     let(:org_id) { '1' }
@@ -318,7 +324,7 @@ RSpec.describe DEQMTestKit::CareGaps do
   end
 
   describe '$care-gaps successful test with program' do
-    let(:test) { group.tests[8] }
+    let(:test) { test_by_id(group, 'care-gaps-with-program-parameter') }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
