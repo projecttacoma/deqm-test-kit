@@ -21,12 +21,6 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
-  # Helper method to find the spec file by name
-  # `deqm_v300-{evaluate-measure-id}` <- current naming convention
-  def test_by_id(group, evaluate_measure_id)
-    group.tests.find { |t| t.id.end_with?(evaluate_measure_id) }
-  end
-
   describe '$evaluate-measure successful individual report test' do
     let(:test) { test_by_id(group, 'evaluate-measure-individual-with-patient-subject') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }

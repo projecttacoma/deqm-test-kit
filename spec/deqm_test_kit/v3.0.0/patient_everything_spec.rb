@@ -19,12 +19,6 @@ RSpec.describe DEQMTestKit::PatientEverything do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
-  # Helper method to find the spec file by name
-  # `deqm_v300-{patient-everything-id}` <- current naming convention
-  def test_by_id(group, patient_everything_id)
-    group.tests.find { |t| t.id.end_with?(patient_everything_id) }
-  end
-
   describe 'Patient/<id>/$everything successful test' do
     let(:test) { test_by_id(group, 'patient-everything-single-patient') }
 

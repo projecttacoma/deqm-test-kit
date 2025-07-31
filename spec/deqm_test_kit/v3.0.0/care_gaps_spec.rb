@@ -18,12 +18,6 @@ RSpec.describe DEQMTestKit::CareGaps do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
-  # Helper method to find the spec file by name
-  # `deqm_v300-{care-gaps-id}` <- current naming convention
-  def test_by_id(group, care_gaps_id)
-    group.tests.find { |t| t.id.end_with?(care_gaps_id) }
-  end
-
   describe '$care-gaps successful test with required query parameters (Patient)' do
     let(:test) { test_by_id(group, 'care-gaps-patient-subject-with-required-params') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
