@@ -68,7 +68,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate (default reportType=population)'
-      id 'evaluate-01'
+      id 'evaluate-measureid-query-default-reporttype'
       description %(Measure/[id]/$evaluate without reportType (defaults to reportType=population)
       returns 200 and FHIR Parameters resource.)
 
@@ -103,7 +103,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with measureId in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
-      id 'evaluate-02'
+      id 'evaluate-measureid-body-default-reporttype'
       description %(Measure/$evaluate with measureId in Parameters resource request body and
       without reportType (defaults to reportType=population) returns 200 and FHIR Parameters resource.)
 
@@ -142,7 +142,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with reportType=subject and measureId in Parameters resource request body'
-      id 'evaluate-03'
+      id 'evaluate-subject-reporttype-body'
       description %(Measure/$evaluate with reportType=subject and subject and measureId in Parameters resource request
       body returns 200 and FHIR Parameters resource.)
 
@@ -186,7 +186,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with multiple measureIds in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
-      id 'evaluate-04'
+      id 'evaluate-multiple-measureids-no-reporttype'
       description %(Measure/$evaluate without reportType (defaults to reportType=population) and subject and multiple
       measureIds in Parameters resource request body returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args
@@ -232,7 +232,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with reportType=subject and multiple measureIds in Parameters resource request body'
-      id 'evaluate-05'
+      id 'evaluate-multiple-measureids-with-subject'
       description %(Measure/$evaluate with reportType=subject and subject and multiple measureIds in Parameters
       resource request body returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args
@@ -280,7 +280,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with reportType=subject and subjectGroup'
-      id 'evaluate-06'
+      id 'evaluate-subjectgroup-embedded-resource'
       description %(Measure/$evaluate with reportType=subject and subjectGroup.)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -338,7 +338,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with reportType=subject and subject Group reference'
-      id 'evaluate-07'
+      id 'evaluate-subjectgroup-reference'
       description %(Measure/$evaluate with reportType=subject and subject Group reference.)
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -385,7 +385,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid measure ID'
-      id 'evaluate-8'
+      id 'evaluate-invalid-measureid-subject'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -421,7 +421,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate fails for invalid measure ID'
-      id 'evaluate-9'
+      id 'evaluate-measureid-query-invalid-measureid'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -436,7 +436,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid patient ID'
-      id 'evaluate-10'
+      id 'evaluate-invalid-patientid-subject-body'
       description 'Request returns a 404 error when the given patient ID cannot be found.'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -472,7 +472,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid patient ID'
-      id 'evaluate-11'
+      id 'evaluate-measureid-query-invalid-patientid'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -487,7 +487,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate fails for missing subject query parameter (subject report type)'
-      id 'evaluate-12'
+      id 'evaluate-missing-subject-param'
       description %(Server should not perform calculation and return a 400 response code
       when the subject report type is specified but no subject has been specified in the
       query parameters.)
@@ -504,7 +504,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid reportType'
-      id 'evaluate-13'
+      id 'evaluate-measureid-query-invalid-reporttype'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -521,7 +521,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate reportType=subject fails for invalid reportType'
-      id 'evaluate-14'
+      id 'evaluate-body-invalid-reporttype'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -562,7 +562,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for missing periodEnd parameter in input'
-      id 'evaluate-15'
+      id 'evaluate-measureid-query-missing-periodend'
       description %(Server should return 400 when input is missing periodEnd parameter.)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -576,8 +576,8 @@ module DEQMTestKit
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter'
-      id 'evaluate-16'
+      title 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter in the body'
+      id 'evaluate-body-missing-periodend'
       description %(Server should return 400 when input is missing periodEnd parameter.)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
