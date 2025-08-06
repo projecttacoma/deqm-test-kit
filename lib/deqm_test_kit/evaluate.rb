@@ -421,7 +421,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate fails for invalid measure ID'
-      id 'evaluate-measureid-query-invalid-measureid'
+      id 'evaluate-measureid-path-invalid-measureid'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -472,7 +472,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid patient ID'
-      id 'evaluate-measureid-query-invalid-patientid'
+      id 'evaluate-measureid-path-invalid-patientid'
       description 'Request returns a 404 error when the given patient ID cannot be found'
       input :measure_id, **measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -504,7 +504,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid reportType'
-      id 'evaluate-measureid-query-invalid-reporttype'
+      id 'evaluate-measureid-path-invalid-reporttype'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
@@ -562,7 +562,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate reportType=subject fails for missing periodEnd parameter in input'
-      id 'evaluate-measureid-query-missing-periodend'
+      id 'evaluate-measureid-path-missing-periodend'
       description %(Server should return 400 when input is missing periodEnd parameter.)
       input :measure_id, **measure_id_args
       input :patient_id, title: 'Patient ID'
