@@ -68,7 +68,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate (default reportType=population)'
-      id 'evaluate-measureid-query-default-reporttype'
+      id 'evaluate-measureid-path-default-reporttype'
       description %(Measure/[id]/$evaluate without reportType (defaults to reportType=population)
       returns 200 and FHIR Parameters resource.)
 
@@ -186,7 +186,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with multiple measureIds in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
-      id 'evaluate-multiple-measureids-no-reporttype'
+      id 'evaluate-multiple-measureids-default-reporttype'
       description %(Measure/$evaluate without reportType (defaults to reportType=population) and subject and multiple
       measureIds in Parameters resource request body returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args

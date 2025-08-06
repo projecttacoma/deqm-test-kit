@@ -34,7 +34,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate with reportType=population' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-query-default-reporttype') }
+    let(:test) { test_by_id(group, 'evaluate-measureid-path-default-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -159,7 +159,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate output with multiple measures using Measure/$evaluate' do
-    let(:test) { test_by_id(group, 'evaluate-multiple-measureids-no-reporttype') }
+    let(:test) { test_by_id(group, 'evaluate-multiple-measureids-default-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:additional_measures) { ['measure-EXM124-7.3.000'] }
     let(:period_start) { '2019-01-01' }

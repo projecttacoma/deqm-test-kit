@@ -90,7 +90,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Check proper calculation for population report with Group subject'
-      id 'evaluate-measure-population-with-group-subject'
+      id 'evaluate-measure-population-with-group-subject-reference'
       description %(Server should properly return population measure report when provided a
       Group ID and required query parameters \(period start, period end\).)
       input :measure_id, **measure_id_args

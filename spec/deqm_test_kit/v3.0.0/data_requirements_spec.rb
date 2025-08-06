@@ -357,7 +357,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
   end
 
   describe '$data-requirements with invalid id' do
-    let(:test) { test_by_id(group, 'data-requirements-invalid-measure-returns-404') }
+    let(:test) { test_by_id(group, 'data-requirements-invalid-measure') }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }

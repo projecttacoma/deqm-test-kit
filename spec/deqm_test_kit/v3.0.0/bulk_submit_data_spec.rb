@@ -18,7 +18,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
   end
 
   describe 'The server is able to perform bulk data tasks' do
-    let(:test) { test_by_id(group, 'bulk-submit-data-accepts-requests-for-measure') }
+    let(:test) { test_by_id(group, 'bulk-submit-data-accepts-submit-requests') }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
     let(:measure_id) { 'measure-EXM130-7.3.000' }

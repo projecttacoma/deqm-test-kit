@@ -162,7 +162,7 @@ RSpec.describe DEQMTestKit::EvaluateMeasure do
   end
 
   describe '$evaluate-measure successful population report with Group subject test' do
-    let(:test) { test_by_id(group, 'evaluate-measure-population-with-group-subject') }
+    let(:test) { test_by_id(group, 'evaluate-measure-population-with-group-subject-reference') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }

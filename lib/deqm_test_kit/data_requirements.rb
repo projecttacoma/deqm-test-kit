@@ -123,7 +123,7 @@ module DEQMTestKit
     test do
       include DataRequirementsHelpers
       title 'Check data requirements returns 404 for invalid measure id'
-      id 'data-requirements-invalid-measure-returns-404'
+      id 'data-requirements-invalid-measure'
       description 'Data requirements returns 404 when passed a measure id which is not in the system'
 
       run do
