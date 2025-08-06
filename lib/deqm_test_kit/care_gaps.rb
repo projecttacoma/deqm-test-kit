@@ -38,7 +38,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps proper calculation with required query parameters for Patient subject'
-      id 'care-gaps-01'
+      id 'care-gaps-patient-subject-with-required-params'
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided
       and subject is a Patient resource.)
@@ -56,7 +56,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps proper calculation with required query parameters for Group subject'
-      id 'care-gaps-02'
+      id 'care-gaps-group-subject-with-required-params'
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided
       and subject is a Group resource.)
@@ -74,7 +74,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps returns a BadRequest error for missing required query parameter'
-      id 'care-gaps-03'
+      id 'care-gaps-missing-required-parameter'
       description %(Server should not perform calculation and return a 400 response code
     when one of the required query parameters is omitted from the request. In this test,
       the measurement period start is omitted from the request.)
@@ -90,7 +90,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps returns a BadRequest error for subject and organization query parameters'
-      id 'care-gaps-04'
+      id 'care-gaps-subject-and-organization-conflict'
       description %(Server should not perform calculation and return a 400 response code
     when both the subject and organization query parameters are provided in the request.
       As stated in the $care-gaps FHIR spec, these query parameters are mutually
@@ -110,7 +110,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps returns a BadRequest error for invalid subject format'
-      id 'care-gaps-05'
+      id 'care-gaps-invalid-subject-format'
       description "Server should not perform calculation and return a 400 response code
     when both the subject query parameter is not of the form Patient/<id> or Group/<id>."
       input :measure_id, **measure_id_args
@@ -127,7 +127,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps proper calculation when no measure identifier is provided'
-      id 'care-gaps-06'
+      id 'care-gaps-no-measure-identifier-provided'
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided,
       subject is a Patient resource, and no measure identifier has been provided.)
@@ -143,7 +143,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps returns NotFound error when invalid measure identifier is provided'
-      id 'care-gaps-07'
+      id 'care-gaps-invalid-measure-identifier'
       description %(Server should not perform calculation and return a 404 response code
     when the provided measure identifier cannot be found on the server)
       input :patient_id, title: 'Patient ID'
@@ -159,7 +159,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps proper calculation with practitioner and organization query parameters'
-      id 'care-gaps-08'
+      id 'care-gaps-practitioner-and-organization-params'
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided and
       an organization and practitioner are provided rather than a Patient/Group subject.)
@@ -178,7 +178,7 @@ module DEQMTestKit
     test do
       include CareGapsHelpers
       title 'Check $care-gaps proper calculation with program query parameter'
-      id 'care-gaps-09'
+      id 'care-gaps-with-program-parameter'
       description %(Server should properly return a care gaps report
     when the required query parameters \(periodStart, periodEnd, status\) are provided and
       a program query parameter is provided.)

@@ -137,6 +137,12 @@ FactoryBot.definition_file_paths = [
 
 RSpec::Matchers.define_negated_matcher :exclude, :include
 
+# Helper method to find tests by their descriptive ID suffix
+# Usage: test_by_id(group, 'test-descriptive-name')
+def test_by_id(group, test_id_suffix)
+  group.tests.find { |t| t.id.end_with?(test_id_suffix) }
+end
+
 FHIR.logger = Inferno::Application['logger']
 
 DatabaseCleaner[:sequel].strategy = :truncation

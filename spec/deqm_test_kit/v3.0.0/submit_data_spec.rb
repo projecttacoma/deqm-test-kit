@@ -19,7 +19,7 @@ RSpec.describe DEQMTestKit::SubmitData do
   end
 
   describe '$submit-data successful upload test' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'submit-data-valid-submission-with-verification') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
 
     it 'passes if the submitted resources can be retrieved' do
@@ -148,7 +148,7 @@ RSpec.describe DEQMTestKit::SubmitData do
     end
   end
   describe '$submit-data failed on Parameters object with no MeasureReport' do
-    let(:test) { group.tests[1] }
+    let(:test) { test_by_id(group, 'submit-data-fails-missing-measurereport') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
 
     it 'passes when server returns 400 with correct operation outcome' do
@@ -184,7 +184,7 @@ RSpec.describe DEQMTestKit::SubmitData do
   end
 
   describe '$submit-data failed on Parameters object with multiple MeasureReports' do
-    let(:test) { group.tests[2] }
+    let(:test) { test_by_id(group, 'submit-data-fails-multiple-measurereports') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
 
     it 'passes when server returns 400 with correct operation outcome' do

@@ -37,7 +37,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
   end
 
   describe 'FHIR queries with successful $data-requirements request (all patients)' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'fhir-queries-all-patients-from-data-requirements') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:condition_id) { 'test-condition' }
     let(:period_start) { '2019-01-01' }
@@ -202,7 +202,7 @@ RSpec.describe DEQMTestKit::FHIRQueries do
   end
 
   describe 'FHIR queries with successful $data-requirements request (single patient)' do
-    let(:test) { group.tests[1] }
+    let(:test) { test_by_id(group, 'fhir-queries-single-patient-from-data-requirements') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:condition_id) { 'test-condition' }
     let(:period_start) { '2019-01-01' }

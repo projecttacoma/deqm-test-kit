@@ -17,7 +17,7 @@ RSpec.describe DEQMTestKit::BulkImport do
   end
 
   describe 'The server is able to accept bulk data import requests' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'bulk-import-accepts-import-requests') }
 
     it 'passes on successful $import' do
       resource = FHIR::Bundle.new(total: 1, entry: [{ resource: { id: 'test_id' } }])

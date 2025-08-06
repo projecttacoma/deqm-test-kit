@@ -20,7 +20,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
   end
 
   describe 'Patient/<id>/$everything successful test' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'patient-everything-single-patient') }
 
     # single patient example for Patient/<id>/$everything
     single_patient_file = File.open('./lib/fixtures/singlePatientBundle.json')
@@ -63,7 +63,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
   end
 
   describe 'Patient/$everything successful test' do
-    let(:test) { group.tests[1] }
+    let(:test) { test_by_id(group, 'patient-everything-all-patients') }
 
     # multiple patient example for Patient/$everything
     multiple_patient_file = File.open('./lib/fixtures/multiplePatientBundle.json')
@@ -104,7 +104,7 @@ RSpec.describe DEQMTestKit::PatientEverything do
   end
 
   describe 'Patient/<id>/$everything fails for invalid id' do
-    let(:test) { group.tests[2] }
+    let(:test) { test_by_id(group, 'patient-everything-invalid-patient-id') }
 
     it 'passes with correct Operation-Outcome returned' do
       stub_request(:post, "#{url}/Patient/INVALID/$everything")

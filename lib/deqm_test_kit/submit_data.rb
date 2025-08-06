@@ -49,7 +49,7 @@ module DEQMTestKit
     test do
       include SubmitDataHelpers
       title 'Submit Data valid submission'
-      id 'submit-data-01'
+      id 'submit-data-valid-submission-with-verification'
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'
       makes_request :submit_data
       input :queries_json
@@ -145,7 +145,7 @@ module DEQMTestKit
     test do
       include SubmitDataHelpers
       title 'Fails if a measureReport is not submitted'
-      id 'submit-data-02'
+      id 'submit-data-fails-missing-measurereport'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
       input :measure_id, **measure_id_args
       run do
@@ -165,7 +165,7 @@ module DEQMTestKit
     test do
       include SubmitDataHelpers
       title 'Fails if multiple measureReports are submitted'
-      id 'submit-data-03'
+      id 'submit-data-fails-multiple-measurereports'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
       input :measure_id, **measure_id_args
       run do

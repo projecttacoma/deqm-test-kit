@@ -30,7 +30,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       title 'Ensure FHIR server can accept bulk data import requests for given measure'
-      id 'bulk-submit-data-01'
+      id 'bulk-submit-data-accepts-submit-requests'
       description %(POST request to $bulk-submit-data returns 202 response,
       GET request to bulk status endpoint returns 200 response)
 

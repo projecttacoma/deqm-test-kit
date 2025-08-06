@@ -34,7 +34,7 @@ module DEQMTestKit
     test do
       include MeasureAvailabilityHelpers
       title 'Measure can be found'
-      id 'measure-availability-01'
+      id 'measure-availability-found'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
       input :selected_measure_id, **measure_id_args
@@ -54,7 +54,7 @@ module DEQMTestKit
     test do
       include MeasureAvailabilityHelpers
       title 'Measure cannot be found returns empty bundle'
-      id 'measure-availability-02'
+      id 'measure-availability-not-found'
       description 'Selected measure is know not to exist on the server and returns an empty bundle'
       makes_request :measure_search_failure
       output :null

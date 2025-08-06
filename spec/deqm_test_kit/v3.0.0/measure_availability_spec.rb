@@ -18,7 +18,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
   end
 
   describe 'measure search test' do
-    let(:test) { group.tests.first }
+    let(:test) { test_by_id(group, 'measure-availability-found') }
     let(:selected_measure_id) { 'EXM130|7.3.000' }
     let(:measure_name) { 'EXM130' }
     let(:measure_version) { '7.3.000' }
@@ -79,4 +79,6 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
       expect(result.result_message).to match(/measure/)
     end
   end
+
+  # TODO: Add test for 'measure-availability-not-found'
 end
