@@ -489,7 +489,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate fails for missing subject query parameter (subject report type)' do
-    let(:test) { test_by_id(group, 'evaluate-missing-subject-param') }
+    let(:test) { test_by_id(group, 'evaluate-measureid-path-missing-subject-param') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }

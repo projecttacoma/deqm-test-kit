@@ -487,7 +487,7 @@ module DEQMTestKit
     test do
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate fails for missing subject query parameter (subject report type)'
-      id 'evaluate-missing-subject-param'
+      id 'evaluate-measureid-path-missing-subject-param'
       description %(Server should not perform calculation and return a 400 response code
       when the subject report type is specified but no subject has been specified in the
       query parameters.)
