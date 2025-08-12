@@ -343,7 +343,7 @@ RSpec.describe DEQMTestKit::Evaluate do
              })
         .to_return(status: 404, body: error_outcome.to_json)
 
-      result = run(test, url:, patient_id:, period_start:, period_end:)
+      result = run(test, url:, patient_id:, period_start:, period_end:, measure_id: INVALID_MEASURE_ID)
       expect(result.result).to eq('pass')
     end
 
@@ -362,7 +362,7 @@ RSpec.describe DEQMTestKit::Evaluate do
              })
         .to_return(status: 200, body: error_outcome.to_json)
 
-      result = run(test, url:, patient_id:, period_start:, period_end:)
+      result = run(test, url:, patient_id:, period_start:, period_end:, measure_id: INVALID_MEASURE_ID)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/404/)
     end
@@ -382,7 +382,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       )
         .to_return(status: 404, body: error_outcome.to_json)
 
-      result = run(test, url:, patient_id:, period_start:, period_end:)
+      result = run(test, url:, patient_id:, period_start:, period_end:, measure_id: INVALID_MEASURE_ID)
       expect(result.result).to eq('pass')
     end
 
@@ -393,7 +393,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       )
         .to_return(status: 200, body: error_outcome.to_json)
 
-      result = run(test, url:, patient_id:, period_start:, period_end:)
+      result = run(test, url:, patient_id:, period_start:, period_end:, measure_id: INVALID_MEASURE_ID)
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/404/)
     end
@@ -602,7 +602,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, patient_id:, period_start:)
+      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end: '2019-12-31')
       expect(result.result).to eq('pass')
     end
   end
@@ -628,7 +628,7 @@ RSpec.describe DEQMTestKit::Evaluate do
              })
         .to_return(status: 400, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, patient_id:, period_start:)
+      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end: '2019-12-31')
       expect(result.result).to eq('pass')
     end
   end

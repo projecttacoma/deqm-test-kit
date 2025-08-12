@@ -15,6 +15,12 @@ module DEQMTestKit
         end
         assert_success(:bundle, 200)
       end
+
+      def selected_measure_id
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+
+        measure_id
+      end
     end
     id 'measure_availability'
     title 'Measure Availability'
@@ -28,8 +34,22 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options, title: 'Measure Title' }
+    measure_id_args = {
+      type: 'radio',
+      optional: false,
+      default: 'ColorectalCancerScreeningsFHIR',
+      options: measure_options,
+      title: 'Measure Title'
+    }
+    custom_measure_id_args = {
+      type: 'text',
+      optional: true,
+      title: 'Custom Measure ID',
+      description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
+    }
+
+    input :measure_id, **measure_id_args
+    input :custom_measure_id, **custom_measure_id_args
 
     test do
       include MeasureAvailabilityHelpers
@@ -37,7 +57,6 @@ module DEQMTestKit
       id 'measure-availability-found'
       description 'Selected measure with matching id is available on the server and a valid json object'
       makes_request :measure_search
-      input :selected_measure_id, **measure_id_args
       output :measure_id
       run do
         if selected_measure_id.include?('|')
