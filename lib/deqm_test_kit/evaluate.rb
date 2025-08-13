@@ -82,7 +82,6 @@ module DEQMTestKit
       description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
     }
 
-
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
     INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
