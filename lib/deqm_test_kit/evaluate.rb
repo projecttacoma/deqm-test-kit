@@ -82,11 +82,6 @@ module DEQMTestKit
       description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
     }
 
-    # Shared inputs for the entire Evaluate test group
-    input :measure_id, **measure_id_args
-    input :custom_measure_id, **custom_measure_id_args
-    input :period_start, title: 'Measurement period start', default: '2026-01-01'
-    input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
     INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
@@ -99,6 +94,11 @@ module DEQMTestKit
       id 'evaluate-measureid-path-default-reporttype'
       description %(Measure/[id]/$evaluate without reportType (defaults to reportType=population)
       returns 200 and FHIR Parameters resource.)
+
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         body = {
@@ -130,6 +130,11 @@ module DEQMTestKit
       id 'evaluate-measureid-body-default-reporttype'
       description %(Measure/$evaluate with measureId in Parameters resource request body and
       without reportType (defaults to reportType=population) returns 200 and FHIR Parameters resource.)
+
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         body = {
@@ -166,7 +171,11 @@ module DEQMTestKit
       description %(Measure/$evaluate with reportType=subject and subject and measureId in Parameters resource request
       body returns 200 and FHIR Parameters resource.)
 
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do # rubocop:disable Metrics/BlockLength
         body = {
@@ -206,7 +215,11 @@ module DEQMTestKit
       id 'evaluate-multiple-measureids-default-reporttype'
       description %(Measure/$evaluate without reportType (defaults to reportType=population) and subject and multiple
       measureIds in Parameters resource request body returns 200 and FHIR Parameters resource.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :additional_measures, **additional_measures_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         measure_ids = [selected_measure_id]
@@ -249,8 +262,12 @@ module DEQMTestKit
       id 'evaluate-multiple-measureids-with-subject'
       description %(Measure/$evaluate with reportType=subject and subject and multiple measureIds in Parameters
       resource request body returns 200 and FHIR Parameters resource.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :additional_measures, **additional_measures_args
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         measure_ids = [selected_measure_id]
@@ -293,8 +310,12 @@ module DEQMTestKit
       title 'Measure/$evaluate with reportType=subject and subjectGroup'
       id 'evaluate-subjectgroup-embedded-resource'
       description %(Measure/$evaluate with reportType=subject and subjectGroup.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
       input :group_id, title: 'Group ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do # rubocop:disable Metrics/BlockLength
         body = {
@@ -348,7 +369,11 @@ module DEQMTestKit
       title 'Measure/$evaluate with reportType=subject and subject Group reference'
       id 'evaluate-subjectgroup-reference'
       description %(Measure/$evaluate with reportType=subject and subject Group reference.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :group_id, title: 'Group ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do # rubocop:disable Metrics/BlockLength
         body = {
@@ -393,6 +418,8 @@ module DEQMTestKit
       id 'evaluate-invalid-measureid-subject'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         body = {
@@ -427,6 +454,8 @@ module DEQMTestKit
       id 'evaluate-measureid-path-invalid-measureid'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}"
@@ -439,6 +468,11 @@ module DEQMTestKit
       title 'Measure/$evaluate reportType=subject fails for invalid patient ID'
       id 'evaluate-invalid-patientid-subject-body'
       description 'Request returns a 404 error when the given patient ID cannot be found.'
+
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         body = {
@@ -473,6 +507,11 @@ module DEQMTestKit
       id 'evaluate-measureid-path-invalid-patientid'
       description 'Request returns a 404 error when the given patient ID cannot be found'
 
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=#{INVALID_PATIENT_ID}"
         measure_evaluation_assert_failure(params, selected_measure_id, expected_status: 404)
@@ -487,6 +526,11 @@ module DEQMTestKit
       when the subject report type is specified but no subject has been specified in the
       query parameters.)
 
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&reportType=subject"
         measure_evaluation_assert_failure(params, selected_measure_id)
@@ -498,7 +542,11 @@ module DEQMTestKit
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid reportType'
       id 'evaluate-measureid-path-invalid-reporttype'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do
         params = "periodStart=#{period_start}&periodEnd=#{period_end}&subject=Patient/#{patient_id}" \
@@ -512,7 +560,11 @@ module DEQMTestKit
       title 'Measure/$evaluate reportType=subject fails for invalid reportType'
       id 'evaluate-body-invalid-reporttype'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
       run do # rubocop:disable Metrics/BlockLength
         body = {
@@ -550,7 +602,10 @@ module DEQMTestKit
       title 'Measure/[id]/$evaluate reportType=subject fails for missing periodEnd parameter in input'
       id 'evaluate-measureid-path-missing-periodend'
       description %(Server should return 400 when input is missing periodEnd parameter.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
 
       run do
         params = "periodStart=#{period_start}&subject=Patient/#{patient_id}"
@@ -563,7 +618,10 @@ module DEQMTestKit
       title 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter in the body'
       id 'evaluate-body-missing-periodend'
       description %(Server should return 400 when input is missing periodEnd parameter.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
 
       run do
         body = {
