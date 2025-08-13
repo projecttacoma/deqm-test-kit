@@ -5,10 +5,16 @@ require 'json'
 
 module DEQMTestKit
   # GET [base]/Measure/CMS146/$data-requirements?periodStart=2014&periodEnd=2014
-  class DataRequirements < Inferno::TestGroup
+  class DataRequirements < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     include DataRequirementsUtils
     # module for shared code for $data-requirements assertions and requests
     module DataRequirementsHelpers
+      def selected_measure_id
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+
+        measure_id
+      end
+
       def assert_dr_failure(expected_status: 400)
         assert_error(expected_status)
       end
@@ -25,8 +31,19 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options, title: 'Measure Title' }
+    measure_id_args = {
+      type: 'radio',
+      optional: false,
+      default: 'ColorectalCancerScreeningsFHIR',
+      options: measure_options,
+      title: 'Measure Title'
+    }
+    custom_measure_id_args = {
+      type: 'text',
+      optional: true,
+      title: 'Custom Measure ID',
+      description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
+    }
 
     PARAMS = {
       resourceType: 'Parameters',
@@ -37,12 +54,14 @@ module DEQMTestKit
 
     # rubocop:disable Metrics/BlockLength
     test do
+      include DataRequirementsHelpers
       title 'Check data requirements against expected return'
       id 'data-requirements-match-reference-server'
       description 'Data requirements on the FHIR test server match the data requirements of reference server'
       makes_request :data_requirements
       output :queries_json
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :data_requirements_reference_server
 
       fhir_client :dr_reference_client do
@@ -54,13 +73,13 @@ module DEQMTestKit
 
       run do
         # Get measure resource from client
-        fhir_read(:measure, measure_id)
+        fhir_read(:measure, selected_measure_id)
         assert_response_status(200)
         assert_resource_type(:measure)
         assert_valid_json(response[:body])
 
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements",
+        fhir_operation("Measure/#{selected_measure_id}/$data-requirements",
                        body: PARAMS, name: :data_requirements)
         assert_response_status(200)
         assert_resource_type(:library)
@@ -72,7 +91,7 @@ module DEQMTestKit
 
         # Search reference server by identifier and version
         fhir_search(:measure, client: :dr_reference_client,
-                              params: { name: measure_id }, name: :measure_search)
+                              params: { name: selected_measure_id }, name: :measure_search)
         reference_measure_id = resource.entry[0].resource.id
 
         # Run data requirements operation on reference server
@@ -93,11 +112,11 @@ module DEQMTestKit
 
         # Ensure both data requirements results libraries are identical
         assert(diff.blank?,
-               "Client data-requirements is missing expected data requirements for measure #{measure_id}: #{diff}")
+               "Client data-requirements is missing expected data requirements for measure #{selected_measure_id}: #{diff}") # rubocop:disable Layout/LineLength
 
         diff = actual_dr_strings - expected_dr_strings
         assert(diff.blank?,
-               "Client data-requirements contains unexpected data requirements for measure #{measure_id}: #{diff}")
+               "Client data-requirements contains unexpected data requirements for measure #{selected_measure_id}: #{diff}") # rubocop:disable Layout/LineLength
       end
     end
 
@@ -108,11 +127,12 @@ module DEQMTestKit
       id 'data-requirements-with-period-parameters'
       description 'Data requirements returns 200 when periodStart and periodEnd parameters are included'
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01', optional: true
       input :period_end, title: 'Measurement period end', default: '2019-12-31', optional: true
       run do
         # Run our data requirements operation on the test client server
-        fhir_operation("Measure/#{measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}",
+        fhir_operation("Measure/#{selected_measure_id}/$data-requirements?periodEnd=#{period_end}&periodStart=#{period_start}", # rubocop:disable Layout/LineLength
                        body: PARAMS)
         assert_response_status(200)
         assert_resource_type(:library)

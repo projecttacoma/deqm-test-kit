@@ -8,6 +8,12 @@ module DEQMTestKit
     include DataRequirementsUtils
     # module for shared code for fhir queries assertions and requests
     module FHIRQueriesHelpers
+      def selected_measure_id
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+
+        measure_id
+      end
+
       def dr_assertions(measure_id) # rubocop:disable Metrics/MethodLength
         body = {
           resourceType: 'Parameters',
@@ -55,8 +61,19 @@ module DEQMTestKit
     title 'FHIR Queries'
     description 'Ensure FHIR server can handle queries resulting from $data-requirements operation'
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options, title: 'Measure Title' }
+    measure_id_args = {
+      type: 'radio',
+      optional: false,
+      default: 'ColorectalCancerScreeningsFHIR',
+      options: measure_options,
+      title: 'Measure Title'
+    }
+    custom_measure_id_args = {
+      type: 'text',
+      optional: true,
+      title: 'Custom Measure ID',
+      description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
+    }
 
     use_fqp_extension_args = {
       type: 'radio',
@@ -86,6 +103,7 @@ module DEQMTestKit
       makes_request :fhir_queries
       input :data_requirements_server_url
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :use_fqp_extension, **use_fqp_extension_args
 
       fhir_client :data_requirements_server do
@@ -96,7 +114,7 @@ module DEQMTestKit
       end
 
       run do
-        actual_dr = dr_assertions(measure_id)
+        actual_dr = dr_assertions(selected_measure_id)
         queries = []
         if use_fqp_extension == 'true'
           actual_dr.map do |dr|
@@ -137,6 +155,7 @@ module DEQMTestKit
       makes_request :fhir_queries
       input :data_requirements_server_url
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id
       optional
 
@@ -145,7 +164,7 @@ module DEQMTestKit
       end
 
       run do
-        actual_dr = dr_assertions(measure_id)
+        actual_dr = dr_assertions(selected_measure_id)
         queries = []
 
         actual_dr.each do |dr|

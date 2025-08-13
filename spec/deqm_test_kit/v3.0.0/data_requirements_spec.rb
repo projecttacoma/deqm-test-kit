@@ -82,6 +82,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       result = run(test, url:,
                          measure_id:,
+                         custom_measure_id: nil,
                          data_requirements_reference_server:)
       expect(result.result).to eq('pass')
     end
@@ -144,6 +145,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       result = run(test, url:,
                          measure_id:,
+                         custom_measure_id: nil,
                          data_requirements_reference_server:)
       expect(result.result).to eq('pass')
     end
@@ -206,6 +208,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       result = run(test, url:,
                          measure_id:,
+                         custom_measure_id: nil,
                          data_requirements_reference_server:)
       expect(result.result).to eq('pass')
     end
@@ -254,6 +257,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       result = run(test, url:,
                          measure_id:,
+                         custom_measure_id: nil,
                          data_requirements_reference_server:)
 
       expect(result.result).to eq('fail')
@@ -304,6 +308,7 @@ RSpec.describe DEQMTestKit::DataRequirements do
 
       result = run(test, url:,
                          measure_id:,
+                         custom_measure_id: nil,
                          data_requirements_reference_server:)
 
       expect(result.result).to eq('fail')

@@ -39,7 +39,7 @@ RSpec.describe DEQMTestKit::BulkSubmitData do
 
       stub_request(:get, polling_url)
         .to_return(status: 200, body: resource.to_json)
-      result = run(test, url:, measure_id:, exportUrl:)
+      result = run(test, url:, measure_id:, custom_measure_id: nil, exportUrl:)
       # check that we get a 202 off a bulk data request
       expect(result.result).to eq('pass')
     end
