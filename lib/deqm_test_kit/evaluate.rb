@@ -61,7 +61,7 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    additional_measure_options = JSON.parse(File.read('./lib/fixtures/additionalMeasureRadioButton.json'))
+    additional_measure_options = JSON.parse(File.read('./lib/fixtures/measureCheckBoxes.json'))
     measure_id_args = {
       type: 'radio',
       optional: false,
@@ -468,7 +468,6 @@ module DEQMTestKit
       title 'Measure/$evaluate reportType=subject fails for invalid patient ID'
       id 'evaluate-invalid-patientid-subject-body'
       description 'Request returns a 404 error when the given patient ID cannot be found.'
-
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -506,7 +505,6 @@ module DEQMTestKit
       title 'Measure/[id]/$evaluate reportType=subject fails for invalid patient ID'
       id 'evaluate-measureid-path-invalid-patientid'
       description 'Request returns a 404 error when the given patient ID cannot be found'
-
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -525,7 +523,6 @@ module DEQMTestKit
       description %(Server should not perform calculation and return a 400 response code
       when the subject report type is specified but no subject has been specified in the
       query parameters.)
-
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'

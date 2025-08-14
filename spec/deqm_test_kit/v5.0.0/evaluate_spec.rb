@@ -602,7 +602,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       )
         .to_return(status: 400, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end: '2019-12-31')
+      result = run(test, url:, measure_id:, patient_id:, period_start:)
       expect(result.result).to eq('pass')
     end
   end
@@ -628,7 +628,7 @@ RSpec.describe DEQMTestKit::Evaluate do
              })
         .to_return(status: 400, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end: '2019-12-31')
+      result = run(test, url:, measure_id:, patient_id:, period_start:)
       expect(result.result).to eq('pass')
     end
   end
