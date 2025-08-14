@@ -3,7 +3,7 @@
 require_relative '../patient_everything'
 require_relative '../measure_availability'
 require_relative '../data_requirements'
-require_relative '../submit_data'
+require_relative '../deqm_submit_data'
 require_relative '../fhir_queries'
 require_relative '../bulk_submit_data'
 require_relative '../bulk_import'
@@ -49,7 +49,7 @@ module DEQMTestKit
       group from: :measure_availability
       group from: :data_requirements
       group from: :fhir_queries
-      group from: :submit_data
+      group from: :deqm_submit_data
       group from: :evaluate_measure,
             title: '$evaluate-measure Operation',
             config: {
