@@ -61,6 +61,7 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
+    additional_measure_options = JSON.parse(File.read('./lib/fixtures/additionalMeasureRadioButton.json'))
     measure_id_args = {
       type: 'radio',
       optional: false,
@@ -71,7 +72,7 @@ module DEQMTestKit
     additional_measures_args = {
       type: 'checkbox',
       optional: true,
-      options: measure_options,
+      options: additional_measure_options,
       title: 'Additional Measure Ids',
       default: ['']
     }
