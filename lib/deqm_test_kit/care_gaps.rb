@@ -9,6 +9,12 @@ module DEQMTestKit
   class CareGaps < Inferno::TestGroup
     # module for shared code for $care-gaps assertions and requests
     module CareGapsHelpers
+      def selected_measure_id
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+
+        measure_id
+      end
+
       def care_gaps_assert_success(params, expected_status: 200)
         fhir_operation("/Measure/$care-gaps?#{params}")
         assert_success(:parameters, expected_status)
@@ -29,8 +35,19 @@ module DEQMTestKit
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options, title: 'Measure Title' }
+    measure_id_args = {
+      type: 'radio',
+      optional: false,
+      default: 'ColorectalCancerScreeningsFHIR',
+      options: measure_options,
+      title: 'Measure Title'
+    }
+    custom_measure_id_args = {
+      type: 'text',
+      optional: true,
+      title: 'Custom Measure ID',
+      description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
+    }
 
     INVALID_SUBJECT_ID = 'INVALID_SUBJECT_ID'
     INVALID_MEASURE_ID = 'INVALID_MEASURE_ID'
@@ -43,12 +60,13 @@ module DEQMTestKit
     when the required query parameters \(periodStart, periodEnd, status\) are provided
       and subject is a Patient resource.)
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
+        params = "measureId=#{selected_measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Patient/#{patient_id}&status=open-gap"
         care_gaps_assert_success(params)
       end
@@ -61,12 +79,13 @@ module DEQMTestKit
     when the required query parameters \(periodStart, periodEnd, status\) are provided
       and subject is a Group resource.)
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
       input :group_id, title: 'Group ID'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
+        params = "measureId=#{selected_measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&subject=Group/#{group_id}&status=open-gap"
         care_gaps_assert_success(params)
       end
@@ -79,11 +98,12 @@ module DEQMTestKit
     when one of the required query parameters is omitted from the request. In this test,
       the measurement period start is omitted from the request.)
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
-        invalid_params = "measureId=#{measure_id}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&status=open-gap"
+        invalid_params = "measureId=#{selected_measure_id}&periodEnd=#{period_end}&subject=Patient/#{patient_id}&status=open-gap" # rubocop:disable Layout/LineLength
         care_gaps_assert_failure(invalid_params)
       end
     end
@@ -96,13 +116,14 @@ module DEQMTestKit
       As stated in the $care-gaps FHIR spec, these query parameters are mutually
       exclusive.)
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         # A request with invalid practitioner and organization ids
-        invalid_optional = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
+        invalid_optional = "measureId=#{selected_measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                            "&subject=Patient/#{patient_id}&status=open-gap&organization=Organization/testOrganization"
         care_gaps_assert_failure(invalid_optional)
       end
@@ -114,12 +135,13 @@ module DEQMTestKit
       description "Server should not perform calculation and return a 400 response code
     when both the subject query parameter is not of the form Patient/<id> or Group/<id>."
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
 
       run do
         # Parameters with an invalid patient id for subject
-        invalid_subject = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
+        invalid_subject = "measureId=#{selected_measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                           "&status=open-gap&subject=#{INVALID_SUBJECT_ID}"
         care_gaps_assert_failure(invalid_subject)
       end
@@ -164,13 +186,14 @@ module DEQMTestKit
     when the required query parameters \(periodStart, periodEnd, status\) are provided and
       an organization and practitioner are provided rather than a Patient/Group subject.)
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :period_start, title: 'Measurement period start', default: '2019-01-01'
       input :period_end, title: 'Measurement period end', default: '2019-12-31'
       input :practitioner_id, title: 'Practitioner ID'
       input :org_id, title: 'Organization ID'
 
       run do
-        params = "measureId=#{measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
+        params = "measureId=#{selected_measure_id}&periodStart=#{period_start}&periodEnd=#{period_end}" \
                  "&status=open-gap&practitioner=Practitioner/#{practitioner_id}&organization=Organization/#{org_id}"
         care_gaps_assert_success(params)
       end

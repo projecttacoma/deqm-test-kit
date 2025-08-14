@@ -32,7 +32,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
               })
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, selected_measure_id:, url:)
+      result = run(test, measure_id: selected_measure_id, url:)
 
       expect(result.result).to eq('pass')
     end
@@ -46,7 +46,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
               })
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, selected_measure_id: measure_name, url:)
+      result = run(test, measure_id: measure_name, url:)
 
       expect(result.result).to eq('pass')
     end
@@ -59,7 +59,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
               })
         .to_return(status: 201, body: resource.to_json)
 
-      result = run(test, selected_measure_id:, url:)
+      result = run(test, measure_id: selected_measure_id, url:)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/200/)
@@ -73,7 +73,7 @@ RSpec.describe DEQMTestKit::MeasureAvailability do
               })
         .to_return(status: 200, body: resource.to_json)
 
-      result = run(test, selected_measure_id:, url:)
+      result = run(test, measure_id: selected_measure_id, url:)
 
       expect(result.result).to eq('fail')
       expect(result.result_message).to match(/measure/)

@@ -63,10 +63,6 @@
     {
       "label": "NHSN Glycemic Control Hypoglycemia Initial Population",
       "value": "NHSNGlycemicControlHypoglycemiaInitialPopulation"
-    },
-    {
-      "label": "Other",
-      "value": "Other"
     }
   ]
 }

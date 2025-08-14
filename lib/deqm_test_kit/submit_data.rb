@@ -8,6 +8,12 @@ module DEQMTestKit
   class SubmitData < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     # module for shared code for $submit-data assertions and requests
     module SubmitDataHelpers
+      def selected_measure_id
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+
+        measure_id
+      end
+
       def submit_data_assert_failure(params_hash, expected_status: 400)
         params = FHIR::Parameters.new params_hash
 
@@ -37,8 +43,19 @@ module DEQMTestKit
     description 'Ensure fhir server can receive data via the $submit-data operation'
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance", "agent": ["test-agent"]}' }
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
-    measure_id_args = { type: 'radio', optional: false, default: 'ColorectalCancerScreeningsFHIR',
-                        options: measure_options, title: 'Measure Title' }
+    measure_id_args = {
+      type: 'radio',
+      optional: false,
+      default: 'ColorectalCancerScreeningsFHIR',
+      options: measure_options,
+      title: 'Measure Title'
+    }
+    custom_measure_id_args = {
+      type: 'text',
+      optional: true,
+      title: 'Custom Measure ID',
+      description: 'If you selected "Other" above or want to provide a custom Measure ID, enter it here.'
+    }
 
     fhir_client do
       url :url
@@ -54,6 +71,7 @@ module DEQMTestKit
       makes_request :submit_data
       input :queries_json
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       input :data_requirements_reference_server
 
       fhir_client :dr_reference_client do
@@ -62,9 +80,9 @@ module DEQMTestKit
 
       run do
         # get measure from client
-        assert(measure_id,
+        assert(selected_measure_id,
                'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
-        fhir_read(:measure, measure_id)
+        fhir_read(:measure, selected_measure_id)
         assert_valid_json(response[:body])
         measure = resource
 
@@ -120,7 +138,7 @@ module DEQMTestKit
           params.parameter.push(resource_param)
         end
         # Submit the data
-        fhir_operation("Measure/#{measure_id}/$submit-data", body: params, name: :submit_data)
+        fhir_operation("Measure/#{selected_measure_id}/$submit-data", body: params, name: :submit_data)
         assert_response_status(200)
         assert_valid_json(response[:body])
 
@@ -148,8 +166,9 @@ module DEQMTestKit
       id 'submit-data-fails-missing-measurereport'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       run do
-        test_measure = FHIR::Measure.new(id: measure_id)
+        test_measure = FHIR::Measure.new(id: selected_measure_id)
 
         params_hash = {
           resourceType: 'Parameters',
@@ -168,10 +187,11 @@ module DEQMTestKit
       id 'submit-data-fails-multiple-measurereports'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'
       input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
       run do
         assert(measure_id,
                'No measure selected. Run Measure Availability prior to running the Submit Data test group.')
-        fhir_read(:measure, measure_id)
+        fhir_read(:measure, selected_measure_id)
         assert_valid_json(response[:body])
         measure = resource
 
