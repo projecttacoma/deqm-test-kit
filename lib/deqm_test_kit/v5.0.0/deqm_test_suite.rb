@@ -5,7 +5,7 @@ require_relative '../measure_availability'
 require_relative '../data_requirements'
 require_relative '../fhir_queries'
 require_relative '../evaluate'
-require_relative '../submit_data'
+require_relative '../submit_data_v5'
 
 module DEQMTestKit
   # Test suite for DEQM Version 5.0.0
@@ -52,7 +52,7 @@ module DEQMTestKit
               options: { endpoint_name: 'evaluate' }
             }
       group from: :patient_everything
-      group from: :submit_data
+      group from: :submit_data_v5
     end
   end
 end

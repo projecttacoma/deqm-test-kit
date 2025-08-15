@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DEQMTestKit::SubmitData do
+RSpec.describe DEQMTestKit::SubmitDataV5 do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v500') }
   let(:group) { suite.groups[6] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
@@ -18,28 +18,29 @@ RSpec.describe DEQMTestKit::SubmitData do
     Inferno::TestRunner.new(test_session:, test_run:).run(runnable)
   end
 
-  describe '$submit-data successful upload test' do
-    let(:test) { test_by_id(group, 'submit-data-valid-submission-with-verification') }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+  describe 'STU5 $submit-data successful upload test' do
+    let(:test) { test_by_id(group, 'stu5-submit-data-valid-submission') }
 
     it 'passes if the submitted resources can be retrieved' do
       test_bundle = FHIR::Bundle.new(total: 1)
-      test_measure = FHIR::Measure.new(id: measure_id)
+      test_measure = FHIR::Measure.new(id: 'test-measure-id', url: 'http://example.com/Measure/test')
       identifier = SecureRandom.uuid
       id_resource = FHIR::Identifier.new({ value: identifier })
       test_patient = FHIR::Bundle.new(total: 1,
                                       entry: [resource: FHIR::Patient.new({
                                                                             id: 'PatientID', identifier: [id_resource]
                                                                           })])
+      test_measures_bundle = FHIR::Bundle.new(total: 1,
+                                              entry: [resource: test_measure])
       queries_json = [{ endpoint: 'Patient', params: {} }].to_json
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure")
+        .to_return(status: 200, body: test_measures_bundle.to_json)
 
       stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 200, body: {}.to_json)
 
       stub_request(:get, "#{url}/Patient?identifier=#{identifier}")
@@ -48,189 +49,104 @@ RSpec.describe DEQMTestKit::SubmitData do
       stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
         .to_return(status: 200, body: test_bundle.to_json)
 
-      result = run(test, url:, measure_id:, queries_json:,
+      result = run(test, url:, queries_json:,
                          data_requirements_reference_server:)
       expect(result.result).to eq('pass')
     end
 
     it 'fails if $submit-data does not return 200' do
-      test_bundle = FHIR::Bundle.new(total: 1)
-      test_measure = FHIR::Measure.new(id: measure_id)
+      test_measure = FHIR::Measure.new(id: 'test-measure-id', url: 'http://example.com/Measure/test')
       identifier = SecureRandom.uuid
       id_resource = FHIR::Identifier.new({ value: identifier })
       test_patient = FHIR::Bundle.new(total: 1,
                                       entry: [resource: FHIR::Patient.new({
                                                                             id: 'PatientID', identifier: [id_resource]
                                                                           })])
+      test_measures_bundle = FHIR::Bundle.new(total: 1,
+                                              entry: [resource: test_measure])
       queries_json = [{ endpoint: 'Patient', params: {} }].to_json
 
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
+      stub_request(:get, "#{url}/Measure")
+        .to_return(status: 200, body: test_measures_bundle.to_json)
 
       stub_request(:get, "#{data_requirements_reference_server}/Patient")
         .to_return(status: 200, body: test_patient.to_json)
 
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: {}.to_json)
 
-      stub_request(:get, "#{url}/Patient?identifier=#{identifier}")
-        .to_return(status: 200, body: test_patient.to_json)
-
-      stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
-        .to_return(status: 200, body: test_bundle.to_json)
-
-      result = run(test, url:, measure_id:, queries_json:,
-                         data_requirements_reference_server:)
-      expect(result.result).to eq('fail')
-    end
-
-    it 'fails if the submitted retrieval does not return 200' do
-      test_bundle = FHIR::Bundle.new(total: 1)
-      test_measure = FHIR::Measure.new(id: measure_id)
-      identifier = SecureRandom.uuid
-      id_resource = FHIR::Identifier.new({ value: identifier })
-      test_patient = FHIR::Bundle.new(total: 1,
-                                      entry: [resource: FHIR::Patient.new({
-                                                                            id: 'PatientID', identifier: [id_resource]
-                                                                          })])
-      queries_json = [{ endpoint: 'Patient', params: {} }].to_json
-
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
-
-      stub_request(:get, "#{data_requirements_reference_server}/Patient")
-        .to_return(status: 200, body: test_patient.to_json)
-
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
-        .to_return(status: 200, body: {}.to_json)
-
-      stub_request(:get, "#{url}/Patient?identifier=#{identifier}")
-        .to_return(status: 400)
-
-      stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
-        .to_return(status: 200, body: test_bundle.to_json)
-
-      result = run(test, url:, measure_id:, queries_json:,
-                         data_requirements_reference_server:)
-      expect(result.result).to eq('fail')
-    end
-
-    it 'fails if the submitted resource cannot be found' do
-      test_bundle = FHIR::Bundle.new(total: 1)
-      test_measure = FHIR::Measure.new(id: measure_id)
-      identifier = SecureRandom.uuid
-      id_arr = [FHIR::Identifier.new({ value: identifier })]
-      test_patient = FHIR::Bundle.new(total: 1,
-                                      entry: [resource: FHIR::Patient.new({
-                                                                            id: 'PatientID', identifier: id_arr
-                                                                          })])
-      wrong_patient = FHIR::Bundle.new(total: 0)
-      queries_json = [{ endpoint: 'Patient', params: {} }].to_json
-
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
-
-      stub_request(:get, "#{data_requirements_reference_server}/Patient")
-        .to_return(status: 200, body: test_patient.to_json)
-
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
-        .to_return(status: 200, body: {}.to_json)
-
-      stub_request(:get, "#{url}/Patient?identifier=#{identifier}")
-        .to_return(status: 200, body: wrong_patient.to_json)
-
-      stub_request(:get, %r{#{url}/MeasureReport\?identifier=.*})
-        .to_return(status: 200, body: test_bundle.to_json)
-
-      result = run(test, url:, measure_id:, queries_json:,
+      result = run(test, url:, queries_json:,
                          data_requirements_reference_server:)
       expect(result.result).to eq('fail')
     end
   end
-  describe '$submit-data failed on Parameters object with no MeasureReport' do
-    let(:test) { test_by_id(group, 'submit-data-fails-missing-measurereport') }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+
+  describe 'STU5 $submit-data failed on Parameters object with no bundles' do
+    let(:test) { test_by_id(group, 'stu5-submit-data-fails-no-bundles') }
 
     it 'passes when server returns 400 with correct operation outcome' do
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('pass')
     end
 
     it 'fails when server does not return 400' do
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 200, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('fail')
     end
 
     it 'fails when server returns 400 with incorrect body' do
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: '')
 
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('fail')
     end
 
     it 'fails when server returns correct status code with incorrect severity' do
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: FHIR::OperationOutcome.new(issue: [{ severity: 'warning' }]).to_json)
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('fail')
     end
   end
 
-  describe '$submit-data failed on Parameters object with multiple MeasureReports' do
-    let(:test) { test_by_id(group, 'submit-data-fails-multiple-measurereports') }
-    let(:measure_id) { 'measure-EXM130-7.3.000' }
+  describe 'STU5 $submit-data failed on bundle with no MeasureReport' do
+    let(:test) { test_by_id(group, 'stu5-submit-data-fails-no-measurereport') }
 
     it 'passes when server returns 400 with correct operation outcome' do
-      test_measure = FHIR::Measure.new(id: measure_id)
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
-
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('pass')
     end
 
     it 'fails when server does not return 400' do
-      test_measure = FHIR::Measure.new(id: measure_id)
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
-
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 200, body: error_outcome.to_json)
 
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('fail')
     end
 
     it 'fails when server returns 400 with incorrect body' do
-      test_measure = FHIR::Measure.new(id: measure_id)
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
-
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: '')
 
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('fail')
     end
 
     it 'fails when server returns correct status code with incorrect severity' do
-      test_measure = FHIR::Measure.new(id: measure_id)
-      stub_request(:get, "#{url}/Measure/#{measure_id}")
-        .to_return(status: 200, body: test_measure.to_json)
-
-      stub_request(:post, "#{url}/Measure/#{measure_id}/$submit-data")
+      stub_request(:post, "#{url}/$submit-data")
         .to_return(status: 400, body: FHIR::OperationOutcome.new(issue: [{ severity: 'warning' }]).to_json)
-      result = run(test, url:, measure_id:, queries_json: [])
+      result = run(test, url:)
       expect(result.result).to eq('fail')
     end
   end

@@ -5,7 +5,7 @@ require 'json'
 
 module DEQMTestKit
   # Perform submit data operation on test client
-  class SubmitData < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
+  class SubmitDataV3 < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     # module for shared code for $submit-data assertions and requests
     module SubmitDataHelpers
       def selected_measure_id
@@ -38,8 +38,8 @@ module DEQMTestKit
       end
       # rubocop:enable Metrics/MethodLength
     end
-    id 'submit_data'
-    title '$submit-data'
+    id 'submit_data_v3'
+    title 'submit-data-v3'
     description 'Ensure fhir server can receive data via the $submit-data operation'
     custom_headers = { 'X-Provenance': '{"resourceType": "Provenance", "agent": ["test-agent"]}' }
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
