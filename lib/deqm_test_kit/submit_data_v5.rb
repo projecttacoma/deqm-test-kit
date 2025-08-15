@@ -14,7 +14,7 @@ module DEQMTestKit
         "#{measure_url}|#{measure_version}"
       end
 
-      # DELETEME: Based off of fqm-testify
+      # DELETEME: This was based on fqm-testify
       def create_data_exchange_measure_report(measure_canonical, period_start, period_end, subject_id) # rubocop:disable Metrics/MethodLength
         mr_hash = {
           'resourceType' => 'MeasureReport',
@@ -62,21 +62,13 @@ module DEQMTestKit
         )
       end
 
-      # DELETEME: Q Is this the correct way we should be submitting them?
+      # TODO: I dont think this is the right way to be doing this
       def create_submit_bundle(measure_report, *resources)
         entries = ([measure_report] + resources).map do |res|
           { 'fullUrl' => "#{res.resourceType}/#{res.id || SecureRandom.uuid}", 'resource' => res.to_hash }
         end
         FHIR::Bundle.new('type' => 'collection', 'id' => "bundle-#{SecureRandom.uuid}", 'entry' => entries)
       end
-
-      # DELETEME: OLD
-      # def submit_data_assert_failure(params_hash, expected_status: 400)
-      #   params = FHIR::Parameters.new params_hash
-
-      #   fhir_operation("Measure/#{selected_measure_id}/$submit-data", body: params)
-      #   assert_error(expected_status)
-      # end
 
       def wrap_bundles_in_parameters(*bundles)
         {
@@ -85,6 +77,49 @@ module DEQMTestKit
         }
       end
 
+      # Accepts multiple measure reports as comma-separated format: `http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3`
+      def parse_measures(measures_string, fallback_url, fallback_version) # rubocop:disable Metrics/AbcSize
+        list = []
+        if measures_string && !measures_string.strip.empty?
+          if measures_string.strip.start_with?('[')
+            parsed = JSON.parse(measures_string)
+            assert parsed.is_a?(Array), 'measures_string must be a JSON array'
+            parsed.each do |m|
+              assert m['url'].is_a?(String) && !m['url'].empty?, 'Each measure needs a url'
+              list << canonical_measure(m['url'], m['version'])
+            end
+          else
+            measures_string.split(',').each do |measure_entry|
+              measure_entry = measure_entry.strip
+              if measure_entry.include?('|')
+                url, version = measure_entry.split('|', 2)
+                list << canonical_measure(url.strip, version.strip)
+              else
+                list << canonical_measure(measure_entry, nil)
+              end
+            end
+          end
+        else
+          assert fallback_url && !fallback_url.strip.empty?, 'measure_url is required when measures_string is empty'
+          list << canonical_measure(fallback_url, fallback_version)
+        end
+        list.uniq
+      end
+
+      def build_measure_reports_for_subject(measure_canonicals, period_start, period_end, subject_id)
+        measure_canonicals.map do |mc|
+          create_data_exchange_measure_report(mc, period_start, period_end, subject_id)
+        end
+      end
+
+      # DELETEME: FOR FALURE TESTS IF WE WANT THEM
+      # def submit_data_assert_failure(params_hash, expected_status: 400)
+      #   params = FHIR::Parameters.new(params_hash)
+      #   fhir_operation('Measure/$submit-data', body: params)
+      #   assert_error(expected_status)
+      # end
+
+      # ____ Validators ____
       def validate_parameters_contains_bundles_with_data_collection_reports(parameters)
         assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
         assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
@@ -125,37 +160,6 @@ module DEQMTestKit
         assert subject_refs.size == 1,
                "Expected all MeasureReports in Bundle to reference the same subject, got: #{subject_refs}"
       end
-
-      #  For multiple measures if we are taking them in a JSON array
-      #  Need to fix this to work with array
-      def parse_measures(measures_json, fallback_url, fallback_version)
-        list = []
-        if measures_json && !measures_json.strip.empty?
-          parsed = JSON.parse(measures_json)
-          assert parsed.is_a?(Array), 'measures_json must be a JSON array'
-          parsed.each do |m|
-            assert m['url'].is_a?(String) && !m['url'].empty?, 'Each measure needs a url'
-            list << canonical_measure(m['url'], m['version'])
-          end
-        else
-          assert fallback_url && !fallback_url.strip.empty?, 'measure_url is required when measures_json is empty'
-          list << canonical_measure(fallback_url, fallback_version)
-        end
-        list.uniq
-      end
-
-      def build_measure_reports_for_subject(measure_canonicals, period_start, period_end, subject_id)
-        measure_canonicals.map do |mc|
-          create_data_exchange_measure_report(mc, period_start, period_end, subject_id)
-        end
-      end
-
-      # FOR FALURE TESTS IF WE WANT THEM
-      # def submit_data_assert_failure(params_hash, expected_status: 400)
-      #   params = FHIR::Parameters.new(params_hash)
-      #   fhir_operation('Measure/$submit-data', body: params)
-      #   assert_error(expected_status)
-      # end
     end
     id 'submit_data_v5'
     title '$submit-data-v5'
@@ -180,17 +184,15 @@ module DEQMTestKit
       description 'Submit a Parameters resource containing a single Bundle with one Patient, one Encounter, and a data-collection MeasureReport per requested measure.'
       makes_request :submit_data
 
-      # TODO: change this input
       input :measure_url
       input :measure_version
       input :measures_json,
-            title: 'Measures (JSON array of {url, version?})',
+            title: 'Measures (comma-separated URLs with versions)',
             type: 'text',
             optional: true,
-            description: 'Example: [{"url":"http://example.org/Measure/A","version":"1.0.0"},{"url":"http://example.org/Measure/B"}]'
+            description: 'Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3 (also supports JSON array format)'
 
       run do
-        # Need to change this to accept comma sepreated variables ie http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3
         measures = parse_measures(measures_json, measure_url, measure_version)
 
         patient   = create_dummy_patient
@@ -217,7 +219,7 @@ module DEQMTestKit
 
     # TODO: Add two subjects and that each have multi measures
 
-    # FALURE TESTS IF WE WANT THEM
+    # DELETEME: ____ FALURE TESTS IF WE WANT THEM ____
     # test do
     #   include SubmitDataHelpers
     #   title 'Fails if no bundle is submitted'
