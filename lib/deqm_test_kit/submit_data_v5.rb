@@ -78,7 +78,8 @@ module DEQMTestKit
       end
 
       # Accepts multiple measure reports as comma-separated format: `http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3`
-      def parse_measures(measures_string, fallback_url, fallback_version) # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def parse_measures(measures_string, fallback_url, fallback_version)
         list = []
         if measures_string && !measures_string.strip.empty?
           if measures_string.strip.start_with?('[')
@@ -105,6 +106,7 @@ module DEQMTestKit
         end
         list.uniq
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
 
       def build_measure_reports_for_subject(measure_canonicals, period_start, period_end, subject_id)
         measure_canonicals.map do |mc|
@@ -140,7 +142,7 @@ module DEQMTestKit
         reports.each { |r| validate_data_collection_measure_report_fields(r) }
       end
 
-      def validate_data_collection_measure_report_fields(report)
+      def validate_data_collection_measure_report_fields(report) # rubocop:disable Metrics/AbcSize
         assert report.status == 'complete', 'Expected MeasureReport.status to be "complete"'
         assert report.type == 'data-collection', 'Expected MeasureReport.type to be "data-collection" for submit-data'
         assert report.measure.present?, 'MeasureReport.measure is missing'
@@ -159,6 +161,34 @@ module DEQMTestKit
         assert subject_refs.any?, 'Expected at least one MeasureReport.subject reference in the Bundle'
         assert subject_refs.size == 1,
                "Expected all MeasureReports in Bundle to reference the same subject, got: #{subject_refs}"
+      end
+
+      # Ensures each 'bundle' parameter has exactly one subject, and that
+      # subjects are distinct across bundles
+      def validate_parameters_grouped_by_subject(parameters) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        assert parameters.parameter.is_a?(Array) && parameters.parameter.any?,
+               'Expected Parameters.parameter to be a non-empty array'
+
+        bundle_subjects = parameters.parameter.map do |param|
+          assert param.name == 'bundle', 'Expected parameter.name to be "bundle"'
+          assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
+
+          validate_bundle_contains_data_collection_measure_report(param.resource)
+          validate_bundle_is_single_subject(param.resource)
+
+          mr_subjects = param.resource.entry
+                             .map(&:resource)
+                             .select { |res| res.is_a?(FHIR::MeasureReport) }
+                             .map { |mr| mr.subject&.reference }
+                             .compact
+                             .uniq
+          assert mr_subjects.size == 1,
+                 "Expected exactly one unique subject reference in the Bundle, got: #{mr_subjects}"
+          mr_subjects.first
+        end
+
+        assert bundle_subjects.uniq.size == bundle_subjects.size,
+               "Expected each Bundle to represent a distinct subject, got duplicates: #{bundle_subjects}"
       end
     end
     id 'submit_data_v5'
@@ -181,7 +211,8 @@ module DEQMTestKit
       include SubmitDataHelpers
       title 'Submit Data valid submission (one subject, multiple measures)'
       id 'submit-data-valid-one-subject-multi-measures'
-      description 'Submit a Parameters resource containing a single Bundle with one Patient, one Encounter, and a data-collection MeasureReport per requested measure.'
+      description 'Submit a Parameters resource containing a single Bundle with one Patient, one Encounter, ' \
+                  'and a data-collection MeasureReport per requested measure.'
       makes_request :submit_data
 
       input :measure_url
@@ -190,7 +221,8 @@ module DEQMTestKit
             title: 'Measures (comma-separated URLs with versions)',
             type: 'text',
             optional: true,
-            description: 'Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3 (also supports JSON array format)'
+            description: 'Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3 ' \
+                         '(also supports JSON array format)'
 
       run do
         measures = parse_measures(measures_json, measure_url, measure_version)
@@ -202,12 +234,15 @@ module DEQMTestKit
 
         bundle = create_submit_bundle(*reports, patient, encounter)
 
+        # Validate bundles
         validate_bundle_contains_data_collection_measure_report(bundle)
         validate_bundle_is_single_subject(bundle)
 
+        # Wrap em in a Parameters resource
         params_hash = wrap_bundles_in_parameters(bundle)
         params = FHIR::Parameters.new(params_hash)
 
+        # Validate PArameter
         validate_parameters_contains_bundles_with_data_collection_reports(params)
 
         # Submit
@@ -218,6 +253,58 @@ module DEQMTestKit
     end
 
     # TODO: Add two subjects and that each have multi measures
+    test do
+      include SubmitDataHelpers
+      title 'Submit Data valid submission (two subjects, multiple measures each)'
+      id 'submit-data-valid-two-subjects-multi-measures'
+      description 'Submit a Parameters resource containing two Bundles, each organized by subject, ' \
+                  'with data-collection MeasureReport(s) for the requested measures.'
+      makes_request :submit_data_two_subjects
+
+      input :measure_url
+      input :measure_version
+      input :measures_json,
+            title: 'Measures (comma-separated URLs with versions)',
+            type: 'text',
+            optional: true,
+            description: 'Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3 ' \
+                         '(also supports JSON array format)'
+
+      run do
+        measures = parse_measures(measures_json, measure_url, measure_version)
+
+        # Subject 1
+        patient1   = create_dummy_patient
+        encounter1 = create_dummy_encounter(patient1.id)
+        reports1   = build_measure_reports_for_subject(measures, period_start, period_end, patient1.id)
+        bundle1    = create_submit_bundle(*reports1, patient1, encounter1)
+        validate_bundle_contains_data_collection_measure_report(bundle1)
+        validate_bundle_is_single_subject(bundle1)
+
+        # Subject 2
+        patient2   = create_dummy_patient
+        encounter2 = create_dummy_encounter(patient2.id)
+        reports2   = build_measure_reports_for_subject(measures, period_start, period_end, patient2.id)
+        bundle2    = create_submit_bundle(*reports2, patient2, encounter2)
+
+        # validate bundles
+        validate_bundle_contains_data_collection_measure_report(bundle2)
+        validate_bundle_is_single_subject(bundle2)
+
+        # Wrap em in a Parameters resource
+        params_hash = wrap_bundles_in_parameters(bundle1, bundle2)
+        params = FHIR::Parameters.new(params_hash)
+
+        # Validate parameter
+        validate_parameters_contains_bundles_with_data_collection_reports(params)
+        validate_parameters_grouped_by_subject(params)
+
+        # Submit
+        fhir_operation('Measure/$submit-data', body: params, name: :submit_data_two_subjects)
+        assert_response_status(200)
+        assert_valid_json(response[:body]) # SUT may return OperationOutcome or similar
+      end
+    end
 
     # DELETEME: ____ FALURE TESTS IF WE WANT THEM ____
     # test do
