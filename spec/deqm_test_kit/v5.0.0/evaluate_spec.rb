@@ -317,7 +317,6 @@ RSpec.describe DEQMTestKit::Evaluate do
         .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_id:, group_id:, period_start:, period_end:)
-      puts result
       expect(result.result).to eq('pass')
     end
   end

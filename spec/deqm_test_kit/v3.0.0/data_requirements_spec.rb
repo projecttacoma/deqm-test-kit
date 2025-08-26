@@ -328,7 +328,6 @@ RSpec.describe DEQMTestKit::DataRequirements do
              })
         .to_return(status: 200, body: test_library_response.to_json)
       result = run(test, url:, measure_id:, period_start:, period_end:)
-      puts result
       expect(result.result).to eq('pass')
     end
     it 'fails if 200 not received' do

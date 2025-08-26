@@ -6,8 +6,6 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
-  let(:data_requirements_reference_server) { 'http://example.com/reference/fhir' }
-  let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
@@ -26,42 +24,11 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
         .to_return(status: 200, body: {}.to_json)
 
       result = run(test, {
-        url:,
-        measure_url: 'http://example.org/Measure/A',
-        measure_version: '1.0.0',
-        measures_json: 'http://example.org/Measure/B|1.2.3,http://example.org/Measure/C|2.0.0',
-        period_start: '2026-01-01',
-        period_end: '2026-12-31'
-      })
-      expect(result.result).to eq('pass')
-    end
-
-    it 'passes with JSON array format (backward compatibility)' do
-      stub_request(:post, "#{url}/Measure/$submit-data")
-        .to_return(status: 200, body: {}.to_json)
-
-      measures_json = '[{"url":"http://example.org/Measure/A","version":"1.0.0"},{"url":"http://example.org/Measure/B","version":"1.2.3"}]'
-
-      result = run(test, {
-        url:,
-        measures_json:,
-        period_start: '2026-01-01',
-        period_end: '2026-12-31'
-      })
-      expect(result.result).to eq('pass')
-    end
-
-    it 'passes with fallback to measure_url when measures_json is empty' do
-      stub_request(:post, "#{url}/Measure/$submit-data")
-        .to_return(status: 200, body: {}.to_json)
-
-      result = run(test, {
-        url:,
-        measure_url: 'http://example.org/Measure/A',
-        measure_version: '1.0.0',
-        period_start: '2026-01-01',
-        period_end: '2026-12-31'
-      })
+                     url:,
+                     measure_url_list: 'http://example.org/Measure/B|1.2.3,http://example.org/Measure/C|2.0.0',
+                     period_start: '2026-01-01',
+                     period_end: '2026-12-31'
+                   })
       expect(result.result).to eq('pass')
     end
 
@@ -70,12 +37,11 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
         .to_return(status: 400, body: {}.to_json)
 
       result = run(test, {
-        url:,
-        measure_url: 'http://example.org/Measure/A',
-        measure_version: '1.0.0',
-        period_start: '2026-01-01',
-        period_end: '2026-12-31'
-      })
+                     url:,
+                     measure_url_list: 'http://example.org/Measure/B|1.2.3,http://example.org/Measure/C|2.0.0',
+                     period_start: '2026-01-01',
+                     period_end: '2026-12-31'
+                   })
       expect(result.result).to eq('fail')
     end
   end
@@ -88,11 +54,11 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
         .to_return(status: 200, body: {}.to_json)
 
       result = run(test, {
-        url:,
-        measures_json: 'http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3',
-        period_start: '2026-01-01',
-        period_end: '2026-12-31'
-      })
+                     url:,
+                     measure_url_list: 'http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3',
+                     period_start: '2026-01-01',
+                     period_end: '2026-12-31'
+                   })
       expect(result.result).to eq('pass')
     end
 
@@ -101,13 +67,12 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
         .to_return(status: 400, body: {}.to_json)
 
       result = run(test, {
-        url:,
-        measures_json: 'http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3',
-        period_start: '2026-01-01',
-        period_end: '2026-12-31'
-      })
+                     url:,
+                     measure_url_list: 'http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3',
+                     period_start: '2026-01-01',
+                     period_end: '2026-12-31'
+                   })
       expect(result.result).to eq('fail')
     end
   end
-
 end
