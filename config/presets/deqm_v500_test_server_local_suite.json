@@ -72,6 +72,13 @@
       "title": "FHIR resource types",
       "type": "text",
       "value": "Encounter"
+    },
+    {
+      "name": "measure_url_list",
+      "description": "Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3",
+      "title": "Measures (comma-separated URLs with versions)",
+      "type": "text",
+      "value": "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningsFHIR|0.0.002,http://ecqi.healthit.gov/ecqms/Measure/CervicalCancerScreeningFHIR|0.0.005"
     }
   ]
 }
