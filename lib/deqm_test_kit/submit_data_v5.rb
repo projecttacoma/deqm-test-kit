@@ -28,7 +28,6 @@ module DEQMTestKit
             }
           ],
           'contained' => [
-            # TODO: Check what sort of organization we should be using here?
             { 'resourceType' => 'Organization', 'id' => 'inferno-testkit' }
           ],
           'reporter' => { 'reference' => 'Organization/inferno-testkit' }
@@ -50,7 +49,7 @@ module DEQMTestKit
           'status' => 'finished',
           'class' => { 'system' => 'http://terminology.hl7.org/CodeSystem/v3-ActCode', 'code' => 'AMB' },
           'subject' => { 'reference' => "Patient/#{patient_id}" },
-          'period' => { 'start' => '2019-06-01', 'end' => '2019-06-01' }
+          'period' => { 'start' => '2019-06-01', 'end' => '2019-06-02' }
         )
       end
 
@@ -114,7 +113,7 @@ module DEQMTestKit
 
         bundle = create_submit_bundle(reports, patient, encounter)
 
-        # Wrap em in a Parameters resource
+        # Wrap bundles in a Parameters resource
         params_hash = wrap_bundles_in_parameters(bundle)
         params = FHIR::Parameters.new(params_hash)
 
@@ -148,7 +147,7 @@ module DEQMTestKit
         reports2 = build_measure_reports_for_subject(measures, period_start, period_end, patient2.id)
         bundle2 = create_submit_bundle(reports2, patient2, encounter2)
 
-        # Wrap em in a Parameters resource
+        # Wrap bundles in a Parameters resource
         params_hash = wrap_bundles_in_parameters(bundle1, bundle2)
         params = FHIR::Parameters.new(params_hash)
 
