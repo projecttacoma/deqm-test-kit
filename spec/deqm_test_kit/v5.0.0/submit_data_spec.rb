@@ -6,6 +6,8 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
+  submit_data_response_file = File.open('./spec/fixtures/submitDataResponse.json')
+  submit_data_response = JSON.parse(submit_data_response_file.read).to_json
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
@@ -21,7 +23,7 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
 
     it 'passes with comma-separated measures format' do
       stub_request(:post, "#{url}/Measure/$submit-data")
-        .to_return(status: 200, body: {}.to_json)
+        .to_return(status: 200, body: submit_data_response)
 
       result = run(test, {
                      url:,
@@ -34,7 +36,7 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
 
     it 'fails if $submit-data does not return 200' do
       stub_request(:post, "#{url}/Measure/$submit-data")
-        .to_return(status: 400, body: {}.to_json)
+        .to_return(status: 400, body: submit_data_response)
 
       result = run(test, {
                      url:,
@@ -51,7 +53,7 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
 
     it 'passes with comma-separated measures format' do
       stub_request(:post, "#{url}/Measure/$submit-data")
-        .to_return(status: 200, body: {}.to_json)
+        .to_return(status: 200, body: submit_data_response)
 
       result = run(test, {
                      url:,
@@ -64,7 +66,7 @@ RSpec.describe DEQMTestKit::SubmitDataV5 do
 
     it 'fails if $submit-data does not return 200' do
       stub_request(:post, "#{url}/Measure/$submit-data")
-        .to_return(status: 400, body: {}.to_json)
+        .to_return(status: 400, body: submit_data_response)
 
       result = run(test, {
                      url:,

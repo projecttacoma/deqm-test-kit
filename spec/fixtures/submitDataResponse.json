@@ -1,0 +1,85 @@
+{
+  "resourceType": "Parameters",
+  "parameter": [
+    {
+      "name": "responseBundle",
+      "resource": {
+        "resourceType": "Bundle",
+        "id": "4eac5c8d-fde9-44f3-a4b2-290a8e4777e3",
+        "type": "transaction-response",
+        "link": [
+          {
+            "relation": "self",
+            "url": "http://127.0.0.1:54837"
+          }
+        ],
+        "entry": [
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/MeasureReport/measurereport-testMeasure"
+            }
+          },
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/MeasureReport/measurereport-testMeasure2"
+            }
+          },
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/Patient/test-patient"
+            }
+          },
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/Encounter/test-encounter"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "responseBundle",
+      "resource": {
+        "resourceType": "Bundle",
+        "id": "6d88e86f-b510-4f6f-8e00-d18d6fcaa31a",
+        "type": "transaction-response",
+        "link": [
+          {
+            "relation": "self",
+            "url": "http://127.0.0.1:54837"
+          }
+        ],
+        "entry": [
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/MeasureReport/measurereport-testMeasure-report2"
+            }
+          },
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/MeasureReport/measurereport-testMeasure2-report2"
+            }
+          },
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/Patient/test-patient2"
+            }
+          },
+          {
+            "response": {
+              "status": "201 Created",
+              "location": "4_0_1/Encounter/test-encounter2"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

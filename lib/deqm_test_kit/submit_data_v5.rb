@@ -53,13 +53,18 @@ module DEQMTestKit
         )
       end
 
-      def create_submit_bundle(measure_reports, patient, encounter)
+      def create_submit_bundle(measure_reports, patient, encounter) # rubocop:disable Metrics/MethodLength
         entries = measure_reports.map do |mr|
-          { 'resource' => mr.to_hash }
+          { 'resource' => mr.to_hash, 'request' => { method: 'PUT', url: "MeasureReport/#{SecureRandom.uuid}" } }
         end
         FHIR::Bundle.new(
           'type' => 'transaction',
-          'entry' => entries.push(patient, encounter)
+          'entry' => entries.push(
+            { 'resource' => patient.to_hash,
+              'request' => { method: 'PUT',
+                             url: "Patient/#{SecureRandom.uuid}" } }, { 'resource' => encounter.to_hash, 'request' => \
+                              { method: 'PUT', url: "Encounter/#{SecureRandom.uuid}" } }
+          )
         )
       end
 
@@ -75,6 +80,17 @@ module DEQMTestKit
           create_data_exchange_measure_report(mc, period_start, period_end, subject_id)
         end
       end
+
+      def validate_submit_data_output(parameters)
+        assert_resource_type(FHIR::Parameters, resource: parameters)
+        assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array' # this may not be needed because of the above validation # rubocop:disable Layout/LineLength
+
+        parameters.parameter.each do |param|
+          assert_resource_type(FHIR::Bundle, resource: param.resource)
+          assert param.resource.type == 'transaction-response',
+                 'Expected Bundles contained in the Parameters resource to be of type "transaction-response"'
+        end
+      end
     end
 
     id 'submit_data_v5'
@@ -85,7 +101,6 @@ module DEQMTestKit
     input :measure_url_list,
           title: 'Measures (comma-separated URLs with versions)',
           type: 'text',
-          optional: true,
           description: 'Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3'
 
     input :period_start, title: 'Measurement period start', default: '2026-01-01'
@@ -120,11 +135,10 @@ module DEQMTestKit
         # $submit-data operation with passed in FHIR Parameters resource we created
         fhir_operation('Measure/$submit-data', body: params)
         assert_response_status(200)
-        assert_valid_json(response[:body]) # TODO: update to validate proper return once we confirm
+        validate_submit_data_output(resource)
       end
     end
 
-    # TODO: Add two subjects and that each have multi measures
     test do
       include SubmitDataHelpers
       title 'Submit Data valid submission (two subjects, multiple measures each)'
@@ -154,7 +168,7 @@ module DEQMTestKit
         # $submit-data operation with passed in FHIR Parameters resource we created
         fhir_operation('Measure/$submit-data', body: params)
         assert_response_status(200)
-        assert_valid_json(response[:body]) # TODO: update to validate proper return once we confirm
+        validate_submit_data_output(resource)
       end
     end
   end
