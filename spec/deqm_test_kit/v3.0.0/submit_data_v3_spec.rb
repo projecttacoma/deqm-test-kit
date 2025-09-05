@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DEQMTestKit::SubmitData do
+RSpec.describe DEQMTestKit::SubmitDataV3 do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v300') }
   let(:group) { suite.groups[4] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
