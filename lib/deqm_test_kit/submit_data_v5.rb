@@ -55,15 +55,15 @@ module DEQMTestKit
 
       def create_submit_bundle(measure_reports, patient, encounter) # rubocop:disable Metrics/MethodLength
         entries = measure_reports.map do |mr|
-          { 'resource' => mr.to_hash, 'request' => { method: 'PUT', url: "MeasureReport/#{SecureRandom.uuid}" } }
+          { 'resource' => mr.to_hash, 'request' => { method: 'PUT', url: "MeasureReport/#{mr.id}" } }
         end
         FHIR::Bundle.new(
           'type' => 'transaction',
           'entry' => entries.push(
             { 'resource' => patient.to_hash,
               'request' => { method: 'PUT',
-                             url: "Patient/#{SecureRandom.uuid}" } }, { 'resource' => encounter.to_hash, 'request' => \
-                              { method: 'PUT', url: "Encounter/#{SecureRandom.uuid}" } }
+                             url: "Patient/#{patient.id}" } }, { 'resource' => encounter.to_hash, 'request' => \
+                              { method: 'PUT', url: "Encounter/#{encounter.id}" } }
           )
         )
       end
