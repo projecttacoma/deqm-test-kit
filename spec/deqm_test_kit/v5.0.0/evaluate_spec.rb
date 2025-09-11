@@ -34,7 +34,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate with reportType=population' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-path-default-reporttype') }
+    let(:test) { test_by_id(group, 'evaluate-id-path-population') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -102,7 +102,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate with reportType=population' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-body-default-reporttype') }
+    let(:test) { test_by_id(group, 'evaluate-population') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -130,7 +130,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate with reportType=subject' do
-    let(:test) { test_by_id(group, 'evaluate-subject-reporttype-body') }
+    let(:test) { test_by_id(group, 'evaluate-subject-patient') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -159,7 +159,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate output with multiple measures using Measure/$evaluate' do
-    let(:test) { test_by_id(group, 'evaluate-multiple-measureids-default-reporttype') }
+    let(:test) { test_by_id(group, 'evaluate-multiple-measure-population') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:additional_measures) { ['measure-EXM124-7.3.000'] }
     let(:period_start) { '2019-01-01' }
@@ -224,7 +224,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate output with multiple measures using Measure/$evaluate and reportType=subject' do
-    let(:test) { test_by_id(group, 'evaluate-multiple-measureids-with-subject') }
+    let(:test) { test_by_id(group, 'evaluate-multiple-measure-subject-patient') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:additional_measures) { ['measure-EXM124-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
@@ -293,9 +293,10 @@ RSpec.describe DEQMTestKit::Evaluate do
   ## TODO: write test for subjectGroup
 
   describe 'Measure/$evaluate with reportType=subject and subject Group reference' do
-    let(:test) { test_by_id(group, 'evaluate-subjectgroup-reference') }
+    let(:test) { test_by_id(group, 'evaluate-subject-group-reference-subject') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:group_id) { 'numer-EXM130' }
+    let(:group_subjects) { '1' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
@@ -316,7 +317,7 @@ RSpec.describe DEQMTestKit::Evaluate do
       )
         .to_return(status: 200, body: parameters_response.to_json, headers: {})
 
-      result = run(test, url:, measure_id:, group_id:, period_start:, period_end:)
+      result = run(test, url:, measure_id:, group_subjects:, period_start:, period_end:, group_id:)
       expect(result.result).to eq('pass')
     end
   end
