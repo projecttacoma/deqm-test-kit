@@ -165,26 +165,18 @@ RSpec.describe DEQMTestKit::Evaluate do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
-    it 'passes with correct Parameters resource containing multiple bundles' do
-      # Create a Parameters response with a single bundle containing multiple entries
+    it 'passes with correct Parameters resource containing one Bundle with one MeasureReport' do
       measure_report_first = FHIR::MeasureReport.new(
-        status: 'complete', type: 'individual',
+        status: 'complete', type: 'summary',
         measure: measure_id,
         period: { start: period_start, end: period_end }
       )
-      measure_report_second = FHIR::MeasureReport.new(
-        status: 'complete', type: 'individual',
-        measure: additional_measures.first,
-        period: { start: period_start, end: period_end }
-      )
       bundle = FHIR::Bundle.new(type: 'collection', entry: [
-                                  { resource: measure_report_first },
-                                  { resource: measure_report_second }
+                                  { resource: measure_report_first }
                                 ])
       parameters_response = FHIR::Parameters.new(parameter: [
                                                    { resource: bundle }
                                                  ])
-
       stub_request(
         :post,
         "#{url}/Measure/$evaluate"
@@ -231,7 +223,7 @@ RSpec.describe DEQMTestKit::Evaluate do
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
-    it 'passes with correct Parameters resource containing multiple bundles' do
+    it 'passes with correct Parameters resource 1 Bundle with 2 MeasureReports' do
       # Create a Parameters response with a single bundle containing multiple entries
       measure_report_first = FHIR::MeasureReport.new(
         status: 'complete', type: 'individual',

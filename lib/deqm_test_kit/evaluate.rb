@@ -253,10 +253,11 @@ module DEQMTestKit
         assert resource.parameter.length == 1,
                "Expected 1 Bundle for reportType=population and no subjects specified, got #{resource.parameter.length}"
 
-        expected_measure_report_count = measure_ids.length
-        assert resource.parameter[0].resource.entry.length >= expected_measure_report_count,
-               "Expected #{expected_measure_report_count} MeasureReports, got
-               #{resource.parameter[0].resource.entry.length}"
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == 1,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -307,9 +308,11 @@ module DEQMTestKit
                "Expected 1 Bundle for reportType=subject and 1 patient specified, got #{resource.parameter.length}"
 
         expected_measure_report_count = measure_ids.length
-        assert resource.parameter[0].resource.entry.length >= expected_measure_report_count,
-               "Expected #{expected_measure_report_count} MeasureReports,
-               got #{resource.parameter[0].resource.entry.length}"
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == expected_measure_report_count,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -386,8 +389,11 @@ module DEQMTestKit
                "Expected 1 Bundle for 2 patients specified in subjectGroup for reportType=population,
                got #{resource.parameter.length}"
 
-        assert resource.parameter[0].resource.entry.length == 1,
-               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == 1,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -463,8 +469,11 @@ module DEQMTestKit
         assert resource.parameter.length == 2,
                "Expected 2 Bundles for 2 patients specified in subjectGroup, got #{resource.parameter.length}"
 
-        assert resource.parameter[0].resource.entry.length == 1,
-               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == 1,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -532,11 +541,14 @@ module DEQMTestKit
 
         # Verify we have the expected number of bundles for each subject
         assert resource.parameter.length == 1,
-               "Expected 1 Bundle for reportType=subject and 1 patient specified in subjectGroup with
-               reportType=population, got #{resource.parameter.length}"
+               "Expected 1 Bundle for reportType=population with 1 patient specified in subjectGroup,
+                got #{resource.parameter.length}"
 
-        assert resource.parameter[0].resource.entry.length == 1,
-               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == 1,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -604,11 +616,14 @@ module DEQMTestKit
 
         # Verify we have the expected number of bundles for each subject
         assert resource.parameter.length == 1,
-               "Expected 1 Bundle for reportType=subject and 1 patient specified in subjectGroup for
-               reportType=subject, got #{resource.parameter.length}"
+               "Expected 1 Bundle for reportType=subject and 1 patient specified in subjectGroup,
+                got #{resource.parameter.length}"
 
-        assert resource.parameter[0].resource.entry.length == 1,
-               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == 1,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -663,6 +678,12 @@ module DEQMTestKit
         # Verify we have the expected number of bundles for each subject
         assert resource.parameter.length == 1,
                "Expected 1 Bundle, got #{resource.parameter.length}"
+
+        measure_reports = resource.parameter[0].resource.entry.select do |entry|
+          entry.resource.resourceType == 'MeasureReport'
+        end
+        assert measure_reports.length == 1,
+               "Expected 1 MeasureReport, got #{measure_reports.length}"
       end
     end
 
@@ -719,6 +740,11 @@ module DEQMTestKit
         assert resource.parameter.length.to_s == group_subjects,
                "Expected #{group_subjects} Bundles for each subject specified in the referenced Group,
                 got #{resource.parameter.length}"
+
+        resource.parameter.each do |param|
+          measure_reports = param.resource.entry.select { |entry| entry.resource.resourceType == 'MeasureReport' }
+          assert measure_reports.length == 1, "Expected 1 MeasureReport in each Bundle, got #{measure_reports.length}"
+        end
       end
     end
 
