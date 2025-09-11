@@ -253,11 +253,12 @@ module DEQMTestKit
         assert resource.parameter.length == 1,
                "Expected 1 Bundle for reportType=population and no subjects specified, got #{resource.parameter.length}"
 
+        expected_measure_report_count = measure_ids.length
         measure_reports = resource.parameter[0].resource.entry.select do |entry|
           entry.resource.resourceType == 'MeasureReport'
         end
-        assert measure_reports.length == 1,
-               "Expected 1 MeasureReport, got #{measure_reports.length}"
+        assert measure_reports.length == expected_measure_report_count,
+               "Expected #{expected_measure_report_count} MeasureReports, got #{measure_reports.length}"
       end
     end
 

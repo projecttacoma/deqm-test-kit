@@ -171,8 +171,14 @@ RSpec.describe DEQMTestKit::Evaluate do
         measure: measure_id,
         period: { start: period_start, end: period_end }
       )
+      measure_report_second = FHIR::MeasureReport.new(
+        status: 'complete', type: 'individual',
+        measure: additional_measures.first,
+        period: { start: period_start, end: period_end }
+      )
       bundle = FHIR::Bundle.new(type: 'collection', entry: [
-                                  { resource: measure_report_first }
+                                  { resource: measure_report_first },
+                                  { resource: measure_report_second }
                                 ])
       parameters_response = FHIR::Parameters.new(parameter: [
                                                    { resource: bundle }
