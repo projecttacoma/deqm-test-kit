@@ -352,7 +352,7 @@ module DEQMTestKit
                   },
                   {
                     entity: {
-                      reference: "Patient/#{patient_id_2}"
+                      reference: "Patient/#{patient_id2}"
                     }
                   }
                 ]
@@ -430,7 +430,7 @@ module DEQMTestKit
                   },
                   {
                     entity: {
-                      reference: "Patient/#{patient_id_2}"
+                      reference: "Patient/#{patient_id2}"
                     }
                   }
                 ]
