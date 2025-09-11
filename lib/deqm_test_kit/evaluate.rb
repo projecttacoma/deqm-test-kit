@@ -91,7 +91,7 @@ module DEQMTestKit
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/[id]/$evaluate (default reportType=population)'
-      id 'evaluate-measureid-path-default-reporttype'
+      id 'evaluate-id-path-population'
       description %(Measure/[id]/$evaluate without reportType (defaults to reportType=population)
       returns 200 and FHIR Parameters resource.)
 
@@ -126,10 +126,10 @@ module DEQMTestKit
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with measureId in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
-      id 'evaluate-measureid-body-default-reporttype'
-      description %(Measure/$evaluate with measureId in Parameters resource request body and
-      without reportType (defaults to reportType=population) returns 200 and FHIR Parameters resource.)
+      title 'Measure/$evaluate without reportType (defaults to reportType=population)'
+      id 'evaluate-population'
+      description %(Measure/$evaluate without reportType (defaults to reportType=population) returns 200
+      and FHIR Parameters resource.)
 
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
@@ -166,10 +166,10 @@ module DEQMTestKit
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with reportType=subject and measureId in Parameters resource request body'
-      id 'evaluate-subject-reporttype-body'
-      description %(Measure/$evaluate with reportType=subject and subject and measureId in Parameters resource request
-      body returns 200 and FHIR Parameters resource.)
+      title 'Measure/$evaluate with reportType=subject and Patient subject'
+      id 'evaluate-subject-patient'
+      description %(Measure/$evaluate with reportType=subject and Patient subject returns
+      200 and FHIR Parameters resource.)
 
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
@@ -211,17 +211,17 @@ module DEQMTestKit
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with multiple measureIds in Parameters resource request body without reportType (defaults to reportType=population)' # rubocop:disable Layout/LineLength
-      id 'evaluate-multiple-measureids-default-reporttype'
-      description %(Measure/$evaluate without reportType (defaults to reportType=population) and subject and multiple
-      measureIds in Parameters resource request body returns 200 and FHIR Parameters resource.)
+      title 'Measure/$evaluate with multiple measureIds without reportType (defaults to reportType=population)'
+      id 'evaluate-multiple-measure-population'
+      description %(Measure/$evaluate with multiple measureIds without reportType (defaults to reportType=population)
+      returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :additional_measures, **additional_measures_args
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
-      run do
+      run do # rubocop:disable Metrics/BlockLength
         measure_ids = [selected_measure_id]
         measure_ids += additional_measures if additional_measures&.any?
 
@@ -249,19 +249,23 @@ module DEQMTestKit
 
         validate_parameters_contains_measurereport_bundles(resource)
 
-        # Verify we have the expected number of bundles for each measure
-        expected_bundle_count = measure_ids.length
-        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
-               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 1,
+               "Expected 1 Bundle for reportType=population and no subjects specified, got #{resource.parameter.length}"
+
+        expected_measure_report_count = measure_ids.length
+        assert resource.parameter[0].resource.entry.length >= expected_measure_report_count,
+               "Expected #{expected_measure_report_count} MeasureReports, got
+               #{resource.parameter[0].resource.entry.length}"
       end
     end
 
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with reportType=subject and multiple measureIds in Parameters resource request body'
-      id 'evaluate-multiple-measureids-with-subject'
-      description %(Measure/$evaluate with reportType=subject and subject and multiple measureIds in Parameters
-      resource request body returns 200 and FHIR Parameters resource.)
+      title 'Measure/$evaluate with multiple measureIds and reportType=subject and Patient subject'
+      id 'evaluate-multiple-measure-subject-patient'
+      description %(Measure/$evaluate with multiple measureIds and reportType=subject and subject Patient
+      returns 200 and FHIR Parameters resource.)
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :additional_measures, **additional_measures_args
@@ -269,7 +273,7 @@ module DEQMTestKit
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
-      run do
+      run do # rubocop:disable Metrics/BlockLength
         measure_ids = [selected_measure_id]
         measure_ids += additional_measures if additional_measures&.any?
 
@@ -298,22 +302,28 @@ module DEQMTestKit
 
         validate_parameters_contains_measurereport_bundles(resource)
 
-        # Verify we have the expected number of bundles for each measure
-        expected_bundle_count = measure_ids.length
-        assert resource.parameter[0].resource.entry.length >= expected_bundle_count,
-               "Expected at #{expected_bundle_count} bundles, got #{resource.parameter[0].resource.entry.length}"
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 1,
+               "Expected 1 Bundle for reportType=subject and 1 patient specified, got #{resource.parameter.length}"
+
+        expected_measure_report_count = measure_ids.length
+        assert resource.parameter[0].resource.entry.length >= expected_measure_report_count,
+               "Expected #{expected_measure_report_count} MeasureReports,
+               got #{resource.parameter[0].resource.entry.length}"
       end
     end
 
+    # POPULATION
+    # SUBJECTGROUP 2 PATIENTS
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
-      title 'Measure/$evaluate with reportType=subject and subjectGroup'
-      id 'evaluate-subjectgroup-embedded-resource'
-      description %(Measure/$evaluate with reportType=subject and subjectGroup.)
+      title 'Measure/$evaluate with reportType=population and subjectGroup with 2 Patients'
+      id 'evaluate-subject-group-resource-2-patients-population'
+      description %(Measure/$evaluate with reportType=population and subjectGroup with 2 Patients.)
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :patient_id, title: 'Patient ID'
-      input :group_id, title: 'Group ID'
+      input :patient_id2, title: 'Patient ID 2'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
@@ -324,6 +334,236 @@ module DEQMTestKit
             {
               name: 'measureId',
               valueString: selected_measure_id
+            },
+            {
+              name: 'subject',
+              valueString: 'Group/test-group-2-subjects'
+            },
+            {
+              name: 'subjectGroup',
+              resource: {
+                resourceType: 'Group',
+                id: 'test-group-2-subjects',
+                member: [
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id}"
+                    }
+                  },
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id_2}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              name: 'reportType',
+              valueString: 'population'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 1,
+               "Expected 1 Bundle for 2 patients specified in subjectGroup for reportType=population,
+               got #{resource.parameter.length}"
+
+        assert resource.parameter[0].resource.entry.length == 1,
+               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+      end
+    end
+
+    # SUBJECT
+    # SUBJECTGROUP 2 PATIENTS
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=subject and subjectGroup with 2 Patients'
+      id 'evaluate-subject-group-resource-2-patients-subject'
+      description %(Measure/$evaluate with reportType=subject and subjectGroup with 2 Patients.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :patient_id2, title: 'Patient ID 2'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: selected_measure_id
+            },
+            {
+              name: 'subject',
+              valueString: 'Group/test-group-2-subjects'
+            },
+            {
+              name: 'subjectGroup',
+              resource: {
+                resourceType: 'Group',
+                id: 'test-group-2-subjects',
+                member: [
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id}"
+                    }
+                  },
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id_2}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              name: 'reportType',
+              valueString: 'subject'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 2,
+               "Expected 2 Bundles for 2 patients specified in subjectGroup, got #{resource.parameter.length}"
+
+        assert resource.parameter[0].resource.entry.length == 1,
+               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+      end
+    end
+
+    # POPULATION
+    # SUBJECTGROUP 1 PATIENT
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=population and subjectGroup with 1 Patient'
+      id 'evaluate-subject-group-resource-1-patient-population'
+      description %(Measure/$evaluate with reportType=population and subjectGroup with 1 Patient.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: selected_measure_id
+            },
+            {
+              name: 'subject',
+              valueString: 'Group/test-group'
+            },
+            {
+              name: 'subjectGroup',
+              resource: {
+                resourceType: 'Group',
+                id: 'test-group',
+                member: [
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              name: 'reportType',
+              valueString: 'population'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 1,
+               "Expected 1 Bundle for reportType=subject and 1 patient specified in subjectGroup with
+               reportType=population, got #{resource.parameter.length}"
+
+        assert resource.parameter[0].resource.entry.length == 1,
+               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
+      end
+    end
+
+    # SUBJECT
+    # SUBJECTGROUP 1 PATIENT
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=subject and subjectGroup with 1 Patient'
+      id 'evaluate-subject-group-resource-1-patient-subject'
+      description %(Measure/$evaluate with reportType=subject and subjectGroup with 1 Patient.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureId',
+              valueString: selected_measure_id
+            },
+            {
+              name: 'subject',
+              valueString: 'Group/test-group'
             },
             {
               name: 'subjectGroup',
@@ -361,17 +601,82 @@ module DEQMTestKit
                "Expected resource to be a Parameters resource, but got #{resource&.class}"
 
         validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 1,
+               "Expected 1 Bundle for reportType=subject and 1 patient specified in subjectGroup for
+               reportType=subject, got #{resource.parameter.length}"
+
+        assert resource.parameter[0].resource.entry.length == 1,
+               "Expected 1 MeasureReport, got #{resource.parameter[0].resource.entry.length}"
       end
     end
 
+    # POPULATION
+    # GROUP REFERENCE
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+      title 'Measure/$evaluate with reportType=population and subject Group reference'
+      id 'evaluate-subject-group-reference-population'
+      description %(Measure/$evaluate with reportType=population and subject Group reference.)
+      input :measure_id, **measure_id_args
+      input :custom_measure_id, **custom_measure_id_args
+      input :group_id, title: 'Group ID'
+      input :period_start, title: 'Measurement period start', default: '2026-01-01'
+      input :period_end, title: 'Measurement period end', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'subject',
+              valueString: "Group/#{group_id}"
+            },
+            {
+              name: 'measureId',
+              valueString: selected_measure_id
+            },
+            {
+              name: 'reportType',
+              valueString: 'population'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+        fhir_operation('/Measure/$evaluate', body:)
+
+        assert_response_status(200)
+
+        assert resource.is_a?(FHIR::Parameters),
+               "Expected resource to be a Parameters resource, but got #{resource&.class}"
+
+        validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length == 1,
+               "Expected 1 Bundle, got #{resource.parameter.length}"
+      end
+    end
+
+    # SUBJECT
+    # GROUP REFERENCE
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
       title 'Measure/$evaluate with reportType=subject and subject Group reference'
-      id 'evaluate-subjectgroup-reference'
+      id 'evaluate-subject-group-reference-subject'
       description %(Measure/$evaluate with reportType=subject and subject Group reference.)
       input :measure_id, **measure_id_args
       input :custom_measure_id, **custom_measure_id_args
       input :group_id, title: 'Group ID'
+      input :group_subjects, title: 'Number of subjects in the provided Group'
       input :period_start, title: 'Measurement period start', default: '2026-01-01'
       input :period_end, title: 'Measurement period end', default: '2026-12-31'
 
@@ -409,6 +714,11 @@ module DEQMTestKit
                "Expected resource to be a Parameters resource, but got #{resource&.class}"
 
         validate_parameters_contains_measurereport_bundles(resource)
+
+        # Verify we have the expected number of bundles for each subject
+        assert resource.parameter.length.to_s == group_subjects,
+               "Expected #{group_subjects} Bundles for each subject specified in the referenced Group,
+                got #{resource.parameter.length}"
       end
     end
 

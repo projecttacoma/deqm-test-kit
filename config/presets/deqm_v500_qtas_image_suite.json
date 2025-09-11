@@ -15,7 +15,14 @@
       "description": "",
       "title": "",
       "type": "radio",
-      "value": "ColorectalCancerScreeningsFHIR&version=0.0.003"
+      "value": "CervicalCancerScreeningFHIR"
+    },
+    {
+      "name": "additional_measures",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": ["ColorectalCancerScreeningsFHIR"]
     },
     {
       "name": "data_requirements_reference_server",
@@ -36,14 +43,28 @@
       "description": "",
       "title": "",
       "type": "text",
-      "value": "numer-EXM130"
+      "value": "denom-EXM124"
+    },
+    {
+      "name": "patient_id_2",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "numer-EXM124"
+    },
+    {
+      "name": "group_subjects",
+      "description": "",
+      "title": "Number of subjects in the provided Group",
+      "type": "text",
+      "value": "2"
     },
     {
       "name": "group_id",
       "description": "",
       "title": "Group ID",
       "type": "text",
-      "value": "EXM130-patients"
+      "value": "EXM124-patients"
     },
     {
       "name": "practitioner_id",
