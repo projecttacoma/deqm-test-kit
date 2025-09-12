@@ -15,14 +15,14 @@
       "description": "",
       "title": "",
       "type": "radio",
-      "value": "CervicalCancerScreeningFHIR"
+      "value": "CMS506FHIRSafeUseofOpioids"
     },
     {
       "name": "additional_measures",
       "description": "",
       "title": "",
       "type": "radio",
-      "value": ["ColorectalCancerScreeningsFHIR"]
+      "value": ["CMS130FHIRColorectalCancerScreening"]
     },
     {
       "name": "data_requirements_reference_server",
@@ -43,28 +43,28 @@
       "description": "",
       "title": "",
       "type": "text",
-      "value": "denom-EXM124"
+      "value": "031889e2-0353-4c2e-82c0-f422e15aacaa"
     },
     {
       "name": "patient_id2",
       "description": "",
       "title": "",
       "type": "text",
-      "value": "numer-EXM124"
+      "value": "029865cf-b060-4024-be84-bb902726c25e"
     },
     {
       "name": "group_subjects",
       "description": "",
       "title": "Number of subjects in the provided Group",
       "type": "text",
-      "value": "2"
+      "value": "51"
     },
     {
       "name": "group_id",
       "description": "",
       "title": "Group ID",
       "type": "text",
-      "value": "EXM124-patients"
+      "value": "CMS506FHIRSafeUseofOpioids"
     },
     {
       "name": "practitioner_id",
