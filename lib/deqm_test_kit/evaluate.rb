@@ -340,10 +340,6 @@ module DEQMTestKit
               valueString: selected_measure_id
             },
             {
-              name: 'subject',
-              valueString: 'Group/test-group-2-subjects'
-            },
-            {
               name: 'subjectGroup',
               resource: {
                 resourceType: 'Group',
@@ -421,10 +417,6 @@ module DEQMTestKit
               valueString: selected_measure_id
             },
             {
-              name: 'subject',
-              valueString: 'Group/test-group-2-subjects'
-            },
-            {
               name: 'subjectGroup',
               resource: {
                 resourceType: 'Group',
@@ -500,10 +492,6 @@ module DEQMTestKit
               valueString: selected_measure_id
             },
             {
-              name: 'subject',
-              valueString: 'Group/test-group'
-            },
-            {
               name: 'subjectGroup',
               resource: {
                 resourceType: 'Group',
@@ -573,10 +561,6 @@ module DEQMTestKit
             {
               name: 'measureId',
               valueString: selected_measure_id
-            },
-            {
-              name: 'subject',
-              valueString: 'Group/test-group'
             },
             {
               name: 'subjectGroup',

@@ -41,7 +41,20 @@ module DEQMTestKit
     id 'submit_data_v3'
     title 'submit-data-v3'
     description 'Ensure fhir server can receive data via the $submit-data operation'
-    custom_headers = { 'X-Provenance': '{"resourceType": "Provenance", "agent": ["test-agent"]}' }
+    provenance = {
+      resourceType: 'Provenance',
+      agent: [
+        {
+          who: {
+            reference: 'Practitioner/test-agent',
+            type: 'Practitioner'
+          }
+        }
+      ]
+    }
+    custom_headers = {
+      'X-Provenance' => provenance.to_json
+    }
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     measure_id_args = {
       type: 'radio',
