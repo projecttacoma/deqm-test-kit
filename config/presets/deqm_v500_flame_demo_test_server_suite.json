@@ -15,14 +15,14 @@
       "description": "",
       "title": "",
       "type": "radio",
-      "value": "CervicalCancerScreeningFHIR|0.0.005"
+      "value": "CMS0334FHIRPCCesareanBirth"
     },
     {
       "name": "measure_id",
       "description": "",
       "title": "",
       "type": "radio",
-      "value": "CervicalCancerScreeningFHIR|0.0.005"
+      "value": "CMS0334FHIRPCCesareanBirth"
     },
     {
       "name": "data_requirements_reference_server",
@@ -43,14 +43,28 @@
       "description": "",
       "title": "",
       "type": "text",
-      "value": "942960c8-37da-492d-85c8-0271d7b655b2"
+      "value": "f6dafa7e-15a9-4fec-baea-59d43201caf8"
+    },
+    {
+      "name": "patient_id2",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "c58acff5-248b-49c9-b18d-69e4a84a08d9"
     },
     {
       "name": "group_id",
       "description": "",
       "title": "Group ID",
       "type": "text",
-      "value": "Cervical-patients"
+      "value": "Example-group"
+    },
+    {
+      "name": "group_subjects",
+      "description": "",
+      "title": "Number of subjects in the provided Group",
+      "type": "text",
+      "value": "2"
     },
     {
       "name": "practitioner_id",
@@ -72,6 +86,13 @@
       "title": "FHIR resource types",
       "type": "text",
       "value": "Encounter"
+    },
+    {
+      "name": "measure_url_list",
+      "description": "Example: http://example.org/Measure/A|1.0.0,http://example.org/Measure/B|1.2.3",
+      "title": "Measures (comma-separated URLs with versions)",
+      "type": "text",
+      "value": "https://madie.cms.gov/Measure/CMS0334FHIRPCCesareanBirth|0.6.000,https://madie.cms.gov/Measure/CMS1017FHIRHHFI|0.2.000"
     }
   ]
 }
