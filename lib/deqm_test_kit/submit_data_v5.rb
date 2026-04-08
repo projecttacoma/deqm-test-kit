@@ -96,7 +96,20 @@ module DEQMTestKit
     id 'submit_data_v5'
     title '$submit-data-v5'
     description 'Ensure fhir server can receive data via the $submit-data operation'
-    custom_headers = { 'X-Provenance': '{"resourceType": "Provenance", "agent": ["test-agent"]}' }
+    provenance = {
+      resourceType: 'Provenance',
+      agent: [
+        {
+          who: {
+            reference: 'Practitioner/test-agent',
+            type: 'Practitioner'
+          }
+        }
+      ]
+    }
+    custom_headers = {
+      'X-Provenance' => provenance.to_json
+    }
 
     input :measure_url_list,
           title: 'Measures (comma-separated URLs with versions)',
