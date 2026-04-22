@@ -6,10 +6,11 @@ module DEQMTestKit
   # Perform fhir queries based on $data-requirements operation on test client
   class FHIRQueries < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     include DataRequirementsUtils
+
     # module for shared code for fhir queries assertions and requests
     module FHIRQueriesHelpers
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
@@ -42,7 +43,7 @@ module DEQMTestKit
         responses = queries.map do |q|
           fhir_search(q[:endpoint], params: q[:params])
           { response:,
-            query_string: "/#{q[:endpoint]}#{q[:params].size.positive? ? '?' : ''}#{URI.encode_www_form(q[:params])}" }
+            query_string: "/#{q[:endpoint]}#{'?' if q[:params].size.positive?}#{URI.encode_www_form(q[:params])}" }
         end
         responses.each do |r|
           assert(r[:response][:status] == 200,
@@ -97,6 +98,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       include FHIRQueriesHelpers
+
       title 'Valid FHIR Queries for All Patients'
       id 'fhir-queries-all-patients-from-data-requirements'
       description 'Queries resulting from a $data-requirements operation return 200 OK'
@@ -149,6 +151,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       include FHIRQueriesHelpers
+
       title 'Valid FHIR Queries Single Patient'
       id 'fhir-queries-single-patient-from-data-requirements'
       description 'Queries resulting from a $data-requirements operation return 200 OK'

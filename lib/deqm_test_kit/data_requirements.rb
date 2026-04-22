@@ -7,10 +7,11 @@ module DEQMTestKit
   # GET [base]/Measure/CMS146/$data-requirements?periodStart=2014&periodEnd=2014
   class DataRequirements < Inferno::TestGroup # rubocop:disable Metrics/ClassLength
     include DataRequirementsUtils
+
     # module for shared code for $data-requirements assertions and requests
     module DataRequirementsHelpers
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
@@ -55,6 +56,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       include DataRequirementsHelpers
+
       title 'Check data requirements against expected return'
       id 'data-requirements-match-reference-server'
       description 'Data requirements on the FHIR test server match the data requirements of reference server'
@@ -123,6 +125,7 @@ module DEQMTestKit
     test do
       optional
       include DataRequirementsHelpers
+
       title 'Data requirements supports optional parameters periodStart and periodEnd'
       id 'data-requirements-with-period-parameters'
       description 'Data requirements returns 200 when periodStart and periodEnd parameters are included'
@@ -142,6 +145,7 @@ module DEQMTestKit
 
     test do
       include DataRequirementsHelpers
+
       title 'Check data requirements returns 404 for invalid measure id'
       id 'data-requirements-invalid-measure'
       description 'Data requirements returns 404 when passed a measure id which is not in the system'

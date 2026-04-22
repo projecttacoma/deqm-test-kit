@@ -9,12 +9,13 @@ module DEQMTestKit
     # module for shared code for measure availability assertions and requests
     module BulkSubmitDataHelpers
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
     end
     include BulkImportUtils
+
     id 'bulk_submit_data'
     title 'Bulk Submit Data'
     description "
@@ -49,6 +50,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       include BulkSubmitDataHelpers
+
       title 'Ensure FHIR server can accept bulk data import requests for given measure'
       id 'bulk-submit-data-accepts-submit-requests'
       description %(POST request to $bulk-submit-data returns 202 response,
