@@ -17,7 +17,7 @@ module DEQMTestKit
       end
 
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
@@ -53,6 +53,7 @@ module DEQMTestKit
 
     test do
       include MeasureAvailabilityHelpers
+
       title 'Measure can be found'
       id 'measure-availability-found'
       description 'Selected measure with matching id is available on the server and a valid json object'
@@ -72,6 +73,7 @@ module DEQMTestKit
     end
     test do
       include MeasureAvailabilityHelpers
+
       title 'Measure cannot be found returns empty bundle'
       id 'measure-availability-not-found'
       description 'Selected measure is know not to exist on the server and returns an empty bundle'

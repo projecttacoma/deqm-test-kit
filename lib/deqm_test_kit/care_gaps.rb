@@ -10,7 +10,7 @@ module DEQMTestKit
     # module for shared code for $care-gaps assertions and requests
     module CareGapsHelpers
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
@@ -54,6 +54,7 @@ module DEQMTestKit
 
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps proper calculation with required query parameters for Patient subject'
       id 'care-gaps-patient-subject-with-required-params'
       description %(Server should properly return a care gaps report
@@ -73,6 +74,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps proper calculation with required query parameters for Group subject'
       id 'care-gaps-group-subject-with-required-params'
       description %(Server should properly return a care gaps report
@@ -92,6 +94,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps returns a BadRequest error for missing required query parameter'
       id 'care-gaps-missing-required-parameter'
       description %(Server should not perform calculation and return a 400 response code
@@ -109,6 +112,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps returns a BadRequest error for subject and organization query parameters'
       id 'care-gaps-subject-and-organization-conflict'
       description %(Server should not perform calculation and return a 400 response code
@@ -130,6 +134,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps returns a BadRequest error for invalid subject format'
       id 'care-gaps-invalid-subject-format'
       description "Server should not perform calculation and return a 400 response code
@@ -148,6 +153,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps proper calculation when no measure identifier is provided'
       id 'care-gaps-no-measure-identifier-provided'
       description %(Server should properly return a care gaps report
@@ -164,6 +170,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps returns NotFound error when invalid measure identifier is provided'
       id 'care-gaps-invalid-measure-identifier'
       description %(Server should not perform calculation and return a 404 response code
@@ -180,6 +187,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps proper calculation with practitioner and organization query parameters'
       id 'care-gaps-practitioner-and-organization-params'
       description %(Server should properly return a care gaps report
@@ -200,6 +208,7 @@ module DEQMTestKit
     end
     test do
       include CareGapsHelpers
+
       title 'Check $care-gaps proper calculation with program query parameter'
       id 'care-gaps-with-program-parameter'
       description %(Server should properly return a care gaps report

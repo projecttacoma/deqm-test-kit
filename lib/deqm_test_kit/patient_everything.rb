@@ -28,13 +28,13 @@ module DEQMTestKit
 
     test do
       include PatientEverythingHelpers
+
       title 'Patient/<id>/$everything valid submission'
       id 'patient-everything-single-patient'
       description 'Patient data is received for single patient on the server'
 
       run do
-        single_patient_file = File.open('./lib/fixtures/singlePatientBundle.json')
-        single_patient_bundle = JSON.parse(single_patient_file.read)
+        single_patient_bundle = File.open('./lib/fixtures/singlePatientBundle.json') { |f| JSON.parse(f.read) }
         # Upload single patient bundle to server
         patient_everything_assert_success("Patient/#{TEST_PATIENT_ID}/$everything", single_patient_bundle)
         # Run Patient/<id>/$everything operation on the test client server
@@ -44,21 +44,21 @@ module DEQMTestKit
         assert(single_patient_bundle['entry'].length - 1 == resource.total,
                "Expected #{single_patient_bundle['entry'].length - 1} in response but received #{resource.total}")
         # Check that all necessary resources are included in response
-        assert(resource.entry.count { |x| x.resource.resourceType == 'Encounter' } == 1)
-        assert(resource.entry.count { |x| x.resource.resourceType == 'Procedure' } == 1)
-        assert(resource.entry.count { |x| x.resource.resourceType == 'Patient' } == 1)
+        assert(resource.entry.one? { |x| x.resource.resourceType == 'Encounter' })
+        assert(resource.entry.one? { |x| x.resource.resourceType == 'Procedure' })
+        assert(resource.entry.one? { |x| x.resource.resourceType == 'Patient' })
       end
     end
 
     test do
       include PatientEverythingHelpers
+
       title 'Patient/$everything valid submission'
       id 'patient-everything-all-patients'
       description 'Patient data is received for all patients on the server'
 
       run do
-        multiple_patient_file = File.open('./lib/fixtures/multiplePatientBundle.json')
-        multiple_patient_bundle = JSON.parse(multiple_patient_file.read)
+        multiple_patient_bundle = File.open('./lib/fixtures/multiplePatientBundle.json') { |f| JSON.parse(f.read) }
         # Upload multiple patient bundle to server
         patient_everything_assert_success('Patient/$everything', multiple_patient_bundle)
         # Check all necessary resources are included in the response

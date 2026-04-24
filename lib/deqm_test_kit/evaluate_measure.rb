@@ -9,7 +9,7 @@ module DEQMTestKit
     # module for shared code for $evaluate-measure assertions and requests
     module MeasureEvaluationHelpers
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
@@ -57,6 +57,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check proper calculation for individual report with required query parameters'
       id 'evaluate-measure-individual-with-patient-subject'
       description %(Server should properly return an individual measure report when provided a
@@ -75,6 +76,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check proper calculation for subject-list report with required query parameters'
       id 'evaluate-measure-subject-list-reporttype'
       description %(Server should properly return subject-list measure report when provided a
@@ -92,6 +94,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check proper calculation for population report with required query parameters'
       id 'evaluate-measure-population-reporttype'
       description %(Server should properly return population measure report when provided a
@@ -109,6 +112,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check proper calculation for population report with Group subject'
       id 'evaluate-measure-population-with-group-subject-reference'
       description %(Server should properly return population measure report when provided a
@@ -127,6 +131,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for invalid measure ID'
       id 'evaluate-measure-invalid-measureid'
       description 'Request returns a 404 error when the given measure ID cannot be found.'
@@ -142,6 +147,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for invalid patient ID'
       id 'evaluate-measure-invalid-patientid'
       description 'Request returns a 404 error when the given patient ID cannot be found'
@@ -158,6 +164,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for missing required query parameter'
       id 'evaluate-measure-missing-period-start'
       description %(Server should not perform calculation and return a 400 response code
@@ -176,6 +183,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for missing subject query parameter (subject report type)'
       id 'evaluate-measure-missing-subject-param'
       description %(Server should not perform calculation and return a 400 response code
@@ -194,6 +202,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for invalid reportType'
       id 'evaluate-measure-invalid-reporttype'
       description 'Request returns 400 for invalid report type (not individual, population, or subject-list)'
@@ -212,6 +221,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for invalid parameter structure in input'
       id 'evaluate-measure-malformed-parameters'
       description %(Server should return 400 when the request contains malformed parameters, such as missing '=' or
@@ -227,6 +237,7 @@ module DEQMTestKit
 
     test do
       include MeasureEvaluationHelpers
+
       title 'Check operation fails for missing periodEnd parameter in input'
       id 'evaluate-measure-missing-periodend'
       description %(Server should return 400 when input is missing periodEnd parameter.)

@@ -5,6 +5,7 @@ module DEQMTestKit
   # BulkImport test group - ensure the FHIR server can accept bulk data import requests
   class BulkImport < Inferno::TestGroup
     include BulkImportUtils
+
     id 'bulk_import'
     title 'Non-Measure-Specific Bulk Import'
     description "This test inspects the response to POST [base]/$import and GET [bulk status endpoint]

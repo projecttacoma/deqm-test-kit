@@ -9,7 +9,7 @@ module DEQMTestKit
     # module for shared code for $submit-data assertions and requests
     module SubmitDataHelpers
       def selected_measure_id
-        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive?
+        return custom_measure_id.strip if measure_id == 'Other' && custom_measure_id&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
 
         measure_id
       end
@@ -78,6 +78,7 @@ module DEQMTestKit
     # rubocop:disable Metrics/BlockLength
     test do
       include SubmitDataHelpers
+
       title 'Submit Data valid submission'
       id 'submit-data-valid-submission-with-verification'
       description 'Submit resources relevant to a measure, and then verify they persist on the server.'
@@ -175,6 +176,7 @@ module DEQMTestKit
 
     test do
       include SubmitDataHelpers
+
       title 'Fails if a measureReport is not submitted'
       id 'submit-data-fails-missing-measurereport'
       description 'Request returns a 400 error if MeasureReport is not submitted.'
@@ -196,6 +198,7 @@ module DEQMTestKit
 
     test do
       include SubmitDataHelpers
+
       title 'Fails if multiple measureReports are submitted'
       id 'submit-data-fails-multiple-measurereports'
       description 'Request returns a 400 error multiple MeasureReports are not submitted.'

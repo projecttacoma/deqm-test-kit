@@ -28,9 +28,9 @@ RSpec.describe DEQMTestKit::SubmitDataV3 do
       identifier = SecureRandom.uuid
       id_resource = FHIR::Identifier.new({ value: identifier })
       test_patient = FHIR::Bundle.new(total: 1,
-                                      entry: [resource: FHIR::Patient.new({
-                                                                            id: 'PatientID', identifier: [id_resource]
-                                                                          })])
+                                      entry: [{ resource: FHIR::Patient.new({
+                                                                              id: 'PatientID', identifier: [id_resource]
+                                                                            }) }])
       queries_json = [{ endpoint: 'Patient', params: {} }].to_json
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
@@ -59,9 +59,9 @@ RSpec.describe DEQMTestKit::SubmitDataV3 do
       identifier = SecureRandom.uuid
       id_resource = FHIR::Identifier.new({ value: identifier })
       test_patient = FHIR::Bundle.new(total: 1,
-                                      entry: [resource: FHIR::Patient.new({
-                                                                            id: 'PatientID', identifier: [id_resource]
-                                                                          })])
+                                      entry: [{ resource: FHIR::Patient.new({
+                                                                              id: 'PatientID', identifier: [id_resource]
+                                                                            }) }])
       queries_json = [{ endpoint: 'Patient', params: {} }].to_json
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
@@ -90,9 +90,9 @@ RSpec.describe DEQMTestKit::SubmitDataV3 do
       identifier = SecureRandom.uuid
       id_resource = FHIR::Identifier.new({ value: identifier })
       test_patient = FHIR::Bundle.new(total: 1,
-                                      entry: [resource: FHIR::Patient.new({
-                                                                            id: 'PatientID', identifier: [id_resource]
-                                                                          })])
+                                      entry: [{ resource: FHIR::Patient.new({
+                                                                              id: 'PatientID', identifier: [id_resource]
+                                                                            }) }])
       queries_json = [{ endpoint: 'Patient', params: {} }].to_json
 
       stub_request(:get, "#{url}/Measure/#{measure_id}")
@@ -121,9 +121,9 @@ RSpec.describe DEQMTestKit::SubmitDataV3 do
       identifier = SecureRandom.uuid
       id_arr = [FHIR::Identifier.new({ value: identifier })]
       test_patient = FHIR::Bundle.new(total: 1,
-                                      entry: [resource: FHIR::Patient.new({
-                                                                            id: 'PatientID', identifier: id_arr
-                                                                          })])
+                                      entry: [{ resource: FHIR::Patient.new({
+                                                                              id: 'PatientID', identifier: id_arr
+                                                                            }) }])
       wrong_patient = FHIR::Bundle.new(total: 0)
       queries_json = [{ endpoint: 'Patient', params: {} }].to_json
 

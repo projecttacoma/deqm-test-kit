@@ -62,7 +62,7 @@ module DEQMTestKit
           'entry' => entries.push(
             { 'resource' => patient.to_hash,
               'request' => { method: 'PUT',
-                             url: "Patient/#{patient.id}" } }, { 'resource' => encounter.to_hash, 'request' => \
+                             url: "Patient/#{patient.id}" } }, { 'resource' => encounter.to_hash, 'request' =>
                               { method: 'PUT', url: "Encounter/#{encounter.id}" } }
           )
         )
@@ -126,6 +126,7 @@ module DEQMTestKit
 
     test do
       include SubmitDataHelpers
+
       title 'Submit Data valid submission (one subject, multiple measures)'
       id 'submit-data-valid-one-subject-multi-measures'
       description 'Submit a Parameters resource containing a single Bundle with one Patient, one Encounter, ' \
@@ -154,6 +155,7 @@ module DEQMTestKit
 
     test do
       include SubmitDataHelpers
+
       title 'Submit Data valid submission (two subjects, multiple measures each)'
       id 'submit-data-valid-two-subjects-multi-measures'
       description 'Submit a Parameters resource containing two Bundles, each organized by subject, ' \

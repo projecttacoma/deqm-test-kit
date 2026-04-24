@@ -7,7 +7,7 @@ services:
       # Negative values mean sessions never expire, 0 means sessions immediately expire
       SESSION_CACHE_DURATION: -1
     volumes:
-      - ./lib/davinci_dtr_test_kit/igs:/app/igs
+      - ./lib/deqm_test_kit/igs:/app/igs
       # To let the service share your local FHIR package cache,
       # uncomment the below line
       # - ~/.fhir:/home/ktor/.fhir
@@ -46,7 +46,7 @@ services:
       EXEC_WORKERS: 0
     ports:
       - "3000:3000"
-    command: npm start
+    # command: npm start
   mongo:
     image: mongo:4.4.4
     ports:
