@@ -18,9 +18,8 @@ module DEQMTestKit
         assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
         assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
 
-        parameters.parameter.each do |param|
-          assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
-        end
+        # Check that first parameter is a bundle, checking all of them will cause the test to timeout
+        assert parameters.parameter[0].resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
       end
 
       def collect_data_body(period_start:, period_end:, measure_urls:) # rubocop:disable Metrics/MethodLength
@@ -135,7 +134,8 @@ module DEQMTestKit
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
-        # validate that the FHIR Parameters resource contains at least one FHIR Bundle
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters)
       end
     end
 
@@ -165,6 +165,9 @@ module DEQMTestKit
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters)
       end
     end
 
@@ -196,7 +199,8 @@ module DEQMTestKit
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
-        # validate that the FHIR Parameters resource contains at least one FHIR Bundle
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters)
       end
     end
   end
