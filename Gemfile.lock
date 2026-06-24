@@ -3,6 +3,7 @@ PATH
   specs:
     deqm_test_kit (0.0.1)
       inferno_core (~> 1.1.2)
+      sidekiq (~> 7.2.4)
 
 GEM
   remote: https://rubygems.org/
@@ -388,6 +389,7 @@ DEPENDENCIES
   rspec (~> 3.10)
   rubocop (~> 1.18)
   rubocop-rspec (~> 2.4)
+  sidekiq (~> 7.2.4)
   webmock (~> 3.11)
 
 BUNDLED WITH

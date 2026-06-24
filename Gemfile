@@ -9,6 +9,7 @@ group :development, :test do
   gem 'debug'
   gem 'factory_bot', '~> 6.1'
   gem 'rspec', '~> 3.10'
+  gem 'sidekiq', '~> 7.2.4'
   gem 'webmock', '~> 3.11'
 end
 
