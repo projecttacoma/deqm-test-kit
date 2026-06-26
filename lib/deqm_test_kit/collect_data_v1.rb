@@ -8,10 +8,32 @@ module DEQMTestKit
   class CollectDataV1 < Inferno::TestGroup
     # module for shared code for $collect-data assertions and requests
     module CollectDataHelpers
-      def selected_measure_url(custom_url:, url:)
-        return custom_url.strip if url == 'Other' && custom_url&.strip&.length&.positive? # rubocop:disable Style/SafeNavigationChainLength
+      def selected_measure_url(custom_url:, url:, input_title: 'Measure URL',
+                               custom_input_title: 'Custom Measure URL')
+        return url unless url == 'Other'
 
-        url
+        custom_url = custom_url.to_s.strip
+
+        assert custom_url.length.positive?,
+               "#{custom_input_title} is required when \"#{input_title}\" is \"Other\"."
+
+        custom_url
+      end
+
+      def selected_additional_measure_url(custom_url:, url:)
+        selected_measure_url(
+          custom_url:,
+          url:,
+          input_title: 'Measure URL for additional Measure',
+          custom_input_title: 'Custom Additional Measure URL'
+        )
+      end
+
+      def selected_measure_urls
+        [
+          selected_measure_url(custom_url: custom_measure_url, url: measure_url),
+          selected_additional_measure_url(custom_url: custom_additional_measure_url, url: additional_measure_url)
+        ]
       end
 
       def validate_parameters_contains_bundles(parameters)
@@ -158,10 +180,11 @@ module DEQMTestKit
       input :period_end, title: 'Measurement Period End', default: '2026-12-31'
 
       run do
-        body = collect_data_body(measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url),
-                                                selected_measure_url(custom_url: custom_additional_measure_url,
-                                                                     url: additional_measure_url)],
-                                 period_start: period_start, period_end: period_end)
+        body = collect_data_body(
+          measure_urls: selected_measure_urls,
+          period_start: period_start,
+          period_end: period_end
+        )
 
         result = fhir_operation('/Measure/$collect-data', operation_method: :get,
                                                           body: FHIR::Parameters.new(body))
@@ -191,9 +214,8 @@ module DEQMTestKit
 
       run do
         body = collect_data_body(
-          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url),
-                         selected_measure_url(custom_url: custom_additional_measure_url,
-                                              url: additional_measure_url)], period_start: period_start,
+          measure_urls: selected_measure_urls,
+          period_start: period_start,
           period_end: period_end
         )
 
