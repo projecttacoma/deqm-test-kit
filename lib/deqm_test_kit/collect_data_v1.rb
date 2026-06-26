@@ -40,8 +40,9 @@ module DEQMTestKit
         assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
         assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
 
-        # Check that first parameter is a bundle, checking all of them will cause the test to timeout
-        assert parameters.parameter[0].resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
+        parameters.parameter.each do |param|
+          assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
+        end
       end
 
       def collect_data_body(period_start:, period_end:, measure_urls:) # rubocop:disable Metrics/MethodLength
