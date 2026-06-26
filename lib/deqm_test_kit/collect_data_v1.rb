@@ -107,6 +107,9 @@ module DEQMTestKit
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
         resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters)
       end
     end
 

@@ -33,6 +33,17 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
     end)
   end
 
+  def create_parameters_request(measure_urls:, period_start:, period_end:)
+    parameters = measure_urls.map { |measure_url| { name: 'measureUrl', valueCanonical: measure_url } }
+    parameters << { name: 'periodStart', valueDate: period_start }
+    parameters << { name: 'periodEnd', valueDate: period_end }
+
+    {
+      resourceType: 'Parameters',
+      parameter: parameters
+    }
+  end
+
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
     test_run = Inferno::Repositories::TestRuns.new.create(test_run_params)
@@ -79,13 +90,14 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
     let(:period_end) { '2019-12-31' }
 
     it 'passes with correct FHIR Parameters resource returned' do
+      parameters_request = create_parameters_request(measure_urls: [measure_url], period_start:, period_end:)
       parameters_response = create_parameters_response(measure_urls: [measure_url])
 
       stub_request(
         :post,
         "#{url}/Measure/$collect-data"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"measureUrl","valueCanonical":"http://example.com/Measure/measure-EXM130"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
+        body: parameters_request.to_json,
         headers: {
           'Content-Type' => 'application/fhir+json',
           'Origin' => 'http://example.com/fhir',
@@ -140,12 +152,17 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
 
     it 'passes with correct FHIR Parameters resource returned' do
       parameters_response = create_parameters_response(measure_urls: [measure_url, additional_measure_url])
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url, additional_measure_url],
+        period_start:,
+        period_end:
+      )
 
       stub_request(
         :post,
         "#{url}/Measure/$collect-data"
       ).with(
-        body: '{"resourceType":"Parameters","parameter":[{"name":"measureUrl","valueCanonical":"http://example.com/Measure/measure-EXM130"},{"name":"measureUrl","valueCanonical":"http://example.com/Measure/measure-EXM124"},{"name":"periodStart","valueDate":"2019-01-01"},{"name":"periodEnd","valueDate":"2019-12-31"}]}', # rubocop:disable Layout/LineLength
+        body: parameters_request.to_json,
         headers: {
           'Content-Type' => 'application/fhir+json',
           'Origin' => 'http://example.com/fhir',
