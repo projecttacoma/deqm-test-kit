@@ -42,7 +42,16 @@ module DEQMTestKit
 
         parameters.parameter.each do |param|
           assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
+          validate_bundles_contain_measure_report(param.resource)
         end
+      end
+
+      def validate_bundles_contain_measure_report(bundle)
+        assert bundle.entry.is_a?(Array), 'Expected Bundle.entry to be an array'
+        assert bundle.entry.any?, 'Expected at least one entry in the Bundle'
+
+        measure_reports = bundle.entry.map(&:resource).grep(FHIR::MeasureReport)
+        assert measure_reports.any?, 'Expected at least one MeasureReport in Bundle'
       end
 
       def collect_data_body(period_start:, period_end:, measure_urls:) # rubocop:disable Metrics/MethodLength
