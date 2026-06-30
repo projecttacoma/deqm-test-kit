@@ -239,6 +239,39 @@ module DEQMTestKit
         validate_parameters_contains_bundles(parameters, 2)
       end
     end
+
+    # GET Measure/$collect-data with measureUrl and periodStart in request parameters returns 400 and
+    # FHIR Operation Outcome when periodEnd was missing.
+    test do
+      title 'GET Measure/$collect-data with one measureUrl, periodStart'
+      id 'collect-data-missing-period-end-fail'
+      description %(GET Measure/$collect-data with one measureUrl and periodStart returns 400 and
+      FHIR OperationOutcome when periodEnd was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'measureUrl',
+              valueCanonical: measure_url
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
   end
   # rubocop:enable Metrics/ClassLength
 end
