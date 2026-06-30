@@ -2,3 +2,4 @@
 
 require_relative 'deqm_test_kit/v3.0.0/deqm_test_suite'
 require_relative 'deqm_test_kit/v5.0.0/deqm_test_suite'
+require_relative 'deqm_test_kit/v1.0.0/deqm_test_suite'

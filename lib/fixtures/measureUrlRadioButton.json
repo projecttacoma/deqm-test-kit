@@ -1,0 +1,48 @@
+{
+  "list_options": [
+    {
+      "label": "CMS0334FHIRPCCesareanBirth",
+      "value": "https://madie.cms.gov/Measure/CMS0334FHIRPCCesareanBirth"
+    },
+    {
+      "label": "CMS1017FHIRHHFI",
+      "value": "https://madie.cms.gov/Measure/CMS1017FHIRHHFI"
+    },
+    {
+      "label": "CMS1056CTClinicalFHIR",
+      "value": "https://madie.cms.gov/Measure/CMS1056CTClinicalFHIR"
+    },
+    {
+      "label": "CMS1074FHIRCTIQR",
+      "value": "https://madie.cms.gov/Measure/CMS1074FHIRCTIQR"
+    },
+    {
+      "label": "CMS108FHIRVTEProphylaxis",
+      "value": "https://madie.cms.gov/Measure/CMS108FHIRVTEProphylaxis"
+    },
+    {
+      "label": "CMS117FHIRChildhoodImmunizationStatus",
+      "value": "https://madie.cms.gov/Measure/CMS117FHIRChildhoodImmunizationStatus"
+    },
+    {
+      "label": "CMS1218FHIRHHRF",
+      "value": "https://madie.cms.gov/Measure/CMS1218FHIRHHRF"
+    },
+    {
+      "label": "CMS122FHIRDiabetesAssessGreaterThan9Percent",
+      "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGreaterThan9Percent"
+    },
+    {
+      "label": "CMS1244FHIRECATHOQR",
+      "value": "https://madie.cms.gov/Measure/CMS1244FHIRECATHOQR"
+    },
+    {
+      "label": "CMS124FHIRCervicalCancerScreening",
+      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreening"
+    },
+    {
+      "label": "Other",
+      "value": "Other"
+    }
+  ]
+}

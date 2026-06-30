@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/projecttacoma/deqm-test-kit'
   spec.license       = 'Apache-2.0'
   spec.add_dependency 'inferno_core', '~> 1.1.2'
+  spec.add_dependency 'sidekiq', '~> 7.2.4'
   spec.required_ruby_version = Gem::Requirement.new('>= 3.3.6')
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/projecttacoma/deqm-test-kit'
