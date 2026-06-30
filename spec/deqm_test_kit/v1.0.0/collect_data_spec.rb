@@ -21,16 +21,13 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
       )
     end
 
-    bundles = measure_reports.map do |mr|
-      FHIR::Bundle.new(type: 'transaction', entry: [{ resource: mr }])
-    end
+    bundle = FHIR::Bundle.new(type: 'transaction', entry: measure_reports.map { |mr| { resource: mr } })
 
-    FHIR::Parameters.new(parameter: bundles.map do |bundle|
+    FHIR::Parameters.new(parameter:
       {
         name: 'return',
         resource: bundle
-      }
-    end)
+      })
   end
 
   def create_parameters_request(measure_urls:, period_start:, period_end:)
