@@ -243,8 +243,10 @@ module DEQMTestKit
     # GET Measure/$collect-data with measureUrl and periodStart in request parameters returns 400 and
     # FHIR Operation Outcome when periodEnd was missing.
     test do
+      include CollectDataHelpers
+
       title 'GET Measure/$collect-data with one measureUrl, periodStart'
-      id 'collect-data-missing-period-end-fail'
+      id 'collect-data-missing-period-end-get-fail'
       description %(GET Measure/$collect-data with one measureUrl and periodStart returns 400 and
       FHIR OperationOutcome when periodEnd was missing.)
 
@@ -253,21 +255,170 @@ module DEQMTestKit
       input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
 
       run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodStart', valueDate: period_start }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$collect-data with measureUrl and periodStart in request body returns 400 and
+    # FHIR Operation Outcome when periodEnd was missing.
+    test do
+      include CollectDataHelpers
+
+      title 'POST Measure/$collect-data with one measureUrl, periodStart'
+      id 'collect-data-missing-period-end-post-fail'
+      description %(POST Measure/$collect-data with one measureUrl and periodStart returns 400 and
+      FHIR OperationOutcome when periodEnd was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodStart', valueDate: period_start }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$collect-data', body: body)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # GET Measure/$collect-data with measureUrl and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when periodStart was missing.
+    test do
+      include CollectDataHelpers
+
+      title 'GET Measure/$collect-data with one measureUrl, periodEnd'
+      id 'collect-data-missing-period-start-get-fail'
+      description %(GET Measure/$collect-data with one measureUrl and periodEnd returns 400 and
+      FHIR OperationOutcome when periodStart was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodEnd', valueDate: period_end }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$collect-data with measureUrl and periodEnd in request body returns 400 and
+    # FHIR Operation Outcome when periodStart was missing.
+    test do
+      include CollectDataHelpers
+
+      title 'POST Measure/$collect-data with one measureUrl, periodEnd'
+      id 'collect-data-missing-period-start-post-fail'
+      description %(POST Measure/$collect-data with one measureUrl and periodEnd returns 400 and
+      FHIR OperationOutcome when periodStart was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodEnd', valueDate: period_end }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$collect-data', body: body)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # GET Measure/$collect-data with periodStart and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when measureUrl was missing.
+    test do
+      title 'GET Measure/$collect-data with one periodStart, periodEnd'
+      id 'collect-data-missing-measure-url-get-fail'
+      description %(GET Measure/$collect-data with one periodStart and periodEnd returns 400 and
+      FHIR OperationOutcome when measureUrl was missing.)
+
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
         body = {
           resourceType: 'Parameters',
           parameter: [
             {
-              name: 'measureUrl',
-              valueCanonical: measure_url
-            },
-            {
               name: 'periodStart',
               valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
             }
           ]
         }
 
         result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$collect-data with periodStart and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when measureUrl was missing.
+    test do
+      title 'POST Measure/$collect-data with one periodStart, periodEnd'
+      id 'collect-data-missing-measure-url-post-fail'
+      description %(POST Measure/$collect-data with one periodStart and periodEnd returns 400 and
+      FHIR OperationOutcome when measureUrl was missing.)
+
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$collect-data', body: body)
         assert_response_status(400)
         assert result.resource.is_a?(FHIR::OperationOutcome)
       end
