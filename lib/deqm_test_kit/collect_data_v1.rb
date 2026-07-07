@@ -240,6 +240,143 @@ module DEQMTestKit
       end
     end
 
+    test do
+      include CollectDataHelpers
+
+      title 'GET Measure/$collect-data with one measureUrl, periodStart, periodEnd, and subject=Patient/patientId'
+      id 'collect-data-one-measure-get-subject-patient'
+      description %(GET Measure/$collect-data with one measureUrl, periodStart, periodEnd, and subject=Patient/patientId
+      returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that contains one MeasureReport)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = collect_data_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
+                                              url: measure_url)], period_start: period_start, period_end: period_end
+        ).concat({ name: 'subject', valueString: patient_id })
+
+        fhir_operation('/Measure/$collect-data', operation_method: :get,
+                                                 body: FHIR::Parameters.new(body))
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        # this below will have to be adjusted
+        validate_parameters_contains_bundles(parameters, 1)
+      end
+    end
+
+    test do
+      include CollectDataHelpers
+
+      title 'POST Measure/$collect-data with one measureUrl, periodStart, periodEnd, and subject=Patient/patientId'
+      id 'collect-data-one-measure-post-subject-patient'
+      description %(POST Measure/$collect-data with one measureUrl, periodStart, periodEnd, and
+      subject=Patient/patientId returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that
+      contains one MeasureReport)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = collect_data_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
+                                              url: measure_url)], period_start: period_start, period_end: period_end
+        ).concat({ name: 'subject', valueString: patient_id })
+
+        fhir_operation('/Measure/$collect-data',
+                       body: FHIR::Parameters.new(body))
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        # this below will have to be adjusted
+        validate_parameters_contains_bundles(parameters, 1)
+      end
+    end
+
+    test do
+      include CollectDataHelpers
+
+      title 'GET Measure/$collect-data with two measureUrls, periodStart, periodEnd, and subject=Patient/patientId'
+      id 'collect-data-two-measure-get-subject-patient'
+      description %(GET Measure/$collect-data with two measureUrls, periodStart, periodEnd, and
+      subject=Patient/patientId returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that
+      contains two MeasureReports)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = collect_data_body(
+          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end
+        ).concat({ name: 'subject', valueString: patient_id })
+
+        fhir_operation('/Measure/$collect-data', operation_method: :get,
+                                                 body: FHIR::Parameters.new(body))
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        # this below will have to be adjusted
+        validate_parameters_contains_bundles(parameters, 2)
+      end
+    end
+
+    test do
+      include CollectDataHelpers
+
+      title 'POST Measure/$collect-data with two measureUrls, periodStart, periodEnd, and subject=Patient/patientId'
+      id 'collect-data-two-measure-post-subject-patient'
+      description %(POST Measure/$collect-data with two measureUrls, periodStart, periodEnd, and
+      subject=Patient/patientId returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that
+      contains two MeasureReports)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = collect_data_body(
+          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end
+        ).concat({ name: 'subject', valueString: patient_id })
+
+        fhir_operation('/Measure/$collect-data',
+                       body: FHIR::Parameters.new(body))
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        # this below will have to be adjusted
+        validate_parameters_contains_bundles(parameters, 2)
+      end
+    end
+
     # GET Measure/$collect-data with measureUrl and periodStart in request parameters returns 400 and
     # FHIR Operation Outcome when periodEnd was missing.
     test do
