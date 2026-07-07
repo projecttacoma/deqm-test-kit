@@ -5,7 +5,7 @@ INVALID_START_DATE = 'INVALID_START_DATE'
 
 RSpec.describe DEQMTestKit::CollectDataV1 do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v100') }
-  let(:group) { suite.groups[1] }
+  let(:group) { suite.groups[2] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
