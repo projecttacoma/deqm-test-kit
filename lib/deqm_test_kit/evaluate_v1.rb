@@ -122,7 +122,7 @@ module DEQMTestKit
 
       title 'GET Measure/$evaluate with one measureUrl, required params (default reportType=summary)'
       id 'evaluate-one-measure-summary-get'
-      description %(Measure/$evaluate with one measureUrl and without reportType (defaults to reportType=summary)
+      description %(GET Measure/$evaluate with one measureUrl and without reportType (defaults to reportType=summary)
       returns 200 and FHIR Parameters resource.)
 
       input :measure_url, **measure_url_args
@@ -153,7 +153,7 @@ module DEQMTestKit
 
       title 'POST Measure/$evaluate with one measureUrl, required params (default reportType=summary)'
       id 'evaluate-one-measure-summary-post'
-      description %(Measure/$evaluate with one measureUrl and without reportType (defaults to reportType=summary)
+      description %(POST Measure/$evaluate with one measureUrl and without reportType (defaults to reportType=summary)
       returns 200 and FHIR Parameters resource.)
 
       input :measure_url, **measure_url_args
@@ -183,7 +183,7 @@ module DEQMTestKit
       # This doesn't seem to be possible with Inferno DSL fhir_operation
       title 'GET Measure/$evaluate with two measureUrls, required params (default reportType=summary)'
       id 'evaluate-two-measure-summary-get'
-      description %(Measure/$evaluate with two measureUrls and without reportType (defaults to reportType=summary)
+      description %(GET Measure/$evaluate with two measureUrls and without reportType (defaults to reportType=summary)
       returns 200 and FHIR Parameters resource.)
 
       input :measure_url, **measure_url_args
@@ -217,7 +217,7 @@ module DEQMTestKit
 
       title 'POST Measure/$evaluate with two measureUrls, required params (default reportType=summary)'
       id 'evaluate-two-measure-summary-post'
-      description %(Measure/$evaluate with two measureUrls and without reportType (defaults to reportType=summary)
+      description %(POST Measure/$evaluate with two measureUrls and without reportType (defaults to reportType=summary)
       returns 200 and FHIR Parameters resource.)
 
       input :measure_url, **measure_url_args
