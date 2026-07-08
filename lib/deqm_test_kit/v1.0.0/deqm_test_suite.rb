@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../evaluate_v1'
 require_relative '../collect_data_v1'
 
 module DEQMTestKit
@@ -38,6 +39,7 @@ module DEQMTestKit
         end
       end
 
+      group from: :evaluate_v1
       group from: :collect_data_v1
     end
   end
