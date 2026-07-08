@@ -255,11 +255,15 @@ module DEQMTestKit
       input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
 
       run do
-        body = collect_data_body(
-          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
-                                              url: measure_url)], period_start: period_start, period_end: '2026-12-31'
-        )
-        body[:parameter].delete_if { |param| param[:name] == 'periodEnd' }
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodStart', valueDate: period_start }
+            # periodEnd intentionally omitted
+          ]
+        }
 
         result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
         assert_response_status(400)
@@ -282,11 +286,15 @@ module DEQMTestKit
       input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
 
       run do
-        body = collect_data_body(
-          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
-                                              url: measure_url)], period_start: period_start, period_end: '2026-12-31'
-        )
-        body[:parameter].delete_if { |param| param[:name] == 'periodEnd' }
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodStart', valueDate: period_start }
+            # periodEnd intentionally omitted
+          ]
+        }
 
         result = fhir_operation('/Measure/$collect-data', body: body)
         assert_response_status(400)
@@ -309,11 +317,15 @@ module DEQMTestKit
       input :period_end, title: 'Measurement Period End', default: '2026-12-31'
 
       run do
-        body = collect_data_body(
-          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
-                                              url: measure_url)], period_start: '2026-01-01', period_end: period_end
-        )
-        body[:parameter].delete_if { |param| param[:name] == 'periodStart' }
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodEnd', valueDate: period_end }
+            # periodStart intentionally omitted
+          ]
+        }
 
         result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
         assert_response_status(400)
@@ -336,11 +348,15 @@ module DEQMTestKit
       input :period_end, title: 'Measurement Period End', default: '2026-12-31'
 
       run do
-        body = collect_data_body(
-          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
-                                              url: measure_url)], period_start: '2026-01-01', period_end: period_end
-        )
-        body[:parameter].delete_if { |param| param[:name] == 'periodStart' }
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodEnd', valueDate: period_end }
+            # periodStart intentionally omitted
+          ]
+        }
 
         result = fhir_operation('/Measure/$collect-data', body: body)
         assert_response_status(400)
@@ -351,8 +367,6 @@ module DEQMTestKit
     # GET Measure/$collect-data with periodStart and periodEnd in request parameters returns 400 and
     # FHIR Operation Outcome when measureUrl was missing.
     test do
-      include CollectDataHelpers
-
       title 'GET Measure/$collect-data missing measureUrl returns HTTP 400 and OperationOutcome'
       id 'collect-data-missing-measure-url-get-fail'
       description %(GET Measure/$collect-data with one periodStart and periodEnd returns 400 and
@@ -362,11 +376,20 @@ module DEQMTestKit
       input :period_end, title: 'Measurement Period End', default: '2026-12-31'
 
       run do
-        body = collect_data_body(
-          measure_urls: ['https://madie.cms.gov/Measure/CMS0334FHIRPCCesareanBirth'], period_start: period_start,
-          period_end: period_end
-        )
-        body[:parameter].delete_if { |param| param[:name] == 'measureUrl' }
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+            # measureUrl intentionally omitted
+          ]
+        }
 
         result = fhir_operation('/Measure/$collect-data', operation_method: :get, body: FHIR::Parameters.new(body))
         assert_response_status(400)
@@ -377,8 +400,6 @@ module DEQMTestKit
     # POST Measure/$collect-data with periodStart and periodEnd in request parameters returns 400 and
     # FHIR Operation Outcome when measureUrl was missing.
     test do
-      include CollectDataHelpers
-
       title 'POST Measure/$collect-data missing measureUrl returns HTTP 400 and OperationOutcome'
       id 'collect-data-missing-measure-url-post-fail'
       description %(POST Measure/$collect-data with one periodStart and periodEnd returns 400 and
@@ -388,11 +409,20 @@ module DEQMTestKit
       input :period_end, title: 'Measurement Period End', default: '2026-12-31'
 
       run do
-        body = collect_data_body(
-          measure_urls: ['https://madie.cms.gov/Measure/CMS0334FHIRPCCesareanBirth'], period_start: period_start,
-          period_end: period_end
-        )
-        body[:parameter].delete_if { |param| param[:name] == 'measureUrl' }
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+            # measureUrl intentionally omitted
+          ]
+        }
 
         result = fhir_operation('/Measure/$collect-data', body: body)
         assert_response_status(400)
