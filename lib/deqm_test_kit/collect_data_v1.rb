@@ -46,6 +46,11 @@ module DEQMTestKit
         end
       end
 
+      def validate_number_of_bundles(parameters, bundle_count)
+        assert parameters.parameter.length == bundle_count,
+               "Expected #{bundle_count} Bundle(s), got #{parameters.length}"
+      end
+
       def validate_bundles_contain_measure_report(bundle, measure_count)
         assert bundle.entry.is_a?(Array), 'Expected Bundle.entry to be an array'
         assert bundle.entry.any?, 'Expected at least one entry in the Bundle'
@@ -268,7 +273,8 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        # this below will have to be adjusted
+
+        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 1)
       end
     end
@@ -302,12 +308,13 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        # this below will have to be adjusted
+
+        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 1)
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include CollectDataHelpers
 
       title 'GET Measure/$collect-data with two measureUrls, periodStart, periodEnd, and subject=Patient/patientId'
@@ -337,12 +344,13 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        # this below will have to be adjusted
+
+        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 2)
       end
     end
 
-    test do
+    test do # rubocop:disable Metrics/BlockLength
       include CollectDataHelpers
 
       title 'POST Measure/$collect-data with two measureUrls, periodStart, periodEnd, and subject=Patient/patientId'
@@ -372,7 +380,8 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        # this below will have to be adjusted
+
+        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 2)
       end
     end
