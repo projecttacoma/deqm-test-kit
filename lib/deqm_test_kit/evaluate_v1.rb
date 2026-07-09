@@ -243,5 +243,295 @@ module DEQMTestKit
         validate_parameters_contains_bundles(parameters, 2)
       end
     end
+
+    # GET Measure/$evaluate with measureUrl and periodStart in request parameters returns 400 and
+    # FHIR Operation Outcome when periodEnd was missing.
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'GET Measure/$evaluate missing periodEnd returns HTTP 400 and OperationOutcome'
+      id 'evaluate-missing-period-end-get-fail'
+      description %(GET Measure/$evaluate with one measureUrl and periodStart returns 400 and
+      FHIR OperationOutcome when periodEnd was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodStart', valueDate: period_start }
+            # periodEnd intentionally omitted
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: FHIR::Parameters.new(body), operation_method: :get)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$evaluate with measureUrl and periodStart in request parameters returns 400 and
+    # FHIR Operation Outcome when periodEnd was missing.
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate missing periodEnd returns HTTP 400 and OperationOutcome'
+      id 'evaluate-missing-period-end-post-fail'
+      description %(POST Measure/$evaluate with one measureUrl and periodStart returns 400 and
+      FHIR OperationOutcome when periodEnd was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodStart', valueDate: period_start }
+            # periodEnd intentionally omitted
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # GET Measure/$evaluate with measureUrl and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when periodStart was missing.
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'GET Measure/$evaluate missing periodStart returns HTTP 400 and OperationOutcome'
+      id 'evaluate-missing-period-start-get-fail'
+      description %(GET Measure/$evaluate with one measureUrl and periodEnd returns 400 and
+      FHIR OperationOutcome when periodStart was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodEnd', valueDate: period_end }
+            # periodStart intentionally omitted
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: FHIR::Parameters.new(body), operation_method: :get)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$evaluate with measureUrl and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when periodStart was missing.
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate missing periodStart returns HTTP 400 and OperationOutcome'
+      id 'evaluate-missing-period-start-post-fail'
+      description %(POST Measure/$evaluate with one measureUrl and periodEnd returns 400 and
+      FHIR OperationOutcome when periodStart was missing.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            { name: 'periodEnd', valueDate: period_end }
+            # periodStart intentionally omitted
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # GET Measure/$evaluate with periodStart and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when measureUrl was missing.
+    test do
+      title 'GET Measure/$evaluate missing measureUrl returns HTTP 400 and OperationOutcome'
+      id 'evaluate-missing-measure-url-get-fail'
+      description %(GET Measure/$evaluate with one periodStart and periodEnd returns 400 and
+      FHIR OperationOutcome when measureUrl was missing.)
+
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+            # measureUrl intentionally omitted
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: FHIR::Parameters.new(body), operation_method: :get)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$evaluate with periodStart and periodEnd in request parameters returns 400 and
+    # FHIR Operation Outcome when measureUrl was missing.
+    test do
+      title 'POST Measure/$evaluate missing measureUrl returns HTTP 400 and OperationOutcome'
+      id 'evaluate-missing-measure-url-post-fail'
+      description %(POST Measure/$evaluate with one periodStart and periodEnd returns 400 and
+      FHIR OperationOutcome when measureUrl was missing.)
+
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+            # measureUrl intentionally omitted
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # GET Measure/$evaluate with measureUrl, periodStart, periodEnd, subject, and subjectGroup in request parameters
+    # returns 400 and FHIR Operation Outcome for providing both subject and subjectGroup parameters.
+    test do # rubocop:disable Metrics/BlockLength
+      title 'GET Measure/$evaluate with both subject and subjectGroup returns HTTP 400 and OperationOutcome'
+      id 'evaluate-subject-and-subject-group-get-fail'
+      description %(GET Measure/$evaluate with measureUrl, periodStart, periodEnd, subject, and subjectGroup
+      returns 400 and FHIR OperationOutcome when both subject and subjectGroup were provided.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            {
+              name: 'subject',
+              valueString: patient_id
+            },
+            {
+              name: 'subjectGroup',
+              valueString: 'Group/test-group'
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: FHIR::Parameters.new(body), operation_method: :get)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
+
+    # POST Measure/$evaluate with measureUrl, periodStart, periodEnd, subject, and subjectGroup in request parameters
+    # returns 400 and FHIR Operation Outcome for providing both subject and subjectGroup parameters.
+    test do # rubocop:disable Metrics/BlockLength
+      title 'POST Measure/$evaluate with both subject and subjectGroup returns HTTP 400 and OperationOutcome'
+      id 'evaluate-subject-and-subject-group-post-fail'
+      description %(POST Measure/$evaluate with measureUrl, periodStart, periodEnd, subject, and subjectGroup
+      returns 400 and FHIR OperationOutcome when both subject and subjectGroup were provided.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :patient_id, title: 'Patient ID'
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+
+      run do # rubocop:disable Metrics/BlockLength
+        selected_url = selected_measure_url(custom_url: custom_measure_url, url: measure_url)
+        body = {
+          resourceType: 'Parameters',
+          parameter: [
+            { name: 'measureUrl', valueCanonical: selected_url },
+            {
+              name: 'subject',
+              valueString: patient_id
+            },
+            {
+              name: 'subjectGroup',
+              resource: {
+                resourceType: 'Group',
+                id: 'test-group',
+                member: [
+                  {
+                    entity: {
+                      reference: "Patient/#{patient_id}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              name: 'periodStart',
+              valueDate: period_start
+            },
+            {
+              name: 'periodEnd',
+              valueDate: period_end
+            }
+          ]
+        }
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(400)
+        assert result.resource.is_a?(FHIR::OperationOutcome)
+      end
+    end
   end
 end
