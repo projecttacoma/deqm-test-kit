@@ -48,7 +48,7 @@ module DEQMTestKit
 
       def validate_number_of_bundles(parameters, bundle_count)
         assert parameters.parameter.length == bundle_count,
-               "Expected #{bundle_count} Bundle(s), got #{parameters.length}"
+               "Expected #{bundle_count} Bundle(s), got #{parameters.parameter.length}"
       end
 
       def validate_bundles_contain_measure_report(bundle, measure_count)
@@ -60,25 +60,34 @@ module DEQMTestKit
                "Expected #{measure_count} MeasureReport(s), got #{measure_reports.length}"
       end
 
-      def collect_data_body(period_start:, period_end:, measure_urls:) # rubocop:disable Metrics/MethodLength
+      def collect_data_body(period_start:, period_end:, measure_urls:, patient_id: nil) # rubocop:disable Metrics/MethodLength
+        parameters = measure_urls.map do |url|
+          {
+            name: 'measureUrl',
+            valueCanonical: url
+          }
+        end
+
+        if patient_id
+          parameters << {
+            name: 'subject',
+            valueString: "Patient/#{patient_id}"
+          }
+        end
+
+        parameters << {
+          name: 'periodStart',
+          valueDate: period_start
+        }
+
+        parameters << {
+          name: 'periodEnd',
+          valueDate: period_end
+        }
+
         {
           resourceType: 'Parameters',
-          parameter: [
-            *measure_urls.map do |url|
-              {
-                name: 'measureUrl',
-                valueCanonical: url
-              }
-            end,
-            {
-              name: 'periodStart',
-              valueDate: period_start
-            },
-            {
-              name: 'periodEnd',
-              valueDate: period_end
-            }
-          ]
+          parameter: parameters
         }
       end
     end
@@ -262,11 +271,12 @@ module DEQMTestKit
       run do
         body = collect_data_body(
           measure_urls: [selected_measure_url(custom_url: custom_measure_url,
-                                              url: measure_url)], period_start: period_start, period_end: period_end
-        ).concat({ name: 'subject', valueString: patient_id })
+                                              url: measure_url)], period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
 
-        fhir_operation('/Measure/$collect-data', operation_method: :get,
-                                                 body: FHIR::Parameters.new(body))
+        result = fhir_operation('/Measure/$collect-data', operation_method: :get,
+                                                          body: FHIR::Parameters.new(body))
 
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
@@ -297,11 +307,11 @@ module DEQMTestKit
       run do
         body = collect_data_body(
           measure_urls: [selected_measure_url(custom_url: custom_measure_url,
-                                              url: measure_url)], period_start: period_start, period_end: period_end
-        ).concat({ name: 'subject', valueString: patient_id })
+                                              url: measure_url)], period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
 
-        fhir_operation('/Measure/$collect-data',
-                       body: FHIR::Parameters.new(body))
+        result = fhir_operation('/Measure/$collect-data', body: body)
 
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
@@ -333,11 +343,12 @@ module DEQMTestKit
 
       run do
         body = collect_data_body(
-          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end
-        ).concat({ name: 'subject', valueString: patient_id })
+          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
 
-        fhir_operation('/Measure/$collect-data', operation_method: :get,
-                                                 body: FHIR::Parameters.new(body))
+        result = fhir_operation('/Measure/$collect-data', operation_method: :get,
+                                                          body: FHIR::Parameters.new(body))
 
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
@@ -369,11 +380,11 @@ module DEQMTestKit
 
       run do
         body = collect_data_body(
-          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end
-        ).concat({ name: 'subject', valueString: patient_id })
+          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
 
-        fhir_operation('/Measure/$collect-data',
-                       body: FHIR::Parameters.new(body))
+        result = fhir_operation('/Measure/$collect-data', body: body)
 
         assert_response_status(200)
         assert result.resource.is_a?(FHIR::Parameters), "Expected
