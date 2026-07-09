@@ -284,8 +284,8 @@ module DEQMTestKit
 
         parameters = result.resource
 
-        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 1)
+        validate_number_of_bundles(parameters, 1)
       end
     end
 
@@ -319,8 +319,8 @@ module DEQMTestKit
 
         parameters = result.resource
 
-        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 1)
+        validate_number_of_bundles(parameters, 1)
       end
     end
 
@@ -356,8 +356,8 @@ module DEQMTestKit
 
         parameters = result.resource
 
-        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 2)
+        validate_number_of_bundles(parameters, 1)
       end
     end
 
@@ -392,8 +392,8 @@ module DEQMTestKit
 
         parameters = result.resource
 
-        validate_number_of_bundles(parameters, 1)
         validate_parameters_contains_bundles(parameters, 2)
+        validate_number_of_bundles(parameters, 1)
       end
     end
 
