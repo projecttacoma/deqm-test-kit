@@ -1,0 +1,35 @@
+{
+  "title": "Bulk Export Server Local",
+  "id": "deqm_v100_export_server_local",
+  "test_suite_id": "deqm_v100",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "http://localhost:3001"
+    },
+    {
+      "name": "measure_url",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "https://madie.cms.gov/Measure/CMS165FHIRControllingHighBP"
+    },
+    {
+      "name": "additional_measure_url",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreen"
+    },
+    {
+      "name": "patient_id",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "6769ebe0-1b45-472a-ba7b-8f9a014d94a6"
+    }
+  ]
+}
