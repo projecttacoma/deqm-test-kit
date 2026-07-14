@@ -2,6 +2,7 @@
 
 require_relative '../evaluate_v1'
 require_relative '../collect_data_v1'
+require_relative '../collect_data_endpoint_v1'
 
 module DEQMTestKit
   # Test suite for DEQM Universal Realm Version 1.0.0
@@ -41,6 +42,7 @@ module DEQMTestKit
 
       group from: :evaluate_v1
       group from: :collect_data_v1
+      group from: :collect_data_endpoint_v1
     end
   end
 end
