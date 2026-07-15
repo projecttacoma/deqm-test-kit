@@ -35,45 +35,69 @@ module DEQMTestKit
         ]
       end
 
-      def evaluate_request_body(period_start:, period_end:, measure_urls:) # rubocop:disable Metrics/MethodLength
+      def evaluate_request_body(period_start:, period_end:, measure_urls:, patient_id: nil) # rubocop:disable Metrics/MethodLength
+        parameters = measure_urls.map do |url|
+          {
+            name: 'measureUrl',
+            valueCanonical: url
+          }
+        end
+
+        if patient_id
+          parameters << {
+            name: 'subject',
+            valueString: "Patient/#{patient_id}"
+          }
+        end
+
+        parameters << {
+          name: 'periodStart',
+          valueDate: period_start
+        }
+
+        parameters << {
+          name: 'periodEnd',
+          valueDate: period_end
+        }
+
         {
           resourceType: 'Parameters',
-          parameter: [
-            *measure_urls.map do |url|
-              {
-                name: 'measureUrl',
-                valueCanonical: url
-              }
-            end,
-            {
-              name: 'periodStart',
-              valueDate: period_start
-            },
-            {
-              name: 'periodEnd',
-              valueDate: period_end
-            }
-          ]
+          parameter: parameters
         }
       end
 
-      def validate_parameters_contains_bundles(parameters, measure_count)
+      def validate_parameters_contains_bundles(parameters, measure_count, report_type)
         assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
         assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
 
         parameters.parameter.each do |param|
           assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
-          validate_bundles_contain_measure_report(param.resource, measure_count)
+          validate_bundles_contain_measure_report(param.resource, measure_count, report_type)
         end
       end
 
-      def validate_bundles_contain_measure_report(bundle, measure_count)
+      def validate_bundles_contain_measure_report(bundle, measure_count, report_type)
         assert bundle.entry.is_a?(Array), 'Expected Bundle.entry to be an array'
         assert bundle.entry.any?, 'Expected at least one entry in the Bundle'
 
         measure_reports = bundle.entry.map(&:resource).grep(FHIR::MeasureReport)
         assert measure_reports.length == measure_count,
                "Expected #{measure_count} MeasureReport(s), got #{measure_reports.length}"
+        # validate_measure_report_type(measure_reports, report_type)
+      end
+
+      def validate_measure_report_type(measure_reports, report_type)
+        measure_reports.each do |measure_report|
+          next if measure_report.type == report_type
+
+          assert false,
+                 "Expected MeasureReport.type to be #{report_type.inspect}, got #{measure_report.type.inspect}"
+        end
+      end
+
+      def validate_number_of_bundles(parameters, bundle_count)
+        assert parameters.parameter.length == bundle_count,
+               "Expected #{bundle_count} Bundle(s), got #{parameters.parameter.length}"
       end
     end
 
@@ -94,7 +118,7 @@ module DEQMTestKit
     measure_url_args = {
       type: 'radio',
       optional: false,
-      default: 'https://madie.cms.gov/Measure/CMS0334FHIRPCCesareanBirth',
+      default: 'https://madie.cms.gov/Measure/CMS125FHIRBreastCancerScreen',
       options: measure_options,
       title: 'Measure URL'
     }
@@ -107,6 +131,7 @@ module DEQMTestKit
     custom_measure_url_args = {
       type: 'text',
       optional: true,
+      default: 'https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreen',
       title: 'Custom Measure URL',
       description: 'If you selected "Other" above or want to provide a custom Measure URL, enter it here.'
     }
@@ -144,7 +169,7 @@ module DEQMTestKit
 
         parameters = result.resource
 
-        validate_parameters_contains_bundles(parameters, 1)
+        validate_parameters_contains_bundles(parameters, 1, 'summary')
       end
     end
 
@@ -173,7 +198,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 1)
+        validate_parameters_contains_bundles(parameters, 1, 'summary')
       end
     end
 
@@ -208,7 +233,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 2)
+        validate_parameters_contains_bundles(parameters, 2, 'summary')
       end
     end
 
@@ -240,7 +265,149 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 2)
+        validate_parameters_contains_bundles(parameters, 2, 'summary')
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'GET Measure/$evaluate with one measureUrl, required params, and subject Patient reference
+      (default reportType=individual)'
+      id 'evaluate-one-measure-get-subject-patient'
+      description %(GET Measure/$evaluate with one measureUrl, periodStart, periodEnd, and subject=Patient/patientId
+      returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that contains one MeasureReport)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
+                                              url: measure_url)], period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', operation_method: :get, body: FHIR::Parameters.new(body))
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 1, 'individual')
+        validate_number_of_bundles(parameters, 1)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with one measureUrl, required params, and subject Patient reference
+      (default reportType=individual)'
+      id 'evaluate-one-measure-post-subject-patient'
+      description %(POST Measure/$evaluate with one measureUrl, periodStart, periodEnd, and subject=Patient/patientId
+      returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that contains one MeasureReport)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url,
+                                              url: measure_url)], period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 1, 'individual')
+        validate_number_of_bundles(parameters, 1)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'GET Measure/$evaluate with two measureUrls, required params, and subject Patient reference
+      (default reportType=individual)'
+      id 'evaluate-two-measure-get-subject-patient'
+      description %(GET Measure/$evaluate with two measureUrls, periodStart, periodEnd, and subject=Patient/patientId
+      returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that contains two MeasureReports)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', operation_method: :get, body: FHIR::Parameters.new(body))
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 2, 'individual')
+        validate_number_of_bundles(parameters, 1)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with two measureUrls, required params, and subject Patient reference
+      (default reportType=individual)'
+      id 'evaluate-two-measure-post-subject-patient'
+      description %(POST Measure/$evaluate with two measureUrls, periodStart, periodEnd, and subject=Patient/patientId
+      returns 200 and FHIR Parameters resource that contains exactly one FHIR Bundle that contains two MeasureReports)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: selected_measure_urls, period_start: period_start, period_end: period_end,
+          patient_id: patient_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 2, 'individual')
+        validate_number_of_bundles(parameters, 1)
       end
     end
 

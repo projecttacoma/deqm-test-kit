@@ -22,14 +22,14 @@
       "description": "",
       "title": "",
       "type": "radio",
-      "value": "https://madie.cms.gov/Measure/CMS130FHIRColorectalCancerScrn"
+      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreen"
     },
     {
       "name": "patient_id",
       "description": "",
       "title": "",
       "type": "text",
-      "value": "2d526118-fb1d-44c0-9b0b-b8f6d4f2b4fb"
+      "value": "6769ebe0-1b45-472a-ba7b-8f9a014d94a6"
     },
     {
       "name": "data_endpoint",

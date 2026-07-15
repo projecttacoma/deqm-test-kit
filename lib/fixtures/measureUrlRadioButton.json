@@ -1,56 +1,28 @@
 {
   "list_options": [
     {
-      "label": "CMS2FHIRPCSDepScreenAndFollowUp",
-      "value": "https://madie.cms.gov/Measure/CMS2FHIRPCSDepScreenAndFollowUp"
-    },
-    {
       "label": "CMS122FHIRDiabetesAssessGreaterThan9Percent",
       "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGreaterThan9Percent"
     },
     {
       "label": "CMS124FHIRCervicalCancerScreening",
-      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreening"
+      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreen"
     },
     {
       "label": "CMS125FHIRBreastCancerScreen",
       "value": "https://madie.cms.gov/Measure/CMS125FHIRBreastCancerScreen"
     },
     {
-      "label": "CMS130FHIRColorectalCancerScrn",
-      "value": "https://madie.cms.gov/Measure/CMS130FHIRColorectalCancerScrn"
-    },
-    {
       "label": "CMS165FHIRControllingHighBP",
       "value": "https://madie.cms.gov/Measure/CMS165FHIRControllingHighBP"
-    },
-    {
-      "label": "CMSFHIR529HybridHospitalWideReadmission",
-      "value": "https://madie.cms.gov/Measure/CMSFHIR529HybridHospitalWideReadmission"
-    },
-    {
-      "label": "CMS506FHIRSafeUseofOpioids",
-      "value": "https://madie.cms.gov/Measure/CMS506FHIRSafeUseofOpioids"
     },
     {
       "label": "CMS71FHIRSTKAnticoagAFFlutter",
       "value": "https://madie.cms.gov/Measure/CMS71FHIRSTKAnticoagAFFlutter"
     },
     {
-      "label": "CMS816FHIRHHHypo",
-      "value": "https://madie.cms.gov/Measure/CMS816FHIRHHHypo"
-    },
-    {
-      "label": "CMS1017FHIRHHFI",
-      "value": "https://madie.cms.gov/Measure/CMS1017FHIRHHFI"
-    },
-    {
       "label": "CMS1028FHIRPCSevereOBComps",
       "value": "https://madie.cms.gov/Measure/CMS1028FHIRPCSevereOBComps"
-    },
-    {
-      "label": "CMS1218FHIRHHRF",
-      "value": "https://madie.cms.gov/Measure/CMS1218FHIRHHRF"
     },
     {
       "label": "Other",

@@ -1,0 +1,35 @@
+{
+  "title": "Connectathon Lantana FHIR Server",
+  "id": "deqm_v100_connectathon_lantana_server",
+  "test_suite_id": "deqm_v100",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "https://connectathon-fhir.lantanagroup.com/fhir"
+    },
+    {
+      "name": "measure_url",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "https://madie.cms.gov/Measure/CMS125FHIRBreastCancerScreen"
+    },
+    {
+      "name": "additional_measure_url",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGreaterThan9Percent"
+    },
+    {
+      "name": "patient_id",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "c2f10a34-81ed-4bf0-93ac-fed868ada54b"
+    }
+  ]
+}
