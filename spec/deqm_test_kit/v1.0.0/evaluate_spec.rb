@@ -171,4 +171,261 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
       expect(result.result).to eq('pass')
     end
   end
+
+  describe 'GET Measure/$evaluate missing periodEnd' do
+    let(:test) { test_by_id(group, 'evaluate-missing-period-end-get-fail') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_start) { '2019-01-01' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      stub_request(
+        :get,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        query: {
+          measureUrl: measure_url,
+          periodStart: period_start
+          # periodEnd intentionally omitted
+        },
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'POST Measure/$evaluate missing periodEnd' do
+    let(:test) { test_by_id(group, 'evaluate-missing-period-end-post-fail') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_start) { '2019-01-01' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      parameters_request = {
+        resourceType: 'Parameters',
+        parameter: [
+          { name: 'measureUrl', valueCanonical: measure_url },
+          { name: 'periodStart', valueDate: period_start }
+          # periodEnd intentionally omitted
+        ]
+      }
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'GET Measure/$evaluate missing periodStart' do
+    let(:test) { test_by_id(group, 'evaluate-missing-period-start-get-fail') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_end) { '2019-12-31' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      stub_request(
+        :get,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        query: {
+          measureUrl: measure_url,
+          periodEnd: period_end
+          # periodStart intentionally omitted
+        },
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'POST Measure/$evaluate missing periodStart' do
+    let(:test) { test_by_id(group, 'evaluate-missing-period-start-post-fail') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_end) { '2019-12-31' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      parameters_request = {
+        resourceType: 'Parameters',
+        parameter: [
+          { name: 'measureUrl', valueCanonical: measure_url },
+          { name: 'periodEnd', valueDate: period_end }
+          # periodStart intentionally omitted
+        ]
+      }
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'GET Measure/$evaluate missing measureUrl' do
+    let(:test) { test_by_id(group, 'evaluate-missing-measure-url-get-fail') }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      stub_request(
+        :get,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        query: {
+          periodStart: period_start,
+          periodEnd: period_end
+          # measureUrl intentionally omitted
+        },
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'POST Measure/$evaluate missing measureUrl' do
+    let(:test) { test_by_id(group, 'evaluate-missing-measure-url-post-fail') }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      parameters_request = {
+        resourceType: 'Parameters',
+        parameter: [
+          { name: 'periodStart', valueDate: period_start },
+          { name: 'periodEnd', valueDate: period_end }
+          # measureUrl intentionally omitted
+        ]
+      }
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'GET Measure/$evaluate with both subject and subjectGroup' do
+    let(:test) { test_by_id(group, 'evaluate-subject-and-subject-group-get-fail') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:patient_id) { 'test-patient' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      stub_request(
+        :get,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        query: {
+          measureUrl: measure_url,
+          subject: patient_id,
+          subjectGroup: 'Group/test-group',
+          periodStart: period_start,
+          periodEnd: period_end
+        },
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, patient_id:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'POST Measure/$evaluate with both subject and subjectGroup' do
+    let(:test) { test_by_id(group, 'evaluate-subject-and-subject-group-post-fail') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:patient_id) { 'test-patient' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+
+    it 'passes with HTTP 400 error and correct OperationOutcome returned' do
+      parameters_request = {
+        resourceType: 'Parameters',
+        parameter: [
+          { name: 'measureUrl', valueCanonical: measure_url },
+          { name: 'subject', valueString: patient_id },
+          {
+            name: 'subjectGroup',
+            resource: {
+              resourceType: 'Group',
+              id: 'test-group',
+              member: [
+                {
+                  entity: {
+                    reference: "Patient/#{patient_id}"
+                  }
+                }
+              ]
+            }
+          },
+          { name: 'periodStart', valueDate: period_start },
+          { name: 'periodEnd', valueDate: period_end }
+        ]
+      }
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 400, body: error_outcome.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, patient_id:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
 end
