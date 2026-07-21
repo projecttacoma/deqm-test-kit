@@ -5,12 +5,12 @@
       "value": "https://madie.cms.gov/Measure/CMS2FHIRPCSDepScreenAndFollowUp"
     },
     {
-      "label": "CMS122FHIRDiabetesAssessGreaterThan9Percent",
-      "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGreaterThan9Percent"
+      "label": "CMS122FHIRDiabetesAssessGT9Pct",
+      "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGT9Pct"
     },
     {
-      "label": "CMS124FHIRCervicalCancerScreening",
-      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreening"
+      "label": "CMS124FHIRCervicalCancerScreen",
+      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreen"
     },
     {
       "label": "CMS125FHIRBreastCancerScreen",
