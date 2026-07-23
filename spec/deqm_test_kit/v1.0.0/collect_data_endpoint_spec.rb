@@ -16,7 +16,17 @@ RSpec.describe DEQMTestKit::CollectDataEndpointV1 do
       status: 'active',
       connectionType: { system: 'http://terminology.hl7.org/CodeSystem/endpoint-connection-type',
                         code: 'hl7-fhir-rest' },
-      address: 'https://r4.smarthealthit.org'
+      address: 'example.com/data',
+      payloadType: [
+        {
+          coding: [
+            {
+              system: 'http://hl7.org/fhir/resource-types',
+              code: 'Parameters'
+            }
+          ]
+        }
+      ]
     }.to_json
   end
 
@@ -80,6 +90,55 @@ RSpec.describe DEQMTestKit::CollectDataEndpointV1 do
         test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_id:, data_endpoint:
       )
       expect(result.result).to eq('pass')
+    end
+
+    it 'fails if result is not a Parameters resource' do
+      measure_urls = [measure_url, additional_measure_url]
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id:, data_endpoint:
+      )
+      parameters_response = { resourceType: 'Invalid' }
+
+      stub_request(
+        :post, "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => url,
+          'Referrer' => url
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(
+        test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_id:, data_endpoint:
+      )
+      expect(result.result).to eq('fail')
+      expect(result.result_message).to match(/Parameters/)
+    end
+
+    it 'fails if result has incorrect number of measure reports' do
+      measure_urls = [measure_url, additional_measure_url]
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id:, data_endpoint:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url])
+
+      stub_request(
+        :post, "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => url,
+          'Referrer' => url
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(
+        test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_id:, data_endpoint:
+      )
+      expect(result.result).to eq('fail')
     end
   end
 end
