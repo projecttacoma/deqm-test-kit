@@ -1,44 +1,56 @@
 {
   "list_options": [
     {
-      "label": "CMS0334FHIRPCCesareanBirth",
-      "value": "https://madie.cms.gov/Measure/CMS0334FHIRPCCesareanBirth"
+      "label": "CMS2FHIRPCSDepScreenAndFollowUp",
+      "value": "https://madie.cms.gov/Measure/CMS2FHIRPCSDepScreenAndFollowUp"
+    },
+    {
+      "label": "CMS122FHIRDiabetesAssessGT9Pct",
+      "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGT9Pct"
+    },
+    {
+      "label": "CMS124FHIRCervicalCancerScreen",
+      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreen"
+    },
+    {
+      "label": "CMS125FHIRBreastCancerScreen",
+      "value": "https://madie.cms.gov/Measure/CMS125FHIRBreastCancerScreen"
+    },
+    {
+      "label": "CMS130FHIRColorectalCancerScrn",
+      "value": "https://madie.cms.gov/Measure/CMS130FHIRColorectalCancerScrn"
+    },
+    {
+      "label": "CMS165FHIRControllingHighBP",
+      "value": "https://madie.cms.gov/Measure/CMS165FHIRControllingHighBP"
+    },
+    {
+      "label": "CMSFHIR529HybridHospitalWideReadmission",
+      "value": "https://madie.cms.gov/Measure/CMSFHIR529HybridHospitalWideReadmission"
+    },
+    {
+      "label": "CMS506FHIRSafeUseofOpioids",
+      "value": "https://madie.cms.gov/Measure/CMS506FHIRSafeUseofOpioids"
+    },
+    {
+      "label": "CMS71FHIRSTKAnticoagAFFlutter",
+      "value": "https://madie.cms.gov/Measure/CMS71FHIRSTKAnticoagAFFlutter"
+    },
+    {
+      "label": "CMS816FHIRHHHypo",
+      "value": "https://madie.cms.gov/Measure/CMS816FHIRHHHypo"
     },
     {
       "label": "CMS1017FHIRHHFI",
       "value": "https://madie.cms.gov/Measure/CMS1017FHIRHHFI"
     },
     {
-      "label": "CMS1056CTClinicalFHIR",
-      "value": "https://madie.cms.gov/Measure/CMS1056CTClinicalFHIR"
-    },
-    {
-      "label": "CMS1074FHIRCTIQR",
-      "value": "https://madie.cms.gov/Measure/CMS1074FHIRCTIQR"
-    },
-    {
-      "label": "CMS108FHIRVTEProphylaxis",
-      "value": "https://madie.cms.gov/Measure/CMS108FHIRVTEProphylaxis"
-    },
-    {
-      "label": "CMS117FHIRChildhoodImmunizationStatus",
-      "value": "https://madie.cms.gov/Measure/CMS117FHIRChildhoodImmunizationStatus"
+      "label": "CMS1028FHIRPCSevereOBComps",
+      "value": "https://madie.cms.gov/Measure/CMS1028FHIRPCSevereOBComps"
     },
     {
       "label": "CMS1218FHIRHHRF",
       "value": "https://madie.cms.gov/Measure/CMS1218FHIRHHRF"
-    },
-    {
-      "label": "CMS122FHIRDiabetesAssessGreaterThan9Percent",
-      "value": "https://madie.cms.gov/Measure/CMS122FHIRDiabetesAssessGreaterThan9Percent"
-    },
-    {
-      "label": "CMS1244FHIRECATHOQR",
-      "value": "https://madie.cms.gov/Measure/CMS1244FHIRECATHOQR"
-    },
-    {
-      "label": "CMS124FHIRCervicalCancerScreening",
-      "value": "https://madie.cms.gov/Measure/CMS124FHIRCervicalCancerScreening"
     },
     {
       "label": "Other",
