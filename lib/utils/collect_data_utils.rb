@@ -57,7 +57,9 @@ module DEQMTestKit
              "Expected #{measure_count} MeasureReport(s), got #{measure_reports.length}"
     end
 
-    def collect_data_body(period_start:, period_end:, measure_urls:, patient_id: nil, data_endpoint: nil) # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
+    def collect_data_body(period_start:, period_end:, measure_urls:, patient_id: nil,
+                          patient_id_list: nil, data_endpoint: nil)
       parameters = measure_urls.map do |url|
         {
           name: 'measureUrl',
@@ -69,6 +71,19 @@ module DEQMTestKit
         parameters << {
           name: 'subject',
           valueString: "Patient/#{patient_id}"
+        }
+      end
+
+      if patient_id_list
+        parameters << {
+          name: 'subjectGroup',
+          resource: {
+            resourceType: 'Group',
+            id: 'test-group-subjectGroup',
+            member: patient_id_list.map do |group_patient_id|
+              { entity: { reference: "Patient/#{group_patient_id}" } }
+            end
+          }
         }
       end
 
@@ -94,5 +109,6 @@ module DEQMTestKit
         parameter: parameters
       }
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/ParameterLists
   end
 end

@@ -18,9 +18,21 @@ module DEQMTestKit
       FHIR::Parameters.new(parameter: { name: 'return', resource: bundle })
     end
 
-    def create_parameters_request(measure_urls:, period_start:, period_end:, patient_id: nil, data_endpoint: nil)
+    # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
+    def create_parameters_request(measure_urls:, period_start:, period_end:, patient_id: nil, patient_id_list: nil,
+                                  data_endpoint: nil)
       parameters = measure_urls.map { |measure_url| { name: 'measureUrl', valueCanonical: measure_url } }
       parameters << { name: 'subject', valueString: "Patient/#{patient_id}" } if patient_id
+      if patient_id_list
+        parameters << {
+          name: 'subjectGroup',
+          resource: {
+            resourceType: 'Group',
+            id: 'test-group-subjectGroup',
+            member: patient_id_list.map { |group_patient_id| { entity: { reference: "Patient/#{group_patient_id}" } } }
+          }
+        }
+      end
       parameters << { name: 'periodStart', valueDate: period_start }
       parameters << { name: 'periodEnd', valueDate: period_end }
       parameters << { name: 'dataEndpoint', resource: JSON.parse(data_endpoint) } if data_endpoint
@@ -30,6 +42,7 @@ module DEQMTestKit
         parameter: parameters
       }
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/ParameterLists
 
     def run(runnable, inputs = {})
       test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
