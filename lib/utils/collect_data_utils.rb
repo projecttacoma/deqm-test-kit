@@ -57,31 +57,32 @@ module DEQMTestKit
              "Expected #{measure_count} MeasureReport(s), got #{measure_reports.length}"
     end
 
-    # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
-    def collect_data_body(period_start:, period_end:, measure_urls:, patient_id: nil,
-                          patient_id_list: nil, data_endpoint: nil)
-      parameters = measure_urls.map do |url|
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def collect_data_body(options)
+      parameters = options[:measure_urls].map do |url|
         {
           name: 'measureUrl',
           valueCanonical: url
         }
       end
 
-      if patient_id
+      if options[:patient_id]
         parameters << {
           name: 'subject',
-          valueString: "Patient/#{patient_id}"
+          valueString: "Patient/#{options[:patient_id]}"
         }
       end
 
-      if patient_id_list
+      if options[:patient_id_list]
         parameters << {
           name: 'subjectGroup',
           resource: {
             resourceType: 'Group',
             id: 'test-group-subjectGroup',
-            member: patient_id_list.map do |group_patient_id|
-              { entity: { reference: "Patient/#{group_patient_id}" } }
+            type: 'person',
+            actual: true,
+            member: options[:patient_id_list].map do |patient_id|
+              { entity: { reference: "Patient/#{patient_id}" } }
             end
           }
         }
@@ -89,18 +90,18 @@ module DEQMTestKit
 
       parameters << {
         name: 'periodStart',
-        valueDate: period_start
+        valueDate: options[:period_start]
       }
 
       parameters << {
         name: 'periodEnd',
-        valueDate: period_end
+        valueDate: options[:period_end]
       }
 
-      if data_endpoint
+      if options[:data_endpoint]
         parameters << {
           name: 'dataEndpoint',
-          resource: JSON.parse(data_endpoint)
+          resource: JSON.parse(options[:data_endpoint])
         }
       end
 
@@ -109,6 +110,6 @@ module DEQMTestKit
         parameter: parameters
       }
     end
-    # rubocop:enable Metrics/MethodLength, Metrics/ParameterLists
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
   end
 end

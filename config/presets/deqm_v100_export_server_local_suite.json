@@ -30,6 +30,13 @@
       "title": "",
       "type": "text",
       "value": "6769ebe0-1b45-472a-ba7b-8f9a014d94a6"
+    },
+    {
+      "name": "patient_ids",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "f6dafa7e-15a9-4fec-baea-59d43201caf8, c58acff5-248b-49c9-b18d-69e4a84a08d9"
     }
   ]
 }

@@ -318,8 +318,8 @@ module DEQMTestKit
       title 'POST Measure/$collect-data with one measureUrl, periodStart, periodEnd, and subjectGroup'
       id 'collect-data-one-measure-post-subject-group'
       description %(POST Measure/$collect-data with one measureUrl, periodStart, periodEnd, and
-      subjectGroup returns 200 and FHIR Parameters resource that contains X number of FHIR Bundles that
-      each contain one MeasureReport)
+      subjectGroup returns 200 and FHIR Parameters resource that contains X (patient count)
+      number of FHIR Bundles that each contain one MeasureReport)
 
       input :measure_url, **measure_url_args
       input :custom_measure_url, **custom_measure_url_args
@@ -358,8 +358,8 @@ module DEQMTestKit
       title 'POST Measure/$collect-data with two measureUrls, periodStart, periodEnd, and subjectGroup'
       id 'collect-data-two-measures-post-subject-group'
       description %(POST Measure/$collect-data with two measureUrls, periodStart, periodEnd, and
-      subjectGroup returns 200 and FHIR Parameters resource that contains X number of FHIR Bundles that
-      each contain two MeasureReports)
+      subjectGroup returns 200 and FHIR Parameters resource that contains X (patient count)
+      number of FHIR Bundles that each contain two MeasureReports)
 
       input :measure_url, **measure_url_args
       input :custom_measure_url, **custom_measure_url_args

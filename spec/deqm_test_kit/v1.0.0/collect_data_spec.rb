@@ -275,25 +275,8 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
       parameters_request = create_parameters_request(
         measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
       )
-      parameters_response = FHIR::Parameters.new(
-        parameter: patient_id_list.map do
-          FHIR::Parameters::Parameter.new(
-            name: 'return',
-            resource: FHIR::Bundle.new(
-              type: 'transaction',
-              entry: [
-                {
-                  resource: FHIR::MeasureReport.new(
-                    status: 'complete',
-                    type: 'data-collection',
-                    measure: measure_url,
-                    period: { start: period_start, end: period_end }
-                  )
-                }
-              ]
-            )
-          )
-        end
+      parameters_response = create_parameters_response(
+        measure_urls: [measure_url], patient_ids: patient_id_list
       )
 
       stub_request(
@@ -381,26 +364,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
       parameters_request = create_parameters_request(
         measure_urls:, period_start:, period_end:, patient_id_list:
       )
-      parameters_response = FHIR::Parameters.new(
-        parameter: patient_id_list.map do
-          FHIR::Parameters::Parameter.new(
-            name: 'return',
-            resource: FHIR::Bundle.new(
-              type: 'transaction',
-              entry: measure_urls.map do |measure_url|
-                {
-                  resource: FHIR::MeasureReport.new(
-                    status: 'complete',
-                    type: 'data-collection',
-                    measure: measure_url,
-                    period: { start: period_start, end: period_end }
-                  )
-                }
-              end
-            )
-          )
-        end
-      )
+      parameters_response = create_parameters_response(measure_urls:, patient_ids: patient_id_list)
 
       stub_request(:post, "#{url}/Measure/$collect-data").with(
         body: parameters_request.to_json,
