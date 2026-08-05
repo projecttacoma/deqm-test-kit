@@ -263,6 +263,161 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
     end
   end
 
+  describe 'POST Measure/$collect-data with one measureUrl and subjectGroup' do
+    let(:test) { test_by_id(group, 'collect-data-one-measure-post-subject-group') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:patient_ids) { 'patient-1, patient-2' }
+
+    it 'passes with correct FHIR Parameters resource returned' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(
+        measure_urls: [measure_url], bundle_count: patient_id_list.length
+      )
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'fails if result has incorrect number of measure reports' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url, measure_url],
+                                                       bundle_count: patient_id_list.length)
+
+      stub_request(
+        :post, "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+
+    it 'fails if result has incorrect number of bundles' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url])
+
+      stub_request(
+        :post, "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+  end
+
+  describe 'POST Measure/$collect-data with two measureUrls and subjectGroup' do
+    let(:test) { test_by_id(group, 'collect-data-two-measures-post-subject-group') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:patient_ids) { 'patient-1,patient-2' }
+
+    it 'passes with correct FHIR Parameters resource returned' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls:, bundle_count: patient_id_list.length)
+
+      stub_request(:post, "#{url}/Measure/$collect-data").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'fails if result has incorrect number of measure reports' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url],
+                                                       bundle_count: patient_id_list.length)
+
+      stub_request(
+        :post, "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+
+    it 'fails if result has incorrect number of bundles' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls:)
+
+      stub_request(
+        :post, "#{url}/Measure/$collect-data"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+  end
+
   describe 'GET Measure/$collect-data missing periodEnd' do
     let(:test) { test_by_id(group, 'collect-data-missing-period-end-get-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
