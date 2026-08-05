@@ -6,7 +6,7 @@ module DEQMTestKit
   # Helpers shared by $collect-data specs
   module CollectDataSpecUtils
     # rubocop:disable Metrics/MethodLength
-    def create_parameters_response(measure_urls:, patient_ids: nil)
+    def create_parameters_response(measure_urls:, bundle_count: 1)
       measure_reports = measure_urls.map do |url|
         FHIR::MeasureReport.new(
           status: 'complete', type: 'data-collection',
@@ -15,7 +15,7 @@ module DEQMTestKit
         )
       end
 
-      bundles = (patient_ids || [nil]).map do
+      bundles = bundle_count.times.map do
         FHIR::Bundle.new(type: 'transaction', entry: measure_reports.map { |mr| { resource: mr } })
       end
 

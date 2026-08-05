@@ -276,7 +276,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
         measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
       )
       parameters_response = create_parameters_response(
-        measure_urls: [measure_url], patient_ids: patient_id_list
+        measure_urls: [measure_url], bundle_count: patient_id_list.length
       )
 
       stub_request(
@@ -300,17 +300,8 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
       parameters_request = create_parameters_request(
         measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
       )
-      parameters_response = FHIR::Parameters.new(
-        parameter: patient_id_list.map do
-          FHIR::Parameters::Parameter.new(
-            name: 'return',
-            resource: FHIR::Bundle.new(
-              type: 'transaction',
-              entry: [] # no measure reports
-            )
-          )
-        end
-      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url, measure_url],
+                                                       bundle_count: patient_id_list.length)
 
       stub_request(
         :post, "#{url}/Measure/$collect-data"
@@ -364,7 +355,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
       parameters_request = create_parameters_request(
         measure_urls:, period_start:, period_end:, patient_id_list:
       )
-      parameters_response = create_parameters_response(measure_urls:, patient_ids: patient_id_list)
+      parameters_response = create_parameters_response(measure_urls:, bundle_count: patient_id_list.length)
 
       stub_request(:post, "#{url}/Measure/$collect-data").with(
         body: parameters_request.to_json,
@@ -385,26 +376,8 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
       parameters_request = create_parameters_request(
         measure_urls:, period_start:, period_end:, patient_id_list:
       )
-      parameters_response = FHIR::Parameters.new(
-        parameter: patient_id_list.map do
-          FHIR::Parameters::Parameter.new(
-            name: 'return',
-            resource: FHIR::Bundle.new(
-              type: 'transaction',
-              entry: [
-                {
-                  resource: FHIR::MeasureReport.new(
-                    status: 'complete',
-                    type: 'data-collection',
-                    measure: measure_url,
-                    period: { start: period_start, end: period_end }
-                  )
-                }
-              ]
-            )
-          )
-        end
-      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url],
+                                                       bundle_count: patient_id_list.length)
 
       stub_request(
         :post, "#{url}/Measure/$collect-data"
