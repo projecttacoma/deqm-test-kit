@@ -32,6 +32,13 @@
       "value": "2d526118-fb1d-44c0-9b0b-b8f6d4f2b4fb"
     },
     {
+      "name": "patient_ids",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "f6dafa7e-15a9-4fec-baea-59d43201caf8, c58acff5-248b-49c9-b18d-69e4a84a08d9"
+    },
+    {
       "name": "data_endpoint",
       "description": "",
       "title": "",

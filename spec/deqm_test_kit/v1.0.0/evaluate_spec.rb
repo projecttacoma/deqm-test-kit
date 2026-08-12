@@ -12,34 +12,52 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
   # Helper method to create a valid Parameters resource
-  def create_parameters_response(measure_urls:) # rubocop:disable Metrics/MethodLength
+  def create_parameters_response(measure_urls:, bundle_count: 1, report_type: 'summary') # rubocop:disable Metrics/MethodLength
     measure_reports = measure_urls.map do |url|
       FHIR::MeasureReport.new(
-        status: 'complete', type: 'summary',
+        status: 'complete', type: report_type,
         measure: url,
         period: { start: '2019-01-01', end: '2019-12-31' }
       )
     end
 
-    bundle = FHIR::Bundle.new(type: 'transaction', entry: measure_reports.map { |mr| { resource: mr } })
+    bundles = bundle_count.times.map do
+      FHIR::Bundle.new(type: 'transaction', entry: measure_reports.map { |mr| { resource: mr } })
+    end
 
-    FHIR::Parameters.new(parameter:
+    FHIR::Parameters.new(parameter: bundles.map do |bundle|
       {
         name: 'return',
         resource: bundle
-      })
+      }
+    end)
   end
 
-  def create_parameters_request(measure_urls:, period_start:, period_end:)
-    parameters = measure_urls.map { |measure_url| { name: 'measureUrl', valueCanonical: measure_url } }
-    parameters << { name: 'periodStart', valueDate: period_start }
-    parameters << { name: 'periodEnd', valueDate: period_end }
+  # rubocop:disable Metrics/MethodLength
+  def create_parameters_request(options)
+    parameters = options[:measure_urls].map { |measure_url| { name: 'measureUrl', valueCanonical: measure_url } }
+    if options[:patient_id_list]
+      parameters << {
+        name: 'subjectGroup',
+        resource: {
+          resourceType: 'Group',
+          id: 'test-group-subjectGroup',
+          type: 'person',
+          actual: true,
+          member: options[:patient_id_list].map { |patient_id| { entity: { reference: "Patient/#{patient_id}" } } }
+        }
+      }
+    end
+    parameters << { name: 'periodStart', valueDate: options[:period_start] }
+    parameters << { name: 'periodEnd', valueDate: options[:period_end] }
+    parameters << { name: 'reportType', valueCode: options[:report_type] } if options[:report_type]
 
     {
       resourceType: 'Parameters',
       parameter: parameters
     }
   end
+  # rubocop:enable Metrics/MethodLength
 
   def run(runnable, inputs = {})
     test_run_params = { test_session_id: test_session.id }.merge(runnable.reference_hash)
@@ -168,6 +186,215 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
       ).to_return(status: 200, body: parameters_response.to_json, headers: {})
 
       result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'POST Measure/$evaluate with one measureUrl and subjectGroup' do
+    let(:test) { test_by_id(group, 'evaluate-one-measure-summary-post-subject-group') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:patient_ids) { 'patient-1, patient-2' }
+
+    it 'passes with correct FHIR Parameters resource returned' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url])
+
+      stub_request(
+        :post,
+        "#{url}/Measure/$evaluate"
+      ).with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'fails if result has incorrect number of measure reports' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url, measure_url])
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+
+    it 'fails if result has incorrect number of bundles' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url], bundle_count: 2)
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+  end
+
+  describe 'POST Measure/$evaluate with two measureUrls and subjectGroup' do
+    let(:test) { test_by_id(group, 'evaluate-two-measure-summary-post-subject-group') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:patient_ids) { 'patient-1, patient-2' }
+
+    it 'passes with correct FHIR Parameters resource returned' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls:)
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'fails if result has incorrect number of measure reports' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls: [measure_url])
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+
+    it 'fails if result has incorrect number of bundles' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:
+      )
+      parameters_response = create_parameters_response(measure_urls:, bundle_count: 2)
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('fail')
+    end
+  end
+
+  describe 'POST Measure/$evaluate with one measureUrl, subjectGroup, and reportType=individual' do
+    let(:test) { test_by_id(group, 'evaluate-one-measure-individual-post-subject-group') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:patient_ids) { 'patient-1, patient-2' }
+
+    it 'passes with correct FHIR Parameters resource returned' do
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls: [measure_url], period_start:, period_end:, patient_id_list:, report_type: 'individual'
+      )
+      parameters_response = create_parameters_response(
+        measure_urls: [measure_url], bundle_count: patient_id_list.length, report_type: 'individual'
+      )
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(
+        status: 200, body: parameters_response.to_json, headers: {}
+      )
+
+      result = run(test, url:, measure_url:, period_start:, period_end:, patient_ids:)
+      expect(result.result).to eq('pass')
+    end
+  end
+
+  describe 'POST Measure/$evaluate with two measureUrls, subjectGroup, and reportType=individual' do
+    let(:test) { test_by_id(group, 'evaluate-two-measure-individual-post-subject-group') }
+    let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
+    let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
+    let(:period_start) { '2019-01-01' }
+    let(:period_end) { '2019-12-31' }
+    let(:patient_ids) { 'patient-1, patient-2' }
+
+    it 'passes with correct FHIR Parameters resource returned' do
+      measure_urls = [measure_url, additional_measure_url]
+      patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+      parameters_request = create_parameters_request(
+        measure_urls:, period_start:, period_end:, patient_id_list:, report_type: 'individual'
+      )
+      parameters_response = create_parameters_response(
+        measure_urls:, bundle_count: patient_id_list.length, report_type: 'individual'
+      )
+
+      stub_request(:post, "#{url}/Measure/$evaluate").with(
+        body: parameters_request.to_json,
+        headers: {
+          'Content-Type' => 'application/fhir+json',
+          'Origin' => 'http://example.com/fhir',
+          'Referrer' => 'http://example.com/fhir'
+        }
+      ).to_return(
+        status: 200, body: parameters_response.to_json, headers: {}
+      )
+
+      result = run(test, url:, measure_url:, additional_measure_url:, period_start:, period_end:, patient_ids:)
       expect(result.result).to eq('pass')
     end
   end
