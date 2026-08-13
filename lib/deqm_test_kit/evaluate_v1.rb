@@ -35,33 +35,61 @@ module DEQMTestKit
         ]
       end
 
-      def evaluate_request_body(period_start:, period_end:, measure_urls:) # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/MethodLength
+      def evaluate_request_body(options)
+        parameters = options[:measure_urls].map do |url|
+          {
+            name: 'measureUrl',
+            valueCanonical: url
+          }
+        end
+
+        if options[:patient_id_list]
+          parameters << {
+            name: 'subjectGroup',
+            resource: {
+              resourceType: 'Group',
+              id: 'test-group-subjectGroup',
+              type: 'person',
+              actual: true,
+              member: options[:patient_id_list].map do |patient_id|
+                { entity: { reference: "Patient/#{patient_id}" } }
+              end
+            }
+          }
+        end
+
+        parameters << {
+          name: 'periodStart',
+          valueDate: options[:period_start]
+        }
+
+        parameters << {
+          name: 'periodEnd',
+          valueDate: options[:period_end]
+        }
+
+        if options[:report_type]
+          parameters << {
+            name: 'reportType',
+            valueCode: options[:report_type]
+          }
+        end
+
         {
           resourceType: 'Parameters',
-          parameter: [
-            *measure_urls.map do |url|
-              {
-                name: 'measureUrl',
-                valueCanonical: url
-              }
-            end,
-            {
-              name: 'periodStart',
-              valueDate: period_start
-            },
-            {
-              name: 'periodEnd',
-              valueDate: period_end
-            }
-          ]
+          parameter: parameters
         }
       end
+      # rubocop:enable Metrics/MethodLength
 
-      def validate_parameters_contains_bundles(parameters, measure_count)
-        assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
-        assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
-
-        parameters.parameter.each do |param|
+      def validate_parameters_contains_bundles(parameters, measure_count, bundle_count = nil)
+        parameter = parameters.parameter
+        assert parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
+        assert parameter.any?, 'Expected at least one parameter entry in Parameters resource'
+        assert bundle_count.nil? || parameter.length == bundle_count,
+               "Expected #{bundle_count} Bundle(s), got #{parameter.length}"
+        parameter.each do |param|
           assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
           validate_bundles_contain_measure_report(param.resource, measure_count)
         end
@@ -74,6 +102,15 @@ module DEQMTestKit
         measure_reports = bundle.entry.map(&:resource).grep(FHIR::MeasureReport)
         assert measure_reports.length == measure_count,
                "Expected #{measure_count} MeasureReport(s), got #{measure_reports.length}"
+      end
+
+      def validate_measure_reports_have_type(parameters, report_type)
+        measure_reports = parameters.parameter.flat_map do |param|
+          param.resource.entry.map(&:resource).grep(FHIR::MeasureReport)
+        end
+
+        assert measure_reports.all? { |measure_report| measure_report.type == report_type },
+               "Expected all MeasureReports to have type #{report_type}"
       end
     end
 
@@ -241,6 +278,156 @@ module DEQMTestKit
 
         parameters = result.resource
         validate_parameters_contains_bundles(parameters, 2)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with one measureUrl, periodStart, periodEnd, and subjectGroup'
+      id 'evaluate-one-measure-summary-post-subject-group'
+      description %(POST Measure/$evaluate with one measureUrl, periodStart, periodEnd, and subjectGroup
+      returns 200 and a FHIR Parameters resource containing one Bundle with one summary MeasureReport.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_ids,
+            title: 'Patient IDs',
+            description: 'Enter a comma-delimited list of patient IDs.'
+
+      run do
+        patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+        body = evaluate_request_body(
+          period_start: period_start,
+          period_end: period_end,
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url)],
+          patient_id_list: patient_id_list
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters, 1, 1)
+        validate_measure_reports_have_type(parameters, 'summary')
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with two measureUrls, periodStart, periodEnd, and subjectGroup'
+      id 'evaluate-two-measure-summary-post-subject-group'
+      description %(POST Measure/$evaluate with two measureUrls, periodStart, periodEnd, and subjectGroup
+      returns 200 and a FHIR Parameters resource containing one Bundle with two summary MeasureReports.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_ids,
+            title: 'Patient IDs',
+            description: 'Enter a comma-delimited list of patient IDs.'
+
+      run do
+        patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+        body = evaluate_request_body(
+          period_start: period_start,
+          period_end: period_end,
+          measure_urls: selected_measure_urls,
+          patient_id_list: patient_id_list
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters, 2, 1)
+        validate_measure_reports_have_type(parameters, 'summary')
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with one measureUrl, subjectGroup, and reportType=individual'
+      id 'evaluate-one-measure-individual-post-subject-group'
+      description %(POST Measure/$evaluate with one measureUrl, periodStart, periodEnd, subjectGroup, and
+      reportType=individual returns 200 and one Bundle per Group member with one individual MeasureReport.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_ids,
+            title: 'Patient IDs',
+            description: 'Enter a comma-delimited list of patient IDs.'
+
+      run do
+        patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+        body = evaluate_request_body(
+          period_start: period_start,
+          period_end: period_end,
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url)],
+          patient_id_list: patient_id_list,
+          report_type: 'individual'
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters, 1, patient_id_list.length)
+        validate_measure_reports_have_type(parameters, 'individual')
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with two measureUrls, subjectGroup, and reportType=individual'
+      id 'evaluate-two-measure-individual-post-subject-group'
+      description %(POST Measure/$evaluate with two measureUrls, periodStart, periodEnd, subjectGroup, and
+      reportType=individual returns 200 and one Bundle per Group member with two individual MeasureReports.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_ids,
+            title: 'Patient IDs',
+            description: 'Enter a comma-delimited list of patient IDs.'
+
+      run do
+        patient_id_list = patient_ids.split(',').map(&:strip).reject(&:empty?)
+        body = evaluate_request_body(
+          period_start: period_start,
+          period_end: period_end,
+          measure_urls: selected_measure_urls,
+          patient_id_list: patient_id_list,
+          report_type: 'individual'
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+        validate_parameters_contains_bundles(parameters, 2, patient_id_list.length)
+        validate_measure_reports_have_type(parameters, 'individual')
       end
     end
 
