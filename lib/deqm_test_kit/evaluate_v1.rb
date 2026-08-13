@@ -83,19 +83,16 @@ module DEQMTestKit
       end
       # rubocop:enable Metrics/MethodLength
 
-      def validate_parameters_contains_bundles(parameters, measure_count)
-        assert parameters.parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
-        assert parameters.parameter.any?, 'Expected at least one parameter entry in Parameters resource'
-
-        parameters.parameter.each do |param|
+      def validate_parameters_contains_bundles(parameters, measure_count, bundle_count = nil)
+        parameter = parameters.parameter
+        assert parameter.is_a?(Array), 'Expected Parameters.parameter to be an array'
+        assert parameter.any?, 'Expected at least one parameter entry in Parameters resource'
+        assert bundle_count.nil? || parameter.length == bundle_count,
+               "Expected #{bundle_count} Bundle(s), got #{parameter.length}"
+        parameter.each do |param|
           assert param.resource.is_a?(FHIR::Bundle), 'Expected parameter.resource to be a Bundle'
           validate_bundles_contain_measure_report(param.resource, measure_count)
         end
-      end
-
-      def validate_number_of_bundles(parameters, bundle_count)
-        assert parameters.parameter.length == bundle_count,
-               "Expected #{bundle_count} Bundle(s), got #{parameters.parameter.length}"
       end
 
       def validate_bundles_contain_measure_report(bundle, measure_count)
@@ -315,8 +312,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 1)
-        validate_number_of_bundles(parameters, 1)
+        validate_parameters_contains_bundles(parameters, 1, 1)
         validate_measure_reports_have_type(parameters, 'summary')
       end
     end
@@ -354,8 +350,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 2)
-        validate_number_of_bundles(parameters, 1)
+        validate_parameters_contains_bundles(parameters, 2, 1)
         validate_measure_reports_have_type(parameters, 'summary')
       end
     end
@@ -392,8 +387,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 1)
-        validate_number_of_bundles(parameters, patient_id_list.length)
+        validate_parameters_contains_bundles(parameters, 1, patient_id_list.length)
         validate_measure_reports_have_type(parameters, 'individual')
       end
     end
@@ -432,8 +426,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 2)
-        validate_number_of_bundles(parameters, patient_id_list.length)
+        validate_parameters_contains_bundles(parameters, 2, patient_id_list.length)
         validate_measure_reports_have_type(parameters, 'individual')
       end
     end
