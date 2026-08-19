@@ -62,7 +62,14 @@ module DEQMTestKit
         if options[:patient_id]
           parameters << {
             name: 'subject',
-            valueString: "Patient/#{patient_id}"
+            valueString: "Patient/#{options[:patient_id]}"
+          }
+        end
+
+        if options[:group_id]
+          parameters << {
+            name: 'subject',
+            valueString: "Group/#{options[:group_id]}"
           }
         end
 
@@ -189,7 +196,7 @@ module DEQMTestKit
 
         parameters = result.resource
 
-        validate_parameters_contains_bundles(parameters, 1, 'summary')
+        validate_parameters_contains_bundles(parameters, 1, 'summary', 1)
       end
     end
 
@@ -218,7 +225,7 @@ module DEQMTestKit
         resource to be a Parameters resource, but got #{result.resource&.class}"
 
         parameters = result.resource
-        validate_parameters_contains_bundles(parameters, 1, 'summary')
+        validate_parameters_contains_bundles(parameters, 1, 'summary', 1)
       end
     end
 
@@ -289,6 +296,7 @@ module DEQMTestKit
       end
     end
 
+    # SUBJECT PATIENT REFERENCE
     test do
       include MeasureEvaluationHelpers
 
@@ -354,6 +362,40 @@ module DEQMTestKit
         parameters = result.resource
 
         validate_parameters_contains_bundles(parameters, 1, 'individual', 1)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with one measureUrl, subject Patient reference, and reportType=summary'
+      id 'evaluate-one-measure-summary-post-subject-patient'
+      description %(POST Measure/$evaluate with measureUrl, periodStart, periodEnd, subject=Patient/patientId, and
+      reportType=summary returns 200 and FHIR parameters resource that contains one FHIR bundle with a summary report.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :patient_id, title: 'Patient ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url)],
+          period_start: period_start,
+          period_end: period_end,
+          patient_id: patient_id,
+          report_type: 'summary'
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 1, 'summary', 1)
       end
     end
 
@@ -427,6 +469,188 @@ module DEQMTestKit
       end
     end
 
+    # SUBJECT GROUP REFERENCE
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'GET Measure/$evaluate with one measureUrl, required params, and subject Group reference (default
+      reportType=summary)'
+      id 'evaluate-one-measure-get-subject-group-reference'
+      description %(GET Measure/$evaluate with measureUrl, periodStart, periodEnd, and subject=Group/groupId
+      returns 200 and a FHIR Parameters resource containing exactly one FHIR Bundle.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url)],
+          period_start: period_start,
+          period_end: period_end,
+          group_id: group_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', operation_method: :get, body: FHIR::Parameters.new(body))
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 1, 'summary', 1)
+      end
+    end
+
+    test do
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with one measureUrl, required params, and subject Group reference (default
+      reportType=summary)'
+      id 'evaluate-one-measure-post-subject-group-reference'
+      description %(POST Measure/$evaluate with measureUrl, periodStart, periodEnd, and subject=Group/groupId
+      returns 200 and a FHIR Parameters resource containing exactly one FHIR Bundle.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url)],
+          period_start: period_start,
+          period_end: period_end,
+          group_id: group_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 1, 'summary', 1)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with one measureUrl, subject Group reference, and reportType=individual'
+      id 'evaluate-one-measure-individual-post-subject-group-reference'
+      description %(POST Measure/$evaluate with measureUrl, periodStart, periodEnd, subject=Group/groupId,
+      and reportType=individual returns 200 and a FHIR Parameters resource that contains a FHIR Bundle with
+      an individual report for each patient in the group.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        fhir_read(:group, group_id)
+        assert_response_status(200)
+        assert_resource_type(:group)
+        group_member_count = resource.member&.length
+
+        body = evaluate_request_body(
+          measure_urls: [selected_measure_url(custom_url: custom_measure_url, url: measure_url)],
+          period_start: period_start,
+          period_end: period_end,
+          group_id: group_id,
+          report_type: 'individual'
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 1, 'individual', group_member_count)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'GET Measure/$evaluate with two measureUrls, required params, and subject Group reference (default
+      reportType=summary)'
+      id 'evaluate-two-measure-get-subject-group-reference'
+      description %(GET Measure/$evaluate with two measureUrls, periodStart, periodEnd, and subject=Group/groupId
+      returns 200 and a FHIR Parameters resource containing exactly one FHIR Bundle.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: selected_measure_urls,
+          period_start: period_start,
+          period_end: period_end,
+          group_id: group_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', operation_method: :get, body: FHIR::Parameters.new(body))
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 2, 'summary', 1)
+      end
+    end
+
+    test do # rubocop:disable Metrics/BlockLength
+      include MeasureEvaluationHelpers
+
+      title 'POST Measure/$evaluate with two measureUrls, required params, and subject Group reference (default
+      reportType=summary)'
+      id 'evaluate-two-measure-post-subject-group-reference'
+      description %(POST Measure/$evaluate with two measureUrls, periodStart, periodEnd, and subject=Group/groupId
+      returns 200 and a FHIR Parameters resource containing exactly one FHIR Bundle.)
+
+      input :measure_url, **measure_url_args
+      input :custom_measure_url, **custom_measure_url_args
+      input :additional_measure_url, **additional_measure_args
+      input :custom_additional_measure_url, **custom_additional_measure_url_args
+      input :period_start, title: 'Measurement Period Start', default: '2026-01-01'
+      input :period_end, title: 'Measurement Period End', default: '2026-12-31'
+      input :group_id, title: 'Group ID'
+
+      run do
+        body = evaluate_request_body(
+          measure_urls: selected_measure_urls,
+          period_start: period_start,
+          period_end: period_end,
+          group_id: group_id
+        )
+
+        result = fhir_operation('/Measure/$evaluate', body: body)
+        assert_response_status(200)
+        assert result.resource.is_a?(FHIR::Parameters), "Expected
+        resource to be a Parameters resource, but got #{result.resource&.class}"
+
+        parameters = result.resource
+
+        validate_parameters_contains_bundles(parameters, 2, 'summary', 1)
+      end
+    end
+
+    # SUBJECTGROUP
     test do # rubocop:disable Metrics/BlockLength
       include MeasureEvaluationHelpers
 
