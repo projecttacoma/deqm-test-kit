@@ -4,7 +4,7 @@ require 'json'
 require_relative '../utils/collect_data_utils'
 
 module DEQMTestKit
-  # tests for $collect-data (DEQM UV v5.0.0)
+  # tests for $collect-data (DEQM v5.0.0)
   # rubocop:disable Metrics/ClassLength
   class CollectDataV5 < Inferno::TestGroup
     id :collect_data_v5
