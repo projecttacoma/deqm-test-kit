@@ -5,6 +5,7 @@ require_relative '../measure_availability'
 require_relative '../data_requirements'
 require_relative '../fhir_queries'
 require_relative '../evaluate'
+require_relative '../collect_data_v5'
 require_relative '../submit_data_v5'
 
 module DEQMTestKit
@@ -53,6 +54,7 @@ module DEQMTestKit
             }
       group from: :patient_everything
       group from: :submit_data_v5
+      group from: :collect_data_v5
     end
   end
 end

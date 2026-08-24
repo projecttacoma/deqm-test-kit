@@ -6,11 +6,12 @@ module DEQMTestKit
   # Helpers shared by $collect-data specs
   module CollectDataSpecUtils
     # rubocop:disable Metrics/MethodLength
-    def create_parameters_response(measure_urls:, bundle_count: 1)
-      measure_reports = measure_urls.map do |url|
+    def create_parameters_response(measure_urls: nil, measure_ids: nil, bundle_count: 1)
+      measures = measure_ids || measure_urls
+      measure_reports = measures.map do |measure|
         FHIR::MeasureReport.new(
           status: 'complete', type: 'data-collection',
-          measure: url,
+          measure: measure,
           period: { start: '2019-01-01', end: '2019-12-31' }
         )
       end
@@ -27,8 +28,14 @@ module DEQMTestKit
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     def create_parameters_request(options)
-      parameters = options[:measure_urls].map do |measure_url|
-        { name: 'measureUrl', valueCanonical: measure_url }
+      measure_name, measure_value_name, measures =
+        if options[:measure_ids]
+          ['measureId', :valueId, options[:measure_ids]]
+        else
+          ['measureUrl', :valueCanonical, options[:measure_urls]]
+        end
+      parameters = measures.map do |measure|
+        { name: measure_name, measure_value_name => measure }
       end
       parameters << { name: 'subject', valueString: "Patient/#{options[:patient_id]}" } if options[:patient_id]
       if options[:patient_id_list]

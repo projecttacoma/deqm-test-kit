@@ -5,6 +5,16 @@ require 'json'
 module DEQMTestKit
   # Utility functions in support of the collect-data test groups
   module CollectDataUtils
+    def selected_measure_id(custom_id:, id:, input_title: 'Measure ID', custom_input_title: 'Custom Measure ID')
+      return id unless id == 'Other'
+
+      custom_id = custom_id.to_s.strip
+      assert custom_id.length.positive?,
+             "#{custom_input_title} is required when \"#{input_title}\" is \"Other\"."
+
+      custom_id
+    end
+
     def selected_measure_url(custom_url:, url:, input_title: 'Measure URL',
                              custom_input_title: 'Custom Measure URL')
       return url unless url == 'Other'
@@ -59,10 +69,17 @@ module DEQMTestKit
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def collect_data_body(options)
-      parameters = options[:measure_urls].map do |url|
+      measure_parameter_name, measure_value_name, measures =
+        if options[:measure_ids]
+          ['measureId', :valueId, options[:measure_ids]]
+        else
+          ['measureUrl', :valueCanonical, options[:measure_urls]]
+        end
+
+      parameters = measures.map do |measure|
         {
-          name: 'measureUrl',
-          valueCanonical: url
+          name: measure_parameter_name,
+          measure_value_name => measure
         }
       end
 
