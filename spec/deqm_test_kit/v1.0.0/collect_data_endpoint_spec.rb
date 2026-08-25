@@ -6,7 +6,7 @@ RSpec.describe DEQMTestKit::CollectDataEndpointV1 do
   include DEQMTestKit::CollectDataSpecUtils
 
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v100') }
-  let(:group) { suite.groups[3] }
+  let(:group) { suite.groups[2].groups[3] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }

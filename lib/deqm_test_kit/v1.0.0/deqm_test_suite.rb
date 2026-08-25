@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 require_relative '../evaluate_v1'
+require_relative '../evaluate_v1_subject'
+require_relative '../evaluate_v1_subject_group'
 require_relative '../collect_data_v1'
+require_relative '../collect_data_v1_subject'
+require_relative '../collect_data_v1_subject_group'
 require_relative '../collect_data_endpoint_v1'
 
 module DEQMTestKit
@@ -40,9 +44,34 @@ module DEQMTestKit
         end
       end
 
-      group from: :evaluate_v1
-      group from: :collect_data_v1
-      group from: :collect_data_endpoint_v1
+      group do
+        id :evaluate
+        title '$evaluate Operation'
+
+        group from: :evaluate_v1,
+              title: '$evaluate'
+
+        group from: :evaluate_v1_subject,
+              title: '$evaluate with subject'
+
+        group from: :evaluate_v1_subjectGroup,
+              title: '$evaluate with subjectGroup'
+      end
+      group do
+        id :collect_data
+        title '$collect-data Operation'
+
+        group from: :collect_data_v1,
+              title: '$collect-data'
+
+        group from: :collect_data_v1_subject,
+              title: '$collect-data with subject'
+
+        group from: :collect_data_v1_subjectGroup,
+              title: '$collect-data with subjectGroup'
+
+        group from: :collect_data_endpoint_v1
+      end
     end
   end
 end
