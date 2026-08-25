@@ -5,9 +5,11 @@ INVALID_PATIENT_ID = 'INVALID_PATIENT_ID'
 INVALID_REPORT_TYPE = 'INVALID_REPORT_TYPE'
 INVALID_START_DATE = 'INVALID_START_DATE'
 
-RSpec.describe DEQMTestKit::Evaluate do
+RSpec.describe DEQMTestKit::EvaluateV5 do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v500') }
-  let(:group) { suite.groups[4] }
+  let(:evaluate_group) { suite.groups[4] }
+  let(:base_tests) { evaluate_group.groups[0] }
+  let(:subject_tests) { evaluate_group.groups[1] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
@@ -34,7 +36,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate with reportType=population' do
-    let(:test) { test_by_id(group, 'evaluate-id-path-population') }
+    let(:test) { test_by_id(base_tests, 'evaluate-id-path-population') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -102,7 +104,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate with reportType=population' do
-    let(:test) { test_by_id(group, 'evaluate-population') }
+    let(:test) { test_by_id(base_tests, 'evaluate-population') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -130,7 +132,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate with reportType=subject' do
-    let(:test) { test_by_id(group, 'evaluate-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-subject-patient') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -159,7 +161,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate output with multiple measures using Measure/$evaluate' do
-    let(:test) { test_by_id(group, 'evaluate-multiple-measure-population') }
+    let(:test) { test_by_id(base_tests, 'evaluate-multiple-measure-population') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:additional_measures) { ['measure-EXM124-7.3.000'] }
     let(:period_start) { '2019-01-01' }
@@ -222,7 +224,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe '$evaluate output with multiple measures using Measure/$evaluate and reportType=subject' do
-    let(:test) { test_by_id(group, 'evaluate-multiple-measure-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-multiple-measure-subject-patient') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:additional_measures) { ['measure-EXM124-7.3.000'] }
     let(:patient_id) { 'numer-EXM130' }
@@ -291,7 +293,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   ## TODO: write test for subjectGroup
 
   describe 'Measure/$evaluate with reportType=subject and subject Group reference' do
-    let(:test) { test_by_id(group, 'evaluate-subject-group-reference-subject') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-subject-group-reference-subject') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:group_id) { 'numer-EXM130' }
     let(:group_subjects) { '1' }
@@ -321,7 +323,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate reportType=subject fails for invalid measure id' do
-    let(:test) { test_by_id(group, 'evaluate-invalid-measureid-subject') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-invalid-measureid-subject') }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -367,7 +369,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate fails for invalid measure ID' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-path-invalid-measureid') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-measureid-path-invalid-measureid') }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -398,7 +400,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate reportType=subject fails for invalid patient ID' do
-    let(:test) { test_by_id(group, 'evaluate-invalid-patientid-subject-body') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-invalid-patientid-subject-body') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -444,7 +446,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate reportType=subject fails for invalid patient ID' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-path-invalid-patientid') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-measureid-path-invalid-patientid') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -487,7 +489,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate fails for missing subject query parameter (subject report type)' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-path-missing-subject-param') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-measureid-path-missing-subject-param') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -515,7 +517,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate reportType=subject fails for invalid reportType' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-path-invalid-reporttype') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-measureid-path-invalid-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:params) do
@@ -559,7 +561,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate reportType=subject fails for invalid reportType' do
-    let(:test) { test_by_id(group, 'evaluate-body-invalid-reporttype') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-body-invalid-reporttype') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -587,7 +589,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/[id]/$evaluate reportType=subject fails for missing periodEnd parameter in input' do
-    let(:test) { test_by_id(group, 'evaluate-measureid-path-missing-periodend') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-measureid-path-missing-periodend') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
@@ -606,7 +608,7 @@ RSpec.describe DEQMTestKit::Evaluate do
   end
 
   describe 'Measure/$evaluate reportType=subject fails for missing periodEnd parameter' do
-    let(:test) { test_by_id(group, 'evaluate-body-missing-periodend') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-body-missing-periodend') }
     let(:measure_id) { 'measure-EXM130-7.3.000' }
     let(:patient_id) { 'numer-EXM130' }
     let(:period_start) { '2019-01-01' }
