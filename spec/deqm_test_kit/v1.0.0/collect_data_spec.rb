@@ -9,14 +9,17 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   include DEQMTestKit::CollectDataSpecUtils
 
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v100') }
-  let(:group) { suite.groups[2] }
+  let(:collect_data_group) { suite.groups[2] }
+  let(:base_tests) { collect_data_group.groups[0] }
+  let(:subject_tests) { collect_data_group.groups[1] }
+  let(:subject_group_tests) { collect_data_group.groups[2] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
   let(:error_outcome) { FHIR::OperationOutcome.new(issue: [{ severity: 'error' }]) }
 
   describe 'GET Measure/$collect-data with one measureUrl and required params' do
-    let(:test) { test_by_id(group, 'collect-data-one-measure-get') }
+    let(:test) { test_by_id(base_tests, 'collect-data-one-measure-get') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -46,7 +49,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data with one measureUrl and required params' do
-    let(:test) { test_by_id(group, 'collect-data-one-measure-post') }
+    let(:test) { test_by_id(base_tests, 'collect-data-one-measure-post') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -73,7 +76,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'GET Measure/$collect-data with two measureUrls and required params' do
-    let(:test) { test_by_id(group, 'collect-data-two-measure-get') }
+    let(:test) { test_by_id(base_tests, 'collect-data-two-measure-get') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -106,7 +109,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data with two measureUrls and required params' do
-    let(:test) { test_by_id(group, 'collect-data-two-measure-post') }
+    let(:test) { test_by_id(base_tests, 'collect-data-two-measure-post') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -138,7 +141,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'GET Measure/$collect-data with one measureUrl and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'collect-data-one-measure-get-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'collect-data-one-measure-get-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -170,7 +173,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data with one measureUrl and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'collect-data-one-measure-post-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'collect-data-one-measure-post-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -199,7 +202,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'GET Measure/$collect-data with two measureUrls and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'collect-data-two-measure-get-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'collect-data-two-measure-get-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -234,7 +237,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data with two measureUrls and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'collect-data-two-measure-post-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'collect-data-two-measure-post-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -264,7 +267,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data with one measureUrl and subjectGroup' do
-    let(:test) { test_by_id(group, 'collect-data-one-measure-post-subject-group') }
+    let(:test) { test_by_id(subject_group_tests, 'collect-data-one-measure-post-subject-group') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -342,7 +345,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data with two measureUrls and subjectGroup' do
-    let(:test) { test_by_id(group, 'collect-data-two-measures-post-subject-group') }
+    let(:test) { test_by_id(subject_group_tests, 'collect-data-two-measures-post-subject-group') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -419,7 +422,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'GET Measure/$collect-data missing periodEnd' do
-    let(:test) { test_by_id(group, 'collect-data-missing-period-end-get-fail') }
+    let(:test) { test_by_id(base_tests, 'collect-data-missing-period-end-get-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
 
@@ -446,7 +449,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data missing periodEnd' do
-    let(:test) { test_by_id(group, 'collect-data-missing-period-end-post-fail') }
+    let(:test) { test_by_id(base_tests, 'collect-data-missing-period-end-post-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
 
@@ -478,7 +481,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'GET Measure/$collect-data missing periodStart' do
-    let(:test) { test_by_id(group, 'collect-data-missing-period-start-get-fail') }
+    let(:test) { test_by_id(base_tests, 'collect-data-missing-period-start-get-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_end) { '2019-12-31' }
 
@@ -505,7 +508,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data missing periodStart' do
-    let(:test) { test_by_id(group, 'collect-data-missing-period-start-post-fail') }
+    let(:test) { test_by_id(base_tests, 'collect-data-missing-period-start-post-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_end) { '2019-12-31' }
 
@@ -537,7 +540,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'GET Measure/$collect-data missing measureUrl' do
-    let(:test) { test_by_id(group, 'collect-data-missing-measure-url-get-fail') }
+    let(:test) { test_by_id(base_tests, 'collect-data-missing-measure-url-get-fail') }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
@@ -564,7 +567,7 @@ RSpec.describe DEQMTestKit::CollectDataV1 do
   end
 
   describe 'POST Measure/$collect-data missing measureUrl' do
-    let(:test) { test_by_id(group, 'collect-data-missing-measure-url-post-fail') }
+    let(:test) { test_by_id(base_tests, 'collect-data-missing-measure-url-post-fail') }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 

@@ -4,8 +4,12 @@ require_relative '../patient_everything'
 require_relative '../measure_availability'
 require_relative '../data_requirements'
 require_relative '../fhir_queries'
-require_relative '../evaluate'
+require_relative '../evaluate_v5'
+require_relative '../evaluate_v5_subject_group'
+require_relative '../evaluate_v5_subject'
 require_relative '../collect_data_v5'
+require_relative '../collect_data_v5_subject'
+require_relative '../collect_data_v5_subject_group'
 require_relative '../submit_data_v5'
 
 module DEQMTestKit
@@ -47,14 +51,43 @@ module DEQMTestKit
       group from: :measure_availability
       group from: :data_requirements
       group from: :fhir_queries
-      group from: :evaluate,
-            title: '$evaluate Operation',
-            config: {
-              options: { endpoint_name: 'evaluate' }
-            }
+      group do
+        id :evaluate
+        title '$evaluate Operation'
+
+        group from: :evaluate_v5,
+              title: '$evaluate',
+              config: {
+                options: { endpoint_name: 'evaluate' }
+              }
+
+        group from: :evaluate_v5_subject,
+              title: '$evaluate with subject',
+              config: {
+                options: { endpoint_name: 'evaluate' }
+              }
+
+        group from: :evaluate_v5_subjectGroup,
+              title: '$evaluate with subjectGroup',
+              config: {
+                options: { endpoint_name: 'evaluate' }
+              }
+      end
       group from: :patient_everything
       group from: :submit_data_v5
-      group from: :collect_data_v5
+      group do
+        id :collect_data
+        title '$collect-data Operation'
+
+        group from: :collect_data_v5,
+              title: '$collect-data'
+
+        group from: :collect_data_v5_subject,
+              title: '$collect-data with subject'
+
+        group from: :collect_data_v5_subjectGroup,
+              title: '$collect-data with subjectGroup'
+      end
     end
   end
 end

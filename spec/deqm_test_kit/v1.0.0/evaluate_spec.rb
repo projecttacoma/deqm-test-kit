@@ -5,7 +5,10 @@ INVALID_START_DATE = 'INVALID_START_DATE'
 
 RSpec.describe DEQMTestKit::EvaluateV1 do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v100') }
-  let(:group) { suite.groups[1] }
+  let(:evaluate_group) { suite.groups[1] }
+  let(:base_tests) { evaluate_group.groups[0] }
+  let(:subject_tests) { evaluate_group.groups[1] }
+  let(:subject_group_tests) { evaluate_group.groups[2] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
   let(:test_session) { repo_create(:test_session, test_suite_id: suite.id) }
   let(:url) { 'http://example.com/fhir' }
@@ -71,7 +74,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with one measureUrl and required params' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-summary-get') }
+    let(:test) { test_by_id(base_tests, 'evaluate-one-measure-summary-get') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -101,7 +104,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl and required params' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-summary-post') }
+    let(:test) { test_by_id(base_tests, 'evaluate-one-measure-summary-post') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -128,7 +131,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with two measureUrls and required params' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-summary-get') }
+    let(:test) { test_by_id(base_tests, 'evaluate-two-measure-summary-get') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -161,7 +164,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with two measureUrls and required params' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-summary-post') }
+    let(:test) { test_by_id(base_tests, 'evaluate-two-measure-summary-post') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -193,7 +196,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with one measureUrl and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-get-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-one-measure-get-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -222,7 +225,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-post-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-one-measure-post-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -249,7 +252,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl, subject=Patient/patientId, and reportType=summary' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-summary-post-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-one-measure-summary-post-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -276,7 +279,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with two measureUrls and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-get-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-two-measure-get-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -309,7 +312,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with two measureUrls and subject=Patient/patientId' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-post-subject-patient') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-two-measure-post-subject-patient') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -336,7 +339,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with one measureUrl and subject=Group/groupId' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-get-subject-group-reference') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-one-measure-get-subject-group-reference') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -365,7 +368,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl and subject=Group/groupId' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-post-subject-group-reference') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-one-measure-post-subject-group-reference') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -390,7 +393,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl, subject=Group/groupId, and reportType=individual' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-individual-post-subject-group-reference') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-one-measure-individual-post-subject-group-reference') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -428,7 +431,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with two measureUrls and subject=Group/groupId' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-get-subject-group-reference') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-two-measure-get-subject-group-reference') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -461,7 +464,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with two measureUrls and subject=Group/groupId' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-post-subject-group-reference') }
+    let(:test) { test_by_id(subject_tests, 'evaluate-two-measure-post-subject-group-reference') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -488,7 +491,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl and subjectGroup' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-summary-post-subject-group') }
+    let(:test) { test_by_id(subject_group_tests, 'evaluate-one-measure-summary-post-subject-group') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -559,7 +562,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with two measureUrls and subjectGroup' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-summary-post-subject-group') }
+    let(:test) { test_by_id(subject_group_tests, 'evaluate-two-measure-summary-post-subject-group') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -631,7 +634,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with one measureUrl, subjectGroup, and reportType=individual' do
-    let(:test) { test_by_id(group, 'evaluate-one-measure-individual-post-subject-group') }
+    let(:test) { test_by_id(subject_group_tests, 'evaluate-one-measure-individual-post-subject-group') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
@@ -663,7 +666,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with two measureUrls, subjectGroup, and reportType=individual' do
-    let(:test) { test_by_id(group, 'evaluate-two-measure-individual-post-subject-group') }
+    let(:test) { test_by_id(subject_group_tests, 'evaluate-two-measure-individual-post-subject-group') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:additional_measure_url) { 'http://example.com/Measure/measure-EXM124' }
     let(:period_start) { '2019-01-01' }
@@ -697,7 +700,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate missing periodEnd' do
-    let(:test) { test_by_id(group, 'evaluate-missing-period-end-get-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-missing-period-end-get-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
 
@@ -724,7 +727,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate missing periodEnd' do
-    let(:test) { test_by_id(group, 'evaluate-missing-period-end-post-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-missing-period-end-post-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_start) { '2019-01-01' }
 
@@ -756,7 +759,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate missing periodStart' do
-    let(:test) { test_by_id(group, 'evaluate-missing-period-start-get-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-missing-period-start-get-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_end) { '2019-12-31' }
 
@@ -783,7 +786,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate missing periodStart' do
-    let(:test) { test_by_id(group, 'evaluate-missing-period-start-post-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-missing-period-start-post-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:period_end) { '2019-12-31' }
 
@@ -815,7 +818,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate missing measureUrl' do
-    let(:test) { test_by_id(group, 'evaluate-missing-measure-url-get-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-missing-measure-url-get-fail') }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
@@ -842,7 +845,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate missing measureUrl' do
-    let(:test) { test_by_id(group, 'evaluate-missing-measure-url-post-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-missing-measure-url-post-fail') }
     let(:period_start) { '2019-01-01' }
     let(:period_end) { '2019-12-31' }
 
@@ -874,7 +877,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'GET Measure/$evaluate with both subject and subjectGroup' do
-    let(:test) { test_by_id(group, 'evaluate-subject-and-subject-group-get-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-subject-and-subject-group-get-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:patient_id) { 'test-patient' }
     let(:period_start) { '2019-01-01' }
@@ -905,7 +908,7 @@ RSpec.describe DEQMTestKit::EvaluateV1 do
   end
 
   describe 'POST Measure/$evaluate with both subject and subjectGroup' do
-    let(:test) { test_by_id(group, 'evaluate-subject-and-subject-group-post-fail') }
+    let(:test) { test_by_id(base_tests, 'evaluate-subject-and-subject-group-post-fail') }
     let(:measure_url) { 'http://example.com/Measure/measure-EXM130' }
     let(:patient_id) { 'test-patient' }
     let(:period_start) { '2019-01-01' }
