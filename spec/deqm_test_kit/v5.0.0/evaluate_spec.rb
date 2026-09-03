@@ -7,7 +7,7 @@ INVALID_START_DATE = 'INVALID_START_DATE'
 
 RSpec.describe DEQMTestKit::EvaluateV5 do
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v500') }
-  let(:evaluate_group) { suite.groups[4] }
+  let(:evaluate_group) { suite.groups.find { |group| group.id.end_with?('-evaluate') } }
   let(:base_tests) { evaluate_group.groups[0] }
   let(:subject_tests) { evaluate_group.groups[1] }
   let(:session_data_repo) { Inferno::Repositories::SessionData.new }
@@ -54,6 +54,29 @@ RSpec.describe DEQMTestKit::EvaluateV5 do
           'Content-Type' => 'application/fhir+json',
           'Origin' => 'http://example.com/fhir',
           'Referrer' => 'http://example.com/fhir'
+        }
+      )
+        .to_return(status: 200, body: parameters_response.to_json, headers: {})
+
+      result = run(test, url:, measure_id:, patient_id:, period_start:, period_end:)
+      expect(result.result).to eq('pass')
+    end
+
+    it 'uses the SMART access token when one is available' do
+      parameters_response = create_parameters_response('individual')
+      session_data_repo.save(
+        test_session_id: test_session.id,
+        name: :deqm_smart_auth_info,
+        value: { access_token: 'smart-access-token', auth_type: 'public' }.to_json,
+        type: 'auth_info'
+      )
+
+      stub_request(
+        :post,
+        "#{url}/Measure/#{measure_id}/$evaluate"
+      ).with(
+        headers: {
+          'Authorization' => 'Bearer smart-access-token'
         }
       )
         .to_return(status: 200, body: parameters_response.to_json, headers: {})

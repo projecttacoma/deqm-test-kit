@@ -21,12 +21,62 @@ module DEQMTestKit
       description 'A set of tests for v5.0.0 DEQM\'s operations and resources'
 
       input :url
+      input :deqm_smart_auth_info,
+            title: 'SMART Backend Services Credentials',
+            description: 'Credentials used to obtain and refresh a SMART Backend Services access token.',
+            type: :auth_info,
+            optional: true,
+            options: {
+              mode: 'auth',
+              components: [
+                {
+                  name: :auth_type,
+                  default: 'backend_services',
+                  locked: true
+                },
+                {
+                  name: :requested_scopes,
+                  default: 'system/*.cruds'
+                },
+                {
+                  name: :use_discovery,
+                  locked: true
+                }
+              ]
+            }
 
       fhir_client do
         url :url
         headers origin: url.to_s,
                 referrer: url.to_s,
                 'Content-Type': 'application/fhir+json'
+      end
+
+      group do
+        id :smart_authorization
+        title 'SMART Backend Services Authorization'
+        description 'Discover SMART endpoints and obtain a client-credentials access token for DEQM requests.'
+        run_as_group
+
+        group from: :smart_discovery_stu2,
+              config: {
+                inputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                },
+                outputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                }
+              }
+
+        group from: :backend_services_authorization,
+              config: {
+                inputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                },
+                outputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                }
+              }
       end
 
       group do
@@ -88,6 +138,7 @@ module DEQMTestKit
         group from: :collect_data_v5_subjectGroup,
               title: '$collect-data with subjectGroup'
       end
+
     end
   end
 end

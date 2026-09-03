@@ -29,6 +29,7 @@ module DEQMTestKit
       headers origin: url.to_s,
               referrer: url.to_s,
               'Content-Type': 'application/fhir+json'
+      auth_info :deqm_smart_auth_info
     end
 
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))

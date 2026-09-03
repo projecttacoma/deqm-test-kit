@@ -9,7 +9,7 @@ RSpec.describe DEQMTestKit::CollectDataV5 do
   include DEQMTestKit::CollectDataSpecUtils
 
   let(:suite) { Inferno::Repositories::TestSuites.new.find('deqm_v500') }
-  let(:collect_data_group) { suite.groups[7] }
+  let(:collect_data_group) { suite.groups.find { |group| group.id.end_with?('-collect_data') } }
   let(:base_tests) { collect_data_group.groups[0] }
   let(:subject_tests) { collect_data_group.groups[1] }
   let(:subject_group_tests) { collect_data_group.groups[2] }
