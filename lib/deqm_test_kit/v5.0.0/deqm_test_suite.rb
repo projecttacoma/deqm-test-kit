@@ -15,6 +15,7 @@ require_relative '../submit_data_v5'
 module DEQMTestKit
   # Test suite for DEQM Version 5.0.0
   module DEQMV500
+    # rubocop:disable Metrics/ClassLength
     class DEQMTestSuite < Inferno::TestSuite # rubocop:disable Style/Documentation
       id :deqm_v500
       title 'DEQM v5.0.0 Measure Operations Test Suite'
@@ -84,6 +85,7 @@ module DEQMTestKit
       group from: :measure_availability
       group from: :data_requirements
       group from: :fhir_queries
+      # rubocop:disable Metrics/BlockLength
       group do
         id :evaluate
         title '$evaluate Operation'
@@ -118,6 +120,7 @@ module DEQMTestKit
                 options: { endpoint_name: 'evaluate' }
               }
       end
+      # rubocop:enable Metrics/BlockLength
       group from: :patient_everything
       group from: :submit_data_v5
       group do
@@ -134,5 +137,6 @@ module DEQMTestKit
               title: '$collect-data with subjectGroup'
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end
