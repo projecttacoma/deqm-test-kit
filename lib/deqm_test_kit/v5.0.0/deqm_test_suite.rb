@@ -49,8 +49,18 @@ module DEQMTestKit
       group do
         id :smart_authorization
         title 'SMART Backend Services Authorization'
-        description 'Obtain a client-credentials access token for DEQM requests.'
+        description 'Discover SMART endpoints and obtain a client-credentials access token for DEQM requests.'
         run_as_group
+
+        group from: :smart_discovery_stu2,
+              config: {
+                inputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                },
+                outputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                }
+              }
 
         group from: :backend_services_authorization,
               config: {
