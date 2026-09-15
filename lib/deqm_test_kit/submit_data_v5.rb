@@ -122,6 +122,7 @@ module DEQMTestKit
     fhir_client do
       url :url
       headers custom_headers
+      auth_info :deqm_smart_auth_info
     end
 
     test do

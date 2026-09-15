@@ -10,13 +10,6 @@ module DEQMTestKit
     id :evaluate_v5
     description 'Ensure FHIR server can calculate a measure using $evaluate operation (DEQM v5.0.0)'
 
-    fhir_client do
-      url :url
-      headers origin: url.to_s,
-              referrer: url.to_s,
-              'Content-Type': 'application/fhir+json'
-    end
-
     measure_options = JSON.parse(File.read('./lib/fixtures/measureRadioButton.json'))
     additional_measure_options = JSON.parse(File.read('./lib/fixtures/measureCheckBoxes.json'))
     measure_id_args = {
