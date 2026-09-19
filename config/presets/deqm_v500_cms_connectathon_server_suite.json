@@ -85,6 +85,13 @@
       "title": "Number of subjects in the provided Group",
       "type": "text",
       "value": "1"
+    },
+    {
+      "name": "measure_url_list",
+      "description": "",
+      "title": "Measures (comma-separated URLs with versions)",
+      "type": "text",
+      "value": "https://fhir-connectathon.test.cms.gov/fhir/Measure/EXMConnectathonSept2026Simple"
     }
   ]
 }
