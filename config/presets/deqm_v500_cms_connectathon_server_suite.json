@@ -1,0 +1,90 @@
+{
+  "title": "CMS Connectathon Server",
+  "id": "deqm_v500_cms_connectathon_server",
+  "test_suite_id": "deqm_v500",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "https://fhir-connectathon.test.cms.gov/fhir"
+    },
+    {
+      "name": "deqm_smart_auth_info",
+      "options": {
+        "mode": "auth",
+        "components": [
+          {
+            "name": "auth_type",
+            "default": "backend_services",
+            "locked": "true"
+          },
+          {
+            "name": "use_discovery",
+            "locked": true
+          }
+        ]
+      },
+      "title": "Backend Services Credentials",
+      "type": "auth_info",
+      "value": {
+        "encryption_algorithm": "ES384",
+        "auth_type": "backend_services",
+        "use_discovery": "true",
+        "requested_scopes": "openid system/*.cruds",
+        "client_id": "cx-0650792bcf51"
+      },
+      "default": {}
+    },
+    {
+      "name": "measure_id",
+      "description": "",
+      "title": "",
+      "type": "radio",
+      "value": "EXMConnectathonSept2026Simple"
+    },
+    {
+      "name": "period_start",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "2026-01-01"
+    },
+    {
+      "name": "period_end",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "2026-12-31"
+    },
+    {
+      "name": "patient_id",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "f9f805fb-82be-470f-99a9-9bd849ead99e"
+    },
+    {
+      "name": "patient_id2",
+      "description": "",
+      "title": "",
+      "type": "text",
+      "value": "123"
+    },
+    {
+      "name": "group_id",
+      "description": "",
+      "title": "Group ID",
+      "type": "text",
+      "value": "a72c3cfa-74ec-4c76-89e5-2d9d6576871a"
+    },
+    {
+      "name": "group_subjects",
+      "description": "",
+      "title": "Number of subjects in the provided Group",
+      "type": "text",
+      "value": "1"
+    }
+  ]
+}
