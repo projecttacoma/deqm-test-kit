@@ -78,6 +78,15 @@ module DEQMTestKit
         title 'Capability Statement'
         description 'Verify that the server has a CapabilityStatement'
 
+        input :deqm_smart_auth_info,
+              type: :auth_info,
+              options: { mode: 'access' }
+
+        fhir_client do
+          url :url
+          auth_info :deqm_smart_auth_info
+        end
+
         test do
           id :capability_statement_read
           title 'Read CapabilityStatement'
@@ -92,9 +101,33 @@ module DEQMTestKit
         end
       end
 
-      group from: :measure_availability
-      group from: :data_requirements
-      group from: :fhir_queries
+      group from: :measure_availability,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      group from: :data_requirements,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      group from: :fhir_queries,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
       # rubocop:disable Metrics/BlockLength
       group do
         id :evaluate
@@ -131,11 +164,31 @@ module DEQMTestKit
               }
       end
       # rubocop:enable Metrics/BlockLength
-      group from: :patient_everything
-      group from: :submit_data_v5
+      group from: :patient_everything,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      group from: :submit_data_v5,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
       group do
         id :collect_data
         title '$collect-data Operation'
+
+        input :deqm_smart_auth_info,
+              type: :auth_info,
+              options: { mode: 'access' }
 
         group from: :collect_data_v5,
               title: '$collect-data'
