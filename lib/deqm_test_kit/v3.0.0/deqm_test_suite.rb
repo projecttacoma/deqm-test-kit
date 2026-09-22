@@ -19,6 +19,12 @@ module DEQMTestKit
       description 'A set of tests for v3.0.0 DEQM\'s operations and resources'
 
       input :url
+      input :deqm_smart_auth_info,
+            title: 'SMART Access Credentials',
+            description: 'Optional credentials for authenticated requests.',
+            type: :auth_info,
+            optional: true,
+            options: { mode: 'access' }
 
       fhir_client do
         url :url

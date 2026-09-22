@@ -15,24 +15,77 @@ require_relative '../submit_data_v5'
 module DEQMTestKit
   # Test suite for DEQM Version 5.0.0
   module DEQMV500
+    # rubocop:disable Metrics/ClassLength
     class DEQMTestSuite < Inferno::TestSuite # rubocop:disable Style/Documentation
       id :deqm_v500
       title 'DEQM v5.0.0 Measure Operations Test Suite'
       description 'A set of tests for v5.0.0 DEQM\'s operations and resources'
 
       input :url
+      input :deqm_smart_auth_info,
+            title: 'SMART Backend Services Credentials',
+            description: 'Credentials used to obtain and refresh a SMART Backend Services access token.',
+            type: :auth_info,
+            optional: true,
+            options: {
+              mode: 'auth',
+              components: [
+                {
+                  name: :auth_type,
+                  default: 'backend_services',
+                  locked: true
+                },
+                {
+                  name: :requested_scopes,
+                  default: 'system/*.cruds'
+                },
+                {
+                  name: :use_discovery,
+                  locked: true
+                }
+              ]
+            }
 
-      fhir_client do
-        url :url
-        headers origin: url.to_s,
-                referrer: url.to_s,
-                'Content-Type': 'application/fhir+json'
+      group do
+        id :smart_authorization
+        title 'SMART Backend Services Authorization'
+        description 'Discover SMART endpoints and obtain a client-credentials access token for DEQM requests.'
+        run_as_group
+
+        group from: :smart_discovery_stu2,
+              config: {
+                inputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                },
+                outputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                }
+              }
+
+        group from: :backend_services_authorization,
+              config: {
+                inputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                },
+                outputs: {
+                  smart_auth_info: { name: :deqm_smart_auth_info }
+                }
+              }
       end
 
       group do
         id :capability_statement
         title 'Capability Statement'
         description 'Verify that the server has a CapabilityStatement'
+
+        input :deqm_smart_auth_info,
+              type: :auth_info,
+              options: { mode: 'access' }
+
+        fhir_client do
+          url :url
+          auth_info :deqm_smart_auth_info
+        end
 
         test do
           id :capability_statement_read
@@ -48,12 +101,49 @@ module DEQMTestKit
         end
       end
 
-      group from: :measure_availability
-      group from: :data_requirements
-      group from: :fhir_queries
+      group from: :measure_availability,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      group from: :data_requirements,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      group from: :fhir_queries,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      # rubocop:disable Metrics/BlockLength
       group do
         id :evaluate
         title '$evaluate Operation'
+
+        input :deqm_smart_auth_info,
+              type: :auth_info,
+              options: { mode: 'access' }
+
+        fhir_client do
+          url :url
+          headers origin: url.to_s,
+                  referrer: url.to_s,
+                  'Content-Type': 'application/fhir+json'
+          auth_info :deqm_smart_auth_info
+        end
 
         group from: :evaluate_v5,
               title: '$evaluate',
@@ -73,11 +163,32 @@ module DEQMTestKit
                 options: { endpoint_name: 'evaluate' }
               }
       end
-      group from: :patient_everything
-      group from: :submit_data_v5
+      # rubocop:enable Metrics/BlockLength
+      group from: :patient_everything,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
+      group from: :submit_data_v5,
+            config: {
+              inputs: {
+                deqm_smart_auth_info: {
+                  type: :auth_info,
+                  options: { mode: 'access' }
+                }
+              }
+            }
       group do
         id :collect_data
         title '$collect-data Operation'
+
+        input :deqm_smart_auth_info,
+              type: :auth_info,
+              options: { mode: 'access' }
 
         group from: :collect_data_v5,
               title: '$collect-data'
@@ -89,5 +200,6 @@ module DEQMTestKit
               title: '$collect-data with subjectGroup'
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

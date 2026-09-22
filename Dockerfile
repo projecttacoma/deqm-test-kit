@@ -21,7 +21,8 @@ FROM dhi.io/ruby:${RUBY_VERSION} AS runtime
 
 ENV INSTALL_PATH=/opt/inferno \
     APP_ENV=production \
-    BUNDLE_PATH=/usr/local/bundle
+    BUNDLE_PATH=/usr/local/bundle \
+    RUBYOPT=-EUTF-8
 
 WORKDIR ${INSTALL_PATH}
 
